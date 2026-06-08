@@ -933,24 +933,7 @@
   <p style="margin-top:.4rem;font-size:.72rem;opacity:.5">Site estático · hospede gratuitamente no GitHub Pages ou Google Sites</p>
 </footer>
 
-<!-- ══════════════════════════════════════════════
-     BOTÃO DE AJUDA AO PROFESSOR
-══════════════════════════════════════════════ -->
-<div class="edit-hint" id="editHint">
-  <div class="edit-hint-panel" id="editPanel">
-    <h5>🛠️ Painel do Professor</h5>
-    <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:.75rem">Para adicionar ou remover materiais e vídeos, abra o painel de administração:</p>
-    <a href="admin.html" target="_blank"
-       style="display:flex;align-items:center;gap:.5rem;background:var(--blue);color:white;padding:.6rem 1rem;border-radius:8px;font-weight:700;font-size:.83rem;justify-content:center;margin-bottom:.75rem;">
-      <i class="fa-solid fa-gear"></i> Abrir Painel Admin
-    </a>
-    <p style="font-size:.72rem;color:var(--text-muted)">Senha: os dígitos do <strong>π</strong> 😉<br/>Altere no arquivo <code>admin.html</code> se precisar</p>
-    <button class="close-panel" onclick="toggleHint()">✕ Fechar</button>
-  </div>
-  <button class="edit-hint-btn" onclick="toggleHint()" title="Painel do professor">
-    <i class="fa-solid fa-gear"></i>
-  </button>
-</div>
+<!-- Painel admin removido do site público — acesse admin.html diretamente no seu computador -->
 
 <!-- ══════════════════════════════════════════════
      SCRIPTS
@@ -1095,8 +1078,6 @@
   function closeVideoModal(e) { if (e.target===document.getElementById('videoModal')) closeModal(); }
   document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
 
-  /* ── Edit hint ── */
-  function toggleHint() { document.getElementById('editPanel').classList.toggle('open'); }
 
   /* ── Counters ── */
   function animCount(id, target) {

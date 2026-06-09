@@ -1138,7 +1138,7 @@
   function renderPlanejamentos() {
     const grid = document.getElementById('planejamento-grid');
     grid.innerHTML = PLANEJAMENTOS.map(p => `
-      <a href="${p.link}" download style="text-decoration:none;display:block;background:white;border-radius:10px;box-shadow:0 4px 16px rgba(13,27,42,.10);overflow:hidden;transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(13,27,42,.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(13,27,42,.10)'">
+      <a href="${p.link}" target="_blank" rel="noopener" style="text-decoration:none;display:block;background:white;border-radius:10px;box-shadow:0 4px 16px rgba(13,27,42,.10);overflow:hidden;transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(13,27,42,.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(13,27,42,.10)'">
         <div style="text-align:center;padding:2rem 1rem;background:var(--blue);color:white;font-size:2.5rem">
           <i class="fa-solid fa-file-pdf"></i>
         </div>

@@ -656,6 +656,7 @@
   </div>
   <ul class="navbar-links" id="navLinks">
     <li><a href="#aulas">Aulas</a></li>
+    <li><a href="#planejamento">Planejamento</a></li>
     <li><a href="#videos">Vídeos</a></li>
     <li><a href="#matematicos">Matemáticos</a></li>
     <li><a href="#contato">Contato</a></li>
@@ -819,6 +820,42 @@
     </div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════
+     PLANEJAMENTO ANUAL
+══════════════════════════════════════════════ -->
+<section class="section" id="planejamento" style="background:#f5f7ff">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:#e3f2fd;color:#1565c0"><i class="fa-solid fa-calendar-check"></i></div>
+      <div>
+        <h2>Planejamento Anual</h2>
+        <p>Documentos de planejamento curricular para cada série</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem">
+      <script>
+        PLANEJAMENTOS.forEach(p => {
+          document.write(`
+            <a href="${p.link}" download class="card" style="cursor:pointer;transition:all .3s">
+              <div style="text-align:center;padding:2rem 1rem;background:var(--blue);color:white;border-radius:10px 10px 0 0;font-size:2.5rem">
+                <i class="fa-solid fa-file-pdf"></i>
+              </div>
+              <div style="padding:1.5rem">
+                <div style="font-size:.75rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">${p.ano}</div>
+                <h3 style="font-size:1.1rem;margin-bottom:.75rem;color:var(--text)">${p.titulo}</h3>
+                <p style="font-size:.9rem;color:var(--text-muted);line-height:1.5">${p.descricao}</p>
+              </div>
+              <div style="padding:1rem;background:#f0f4f8;border-radius:0 0 10px 10px;text-align:center;color:var(--blue);font-weight:600">
+                <i class="fa-solid fa-download"></i> Baixar PDF
+              </div>
+            </a>
+          `);
+        });
+      </script>
+    </div>
+  </div>
+</section>
 
 <!-- ══════════════════════════════════════════════
      MATEMÁTICOS FAMOSOS
@@ -1020,6 +1057,27 @@
       titulo: "A Matemática Insana da Teoria dos Nós",
       categoria: "curiosidade",
       descricao: "Como amarrar um tênis esconde uma matemática surpreendente — a fascinante teoria dos nós explicada pelo Veritasium em Português."
+    }
+  ];
+
+  const PLANEJAMENTOS = [
+    {
+      id: 1, ano: "6º Ano",
+      titulo: "Planejamento Anual – 6º Ano",
+      descricao: "Planejamento curricular completo para matemática do 6º ano.",
+      link: "materiais/planejamentos/planejamento_6ano.pdf"
+    },
+    {
+      id: 2, ano: "7º Ano",
+      titulo: "Planejamento Anual – 7º Ano",
+      descricao: "Planejamento curricular completo para matemática do 7º ano.",
+      link: "materiais/planejamentos/planejamento_7ano.pdf"
+    },
+    {
+      id: 3, ano: "8º Ano",
+      titulo: "Planejamento Anual – 8º Ano",
+      descricao: "Planejamento curricular completo para matemática do 8º ano.",
+      link: "materiais/planejamentos/planejamento_8ano.pdf"
     }
   ];
 

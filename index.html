@@ -262,6 +262,11 @@
       border-color: #e65100;
       box-shadow: 0 4px 16px rgba(230,81,0,.3);
     }
+    .grade-tab[data-grade="temporarios"].active {
+      background: #00838f;
+      border-color: #00838f;
+      box-shadow: 0 4px 16px rgba(0,131,143,.3);
+    }
 
     .grade-panel { display: none; }
     .grade-panel.active { display: block; animation: fadeIn .3s ease; }
@@ -738,6 +743,9 @@
       <button class="grade-tab" data-grade="eja" role="tab" onclick="switchGrade('eja', this)">
         <span class="tab-icon">🎓</span>EJA
       </button>
+      <button class="grade-tab" data-grade="temporarios" role="tab" onclick="switchGrade('temporarios', this)">
+        <span class="tab-icon">🗂️</span>Temporários
+      </button>
     </div>
 
     <!-- ── 6.º ANO ── -->
@@ -792,6 +800,15 @@
         <h3><span class="dot" style="background:#e65100"></span> EJA — Materiais</h3>
       </div>
       <div class="materials-grid" id="grid-eja"></div>
+    </div>
+
+    <!-- ── TEMPORÁRIOS ── -->
+    <div class="grade-panel" id="panel-temporarios">
+      <div class="grade-panel-header">
+        <h3><span class="dot" style="background:#00838f"></span> Temporários — Atividades avulsas</h3>
+      </div>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1.25rem;">Atividades extras e materiais avulsos, fora do roteiro regular das aulas.</p>
+      <div class="materials-grid" id="grid-temporarios"></div>
     </div>
 
   </div>
@@ -1032,6 +1049,12 @@
       link: "materiais/8ano/aula00_revisao_1tri.pdf", data: "09/06/2026"
     },
     {
+      id: 10, grade: "temporarios", trimestre: 2, tipo: "pdf",
+      titulo: "Folha de Multiplicação",
+      descricao: "Folha de exercícios de multiplicação para prática e fixação.",
+      link: "materiais/temporarios/folha_multiplicacao.pdf", data: "15/06/2026"
+    },
+    {
       id: 7, grade: "8ano", trimestre: 2, tipo: "pdf",
       titulo: "Aula 01 – Expressões Algébricas",
       descricao: "Introdução às expressões algébricas: valor numérico, operações e simplificações.",
@@ -1101,10 +1124,12 @@
 
   /* ── Renderizar materiais ── */
   function gradeLabel(g) {
-    return g === 'eja' ? 'EJA' : g.replace('ano', '.º Ano');
+    if (g === 'eja') return 'EJA';
+    if (g === 'temporarios') return 'Temporário';
+    return g.replace('ano', '.º Ano');
   }
   function renderMateriais() {
-    ['6ano','7ano','8ano','9ano','eja'].forEach(grade => {
+    ['6ano','7ano','8ano','9ano','eja','temporarios'].forEach(grade => {
       const grid = document.getElementById('grid-' + grade);
       const items = MATERIAIS.filter(m => m.grade === grade);
       if (!items.length) {
@@ -1118,20 +1143,24 @@
       const byTri = {};
       items.forEach(m => { (byTri[m.trimestre] = byTri[m.trimestre]||[]).push(m); });
       let html = '';
+      const isTemp = grade === 'temporarios';
       Object.keys(byTri).sort((a,b)=>a-b).forEach(tri => {
-        html += `<div style="grid-column:1/-1;margin:0 0 .25rem;">
-          <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);background:#e3f2fd;padding:.3rem .85rem;border-radius:999px;">
-            <i class="fa-solid fa-calendar-days"></i> ${tri}º Trimestre
-          </span></div>`;
+        if (!isTemp) {
+          html += `<div style="grid-column:1/-1;margin:0 0 .25rem;">
+            <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);background:#e3f2fd;padding:.3rem .85rem;border-radius:999px;">
+              <i class="fa-solid fa-calendar-days"></i> ${tri}º Trimestre
+            </span></div>`;
+        }
         byTri[tri].forEach(m => {
           const iconMap = {pdf:'fa-file-pdf pdf',doc:'fa-file-word doc',img:'fa-image img',link:'fa-link link'};
           const [icon, cls] = (iconMap[m.tipo]||'fa-file link').split(' ');
           const tipoLabel = {pdf:'PDF',doc:'Word',img:'Imagem',link:'Link'}[m.tipo]||'Arquivo';
+          const metaLine = isTemp ? `${tipoLabel} · Avulso` : `${tipoLabel} · ${tri}º Trim · ${gradeLabel(grade)}`;
           html += `<div class="material-card">
             <div class="material-card-top">
               <div class="material-icon ${cls||'link'}"><i class="fa-solid ${icon}"></i></div>
               <div class="material-meta"><h4>${m.titulo}</h4>
-                <span>${tipoLabel} · ${tri}º Trim · ${gradeLabel(grade)}</span></div>
+                <span>${metaLine}</span></div>
             </div>
             ${m.descricao?`<p class="material-desc">${m.descricao}</p>`:''}
             <a class="btn-download" href="${m.link}" target="_blank" rel="noopener">

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="860" height="870" viewBox="0 0 860 870" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+
+  <!-- Background -->
+  <rect width="860" height="870" fill="#edf1f7"/>
+
+  <!-- HEADER -->
+  <rect x="0" y="0" width="860" height="100" fill="#1a3a5c"/>
+  <rect x="0" y="0" width="860" height="5" fill="#f0c040"/>
+  <text x="430" y="40" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="bold" letter-spacing="2.5">EXPRESSÕES ALGÉBRICAS · 8.º ANO · AULA 01</text>
+  <text x="430" y="68" text-anchor="middle" fill="white" font-size="22" font-weight="bold">SITUAÇÃO-PROBLEMA 5</text>
+  <text x="430" y="90" text-anchor="middle" fill="#90b8d8" font-size="14">Aplicativo de Assinaturas</text>
+
+  <!-- CONTEXTO -->
+  <rect x="32" y="114" width="796" height="252" fill="white" rx="10"/>
+  <rect x="32" y="114" width="6" height="252" fill="#1a3a5c" rx="3"/>
+
+  <text x="56" y="140" fill="#1a3a5c" font-size="12" font-weight="bold" letter-spacing="1">CONTEXTO DO PROBLEMA</text>
+  <line x1="56" y1="148" x2="820" y2="148" stroke="#dce6f0" stroke-width="1"/>
+
+  <text x="56" y="172" fill="#2c3e50" font-size="15">Um estudante do 8.º ano criou um aplicativo de músicas independentes e oferece</text>
+  <text x="56" y="194" fill="#2c3e50" font-size="15">dois planos de assinatura:</text>
+
+  <rect x="66" y="204" width="370" height="28" fill="#e4f0fb" rx="5"/>
+  <text x="76" y="222" font-size="14"><tspan fill="#1a3a5c" font-weight="bold">Plano Básico:</tspan><tspan fill="#2c3e50">  R$ 15,00/mês por assinante</tspan></text>
+
+  <rect x="66" y="238" width="390" height="28" fill="#fef7e4" rx="5"/>
+  <text x="76" y="256" font-size="14"><tspan fill="#7a5000" font-weight="bold">Plano Premium:</tspan><tspan fill="#2c3e50">  R$ 30,00/mês por assinante</tspan></text>
+
+  <text x="56" y="286" fill="#2c3e50" font-size="15">O custo fixo mensal (servidores e manutenção) é de <tspan font-weight="bold" fill="#1a3a5c">R$ 400,00</tspan>. O custo variável é de</text>
+  <text x="56" y="308" fill="#2c3e50" font-size="15"><tspan font-weight="bold" fill="#1a3a5c">R$ 3,00</tspan> por assinante básico e <tspan font-weight="bold" fill="#1a3a5c">R$ 5,00</tspan> por assinante premium.</text>
+
+  <line x1="56" y1="321" x2="820" y2="321" stroke="#dce6f0" stroke-width="1" stroke-dasharray="5 4"/>
+  <text x="56" y="341" fill="#5a6a7a" font-size="14" font-style="italic">Seja  x = número de assinantes básicos   e   y = número de assinantes premium.</text>
+
+  <!-- QUESTÕES -->
+  <text x="40" y="383" fill="#1a3a5c" font-size="13" font-weight="bold" letter-spacing="1">QUESTÕES</text>
+  <line x1="40" y1="389" x2="820" y2="389" stroke="#c5d5e5" stroke-width="1.5"/>
+
+  <!-- a) -->
+  <rect x="32" y="397" width="796" height="50" fill="white" rx="7"/>
+  <rect x="32" y="397" width="5" height="50" fill="#1565C0" rx="3"/>
+  <text x="50" y="427" fill="#1565C0" font-size="18" font-weight="bold">a)</text>
+  <text x="78" y="427" fill="#1a1a2e" font-size="15">Escreva a expressão algébrica da receita total R em função de x e y.</text>
+
+  <!-- b) -->
+  <rect x="32" y="455" width="796" height="50" fill="white" rx="7"/>
+  <rect x="32" y="455" width="5" height="50" fill="#1565C0" rx="3"/>
+  <text x="50" y="485" fill="#1565C0" font-size="18" font-weight="bold">b)</text>
+  <text x="78" y="485" fill="#1a1a2e" font-size="15">Escreva a expressão do custo total CT em função de x e y.</text>
+
+  <!-- c) -->
+  <rect x="32" y="513" width="796" height="70" fill="white" rx="7"/>
+  <rect x="32" y="513" width="5" height="70" fill="#E65100" rx="3"/>
+  <text x="50" y="542" fill="#E65100" font-size="18" font-weight="bold">c)</text>
+  <text x="78" y="542" fill="#1a1a2e" font-size="15">Escreva e simplifique a expressão do lucro L = R − CT.</text>
+  <text x="78" y="567" fill="#c62828" font-size="13" font-style="italic">Atenção: distribua o sinal negativo em todos os termos do CT!</text>
+
+  <!-- d) -->
+  <rect x="32" y="591" width="796" height="50" fill="white" rx="7"/>
+  <rect x="32" y="591" width="5" height="50" fill="#2E7D32" rx="3"/>
+  <text x="50" y="621" fill="#2E7D32" font-size="18" font-weight="bold">d)</text>
+  <text x="78" y="621" fill="#1a1a2e" font-size="15">Calcule o lucro para x = 40 assinantes básicos e y = 20 assinantes premium.</text>
+
+  <!-- e) -->
+  <rect x="32" y="649" width="796" height="70" fill="white" rx="7"/>
+  <rect x="32" y="649" width="5" height="70" fill="#2E7D32" rx="3"/>
+  <text x="50" y="678" fill="#2E7D32" font-size="18" font-weight="bold">e)</text>
+  <text x="78" y="678" fill="#1a1a2e" font-size="15">O número de assinantes premium dobrou (y = 40), mantendo x = 40. Calcule o novo</text>
+  <text x="78" y="702" fill="#1a1a2e" font-size="15">lucro e diga quanto ele aumentou em relação à letra d.</text>
+
+  <!-- f) -->
+  <rect x="32" y="727" width="796" height="88" fill="white" rx="7"/>
+  <rect x="32" y="727" width="5" height="88" fill="#6A1B9A" rx="3"/>
+  <text x="50" y="755" fill="#6A1B9A" font-size="18" font-weight="bold">f)</text>
+  <text x="78" y="755" fill="#1a1a2e" font-size="15">Mantendo x = 30, reescreva L como uma expressão só em função de y. A partir de</text>
+  <text x="78" y="779" fill="#1a1a2e" font-size="15">quantos assinantes premium o aplicativo deixa de dar prejuízo?</text>
+  <text x="78" y="801" fill="#6A1B9A" font-size="13" font-style="italic">Dica: faça L = 0 e resolva para y.</text>
+
+  <!-- FOOTER -->
+  <rect x="0" y="830" width="860" height="40" fill="#1a3a5c"/>
+  <text x="430" y="856" text-anchor="middle" fill="#7fa8c8" font-size="13">Prof. Mikael Maronez Freitas · Matemática · EMEF Ceará</text>
+
+</svg>

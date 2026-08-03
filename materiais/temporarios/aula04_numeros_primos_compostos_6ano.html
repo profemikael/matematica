@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Matemática 6º Ano — Aula 4 — Números Primos e Compostos</title>
+<style>
+  :root{
+    --azul:#1e3a8a; --azul2:#2947a8; --azulclaro:#eef2ff;
+    --verde:#2e7d32; --verdeclaro:#eaf5ea;
+    --verm:#c0392b; --amarelo:#fef7e0; --amarelo-bd:#e8c96a;
+    --cinza:#4b5563; --linha:#e5e7eb; --cinzabg:#f3f4f6;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Segoe UI",Arial,Helvetica,sans-serif; color:#1f2937;
+    line-height:1.5; font-size:14px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#e9ecf1;
+  }
+  .page{max-width:820px;margin:20px auto;background:#fff;padding:30px 40px 40px;box-shadow:0 2px 12px rgba(0,0,0,.1);}
+
+  .cab{border:2px solid var(--azul);border-left:8px solid var(--azul);border-radius:4px;padding:16px 20px;position:relative;}
+  .cab .top{font-size:12px;font-weight:700;color:var(--azul);}
+  .cab .tri{font-size:12px;color:var(--cinza);margin-bottom:6px;}
+  .cab h1{font-size:26px;color:var(--azul);margin:0;line-height:1.1;}
+  .cab .subt{font-size:15px;font-weight:700;color:var(--verm);margin:2px 0 8px;}
+  .cab .bncc{font-size:11px;font-style:italic;color:var(--cinza);border-top:2px solid var(--amarelo-bd);padding-top:7px;margin-top:7px;}
+  .cab .prof{font-size:12px;font-weight:700;color:var(--azul);margin-top:8px;}
+
+  .barra{color:#fff;font-size:15px;font-weight:700;letter-spacing:.3px;
+         padding:8px 14px;border-radius:4px;margin:22px 0 12px;
+         border-bottom:3px solid rgba(0,0,0,.15);}
+  .barra.azul{background:var(--azul);} .barra.verde{background:var(--verde);} .barra.verm{background:var(--verm);}
+  .barra .n{display:inline-block;min-width:20px;}
+
+  .aprender div{padding:7px 0;border-bottom:1px solid var(--linha);}
+  .aprender .k{display:inline-block;width:26px;color:var(--azul);font-weight:700;}
+
+  .def{border-left:4px solid var(--azul2);background:var(--azulclaro);padding:10px 14px;border-radius:4px;margin:10px 0;}
+  .def.verde{border-color:var(--verde);background:var(--verdeclaro);}
+  .def.amar{border-color:var(--amarelo-bd);background:var(--amarelo);}
+  .destaque{border:1px solid var(--azul2);border-radius:6px;padding:12px;text-align:center;margin:12px 0;font-weight:700;line-height:1.9;}
+  .destaque.amar{border-color:var(--amarelo-bd);background:var(--amarelo);}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+  th{color:#fff;padding:8px 10px;text-align:center;font-weight:700;}
+  th.azul{background:var(--azul);} th.laranja{background:var(--verm);}
+  td{border:1px solid var(--linha);padding:7px 10px;text-align:center;}
+  tr:nth-child(even) td{background:var(--cinzabg);}
+
+  ol.passos{margin:8px 0 8px 4px;padding-left:22px;} ol.passos li{padding:3px 0;}
+
+  .crivo{width:100%;border-collapse:collapse;margin:12px 0;}
+  .crivo td{width:10%;height:34px;text-align:center;font-weight:600;border:1px solid #d5dae2;font-size:14px;}
+  .c-primo{background:#c8e6c9;color:#1b5e20;font-weight:800;}
+  .c-um{background:#fdd6d6;color:#9b2c2c;}
+  .c-comp{background:#eef0f3;color:#9aa2ad;}
+  .legenda{font-size:12px;color:var(--cinza);margin:2px 0 4px;}
+  .legenda span{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:middle;margin:0 3px 0 10px;}
+
+  .exerc{margin:14px 0;}
+  .exerc h4{color:var(--azul);font-size:14px;margin:0 0 3px;}
+  .linha-resp{border-bottom:1px dotted #9aa2ad;color:#9aa2ad;font-size:12px;padding-top:9px;margin-top:4px;}
+  .sp h4{color:var(--verm);font-size:14px;margin:14px 0 3px;}
+  .fim{border-left:5px solid var(--azul2);background:var(--azulclaro);padding:11px 14px;border-radius:4px;margin-top:16px;font-size:13.5px;}
+
+  @media print{
+    body{background:#fff;} .page{box-shadow:none;margin:0;max-width:100%;padding:0;}
+    @page{size:A4;margin:14mm;}
+    .barra,.destaque,.def,table,.exerc,.sp{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="cab">
+    <div class="top">MATEMÁTICA — 6.º ANO</div>
+    <div class="tri">2.º Trimestre | Aula 4</div>
+    <h1>Números Primos e Compostos</h1>
+    <div class="subt">Crivo de Eratóstenes e Decomposição em Fatores Primos</div>
+    <div class="bncc">EF06MA05 – Classificar números naturais em primos e compostos, estabelecer relações entre números, expressas pelos termos "é múltiplo de", "é divisor de", "é fator de", e estabelecer, por meio de investigações, critérios de divisibilidade por 2, 3, 4, 5, 6, 8, 9, 10, 100 e 1000.</div>
+    <div class="prof">Prof. Mikael</div>
+  </div>
+
+  <div class="barra azul">O QUE VAMOS APRENDER?</div>
+  <div class="aprender">
+    <div><span class="k">1</span>O que são números primos e números compostos</div>
+    <div><span class="k">2</span>O Crivo de Eratóstenes — como encontrar todos os números primos até 50</div>
+    <div><span class="k">3</span>Decomposição em fatores primos (fatoração)</div>
+    <div><span class="k">4</span>Exercícios e situações-problema do cotidiano e do empreendedorismo</div>
+  </div>
+
+  <div class="barra azul"><span class="n">1</span> O QUE SÃO NÚMEROS PRIMOS E COMPOSTOS?</div>
+  <div class="def">
+    <strong>Número primo</strong> é o número natural maior que 1 que possui <strong>exatamente 2 divisores</strong>: o número 1 e ele mesmo.<br>
+    <strong>Número composto</strong> é o número natural maior que 1 que possui <strong>mais de 2 divisores</strong>.
+  </div>
+  <div class="destaque">
+    Número primo → exatamente 2 divisores (1 e ele mesmo)<br>
+    Número composto → mais de 2 divisores<br>
+    O número 1 → caso especial: possui apenas 1 divisor — não é primo nem composto
+  </div>
+  <p style="color:var(--azul);font-weight:700;margin:14px 0 4px;">Exemplos</p>
+  <table>
+    <tr><th class="azul">Número</th><th class="azul">Divisores</th><th class="azul">Classificação</th></tr>
+    <tr><td>1</td><td>1</td><td>nem primo, nem composto</td></tr>
+    <tr><td>2</td><td>1, 2</td><td>primo</td></tr>
+    <tr><td>6</td><td>1, 2, 3, 6</td><td>composto</td></tr>
+    <tr><td>7</td><td>1, 7</td><td>primo</td></tr>
+    <tr><td>9</td><td>1, 3, 9</td><td>composto</td></tr>
+  </table>
+
+  <div class="barra verde"><span class="n">2</span> O CRIVO DE ERATÓSTENES</div>
+  <div class="def verde">
+    O <strong>Crivo de Eratóstenes</strong> é um método criado pelo matemático grego Eratóstenes para encontrar todos os números primos até um determinado valor. A ideia é simples: <strong>eliminar</strong> os múltiplos de cada número primo, deixando apenas os primos.
+  </div>
+  <ol class="passos">
+    <li>Risque o número 1 (não é primo).</li>
+    <li>Circule o 2 (primeiro primo) e risque todos os seus múltiplos (4, 6, 8, 10...).</li>
+    <li>Circule o próximo número não riscado (3) e risque seus múltiplos (6, 9, 12...).</li>
+    <li>Repita o processo com 5, 7, 11... até não restarem múltiplos para eliminar.</li>
+    <li>Os números que restarem circulados são os <strong>números primos</strong>!</li>
+  </ol>
+  <p style="color:var(--verde);font-weight:700;margin:12px 0 4px;">Quadro de 1 a 50 — destaque os números primos</p>
+  <table class="crivo">
+    <tr><td class="c-um">1</td><td class="c-primo">2</td><td class="c-primo">3</td><td class="c-comp">4</td><td class="c-primo">5</td><td class="c-comp">6</td><td class="c-primo">7</td><td class="c-comp">8</td><td class="c-comp">9</td><td class="c-comp">10</td></tr>
+    <tr><td class="c-primo">11</td><td class="c-comp">12</td><td class="c-primo">13</td><td class="c-comp">14</td><td class="c-comp">15</td><td class="c-comp">16</td><td class="c-primo">17</td><td class="c-comp">18</td><td class="c-primo">19</td><td class="c-comp">20</td></tr>
+    <tr><td class="c-comp">21</td><td class="c-comp">22</td><td class="c-primo">23</td><td class="c-comp">24</td><td class="c-comp">25</td><td class="c-comp">26</td><td class="c-comp">27</td><td class="c-comp">28</td><td class="c-primo">29</td><td class="c-comp">30</td></tr>
+    <tr><td class="c-primo">31</td><td class="c-comp">32</td><td class="c-comp">33</td><td class="c-comp">34</td><td class="c-comp">35</td><td class="c-comp">36</td><td class="c-primo">37</td><td class="c-comp">38</td><td class="c-comp">39</td><td class="c-comp">40</td></tr>
+    <tr><td class="c-primo">41</td><td class="c-comp">42</td><td class="c-primo">43</td><td class="c-comp">44</td><td class="c-comp">45</td><td class="c-comp">46</td><td class="c-primo">47</td><td class="c-comp">48</td><td class="c-comp">49</td><td class="c-comp">50</td></tr>
+  </table>
+  <div class="legenda"><span style="background:#c8e6c9;"></span>Números primos <span style="background:#fdd6d6;"></span>Número 1 (caso especial) <span style="background:#eef0f3;"></span>Números compostos</div>
+  <div class="destaque">Números primos até 50:<br>2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47</div>
+
+  <div class="barra verm"><span class="n">3</span> DECOMPOSIÇÃO EM FATORES PRIMOS</div>
+  <div class="def amar">
+    <strong>Decompor um número composto em fatores primos</strong> significa escrevê-lo como um produto de números primos. Todo número composto pode ser escrito dessa forma de maneira única (Teorema Fundamental da Aritmética).
+  </div>
+  <p style="color:var(--verm);font-weight:700;margin:12px 0 4px;">Método da divisão sucessiva</p>
+  <p style="margin:0 0 8px;">Divida o número pelo menor número primo possível. Repita o processo com o resultado, sempre usando o menor primo possível, até chegar a 1.</p>
+  <table>
+    <tr><th class="laranja">Número</th><th class="laranja">Divisor primo</th><th class="laranja">Resultado</th></tr>
+    <tr><td>60</td><td>÷ 2</td><td>30</td></tr>
+    <tr><td>30</td><td>÷ 2</td><td>15</td></tr>
+    <tr><td>15</td><td>÷ 3</td><td>5</td></tr>
+    <tr><td>5</td><td>÷ 5</td><td>1</td></tr>
+  </table>
+  <div class="destaque amar">60 = 2 × 2 × 3 × 5 = 2² × 3 × 5</div>
+  <div class="def">▪ <strong>Dica:</strong> para verificar se um número pequeno é primo, basta testar a divisão pelos primos 2, 3, 5, 7... até que o divisor seja maior que a raiz aproximada do número.</div>
+
+  <div class="barra azul">EXERCÍCIOS</div>
+  <div class="exerc">
+    <h4>Exercício 1</h4>
+    <div>Classifique cada número como <strong>primo</strong>, <strong>composto</strong> ou <strong>nem primo nem composto</strong>: 1, 2, 9, 13, 15, 17, 21, 29.</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="exerc">
+    <h4>Exercício 2</h4>
+    <div>Usando o Crivo de Eratóstenes da página anterior, liste todos os números primos entre 1 e 30.</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="exerc">
+    <h4>Exercício 3</h4>
+    <div>Faça a decomposição em fatores primos dos números abaixo, mostrando as divisões sucessivas (como no exemplo do 60):<br>a) 48 &nbsp;&nbsp; b) 90 &nbsp;&nbsp; c) 100</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="exerc">
+    <h4>Exercício 4</h4>
+    <div>Julgue as afirmações como <strong>verdadeiras</strong> ou <strong>falsas</strong>, justificando sua resposta:<br>a) Todo número par é composto.<br>b) O número 2 é o único número primo que é par.</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="exerc">
+    <h4>Exercício 5</h4>
+    <div>Explique, com suas palavras, por que o número 1 não pode ser classificado nem como primo nem como composto.</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+
+  <div class="barra verm">SITUAÇÕES-PROBLEMA — Empreendedorismo e Cotidiano</div>
+  <div class="def amar">▪ <strong>Conexão empreendedora:</strong> entender números primos e fatoração ajuda a organizar estoques em embalagens exatas, simplificar custos e até proteger informações — a criptografia que garante a segurança de compras online é baseada em números primos!</div>
+
+  <div class="sp">
+    <h4>Situação-Problema 1 — ▪ Embalagens da Fábrica de Doces</h4>
+    <div>Uma fábrica precisa embalar 60 doces em caixas, com a mesma quantidade de doces em cada caixa e sem sobrar nenhum.<br>a) Use a decomposição 60 = 2² × 3 × 5 para descobrir três possíveis quantidades de doces por caixa.<br>b) Se cada caixa tiver 15 doces, quantas caixas serão necessárias?</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="sp">
+    <h4>Situação-Problema 2 — ▪ Senhas Seguras</h4>
+    <div>Sistemas de pagamento online usam números primos muito grandes para criar códigos de segurança (criptografia) e proteger as compras dos clientes.<br>a) Por que você acha que números primos grandes são difíceis de descobrir a partir do produto deles?<br>b) Verifique: o número 91 é primo ou composto? Decomponha-o em fatores primos.</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="sp">
+    <h4>Situação-Problema 3 — ▪ Organizando o Estoque</h4>
+    <div>Uma loja recebeu 90 unidades de um produto e quer organizá-las em prateleiras, com a mesma quantidade de produtos em cada prateleira.<br>a) Decomponha 90 em fatores primos.<br>b) A partir da fatoração, cite três formas diferentes de organizar as 90 unidades em prateleiras iguais.</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+  <div class="sp">
+    <h4>Situação-Problema 4 — ▪ Simplificando a Divisão de Lucros</h4>
+    <div>Dois sócios de uma pequena empresa precisam dividir um lucro de R$ 84,00 entre os 12 produtos vendidos no mês, de forma que cada produto "contribua" igualmente para o lucro total.<br>a) Decomponha 84 e 12 em fatores primos.<br>b) Qual é o maior número que divide tanto 84 quanto 12 (use os fatores primos comuns)?<br>c) Quanto cada produto contribuiu, em reais, para o lucro total?</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+    <div class="linha-resp">Resposta:</div>
+  </div>
+
+  <div class="fim"><strong>Bom trabalho!</strong> Reconhecer números primos e saber fatorar é uma ferramenta poderosa para organizar negócios, dividir recursos de forma justa e até entender a segurança digital.</div>
+
+</div>
+</body>
+</html>

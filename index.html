@@ -785,7 +785,14 @@
       <div class="grade-panel-header">
         <h3><span class="dot" style="background:#e65100"></span> EJA — Materiais</h3>
       </div>
-      <div class="materials-grid" id="grid-eja"></div>
+      <div style="padding:1rem 2rem .25rem; font-weight:700; color:#e65100; font-size:1.05rem; display:flex; align-items:center; gap:.5rem;">
+        <span>📐</span> Matemática
+      </div>
+      <div class="materials-grid" id="grid-eja-mat"></div>
+      <div style="padding:1.5rem 2rem .25rem; font-weight:700; color:#1565c0; font-size:1.05rem; display:flex; align-items:center; gap:.5rem;">
+        <span>⚗️</span> Física
+      </div>
+      <div class="materials-grid" id="grid-eja-fis"></div>
     </div>
 
     <!-- ── TEMPORÁRIOS ── -->
@@ -1125,7 +1132,25 @@
       titulo: "6º Ano – Bitcoin: O Dinheiro Digital (Slides Interativos)",
       descricao: "Slides interativos sobre Bitcoin, blockchain, história, exercícios matemáticos e debate. Inclui vídeo explicativo.",
       link: "materiais/temporarios/aula_bitcoin_6ano.html", data: "04/08/2026"
-    }
+    },
+    { id: 40, grade: "eja-mat", trimestre: 3, tipo: "pdf",
+      titulo: "T7 – Apostila 01 – Proporcionalidade e Regra de Três",
+      link: "materiais/eja/matematica/apostila01_proporcionalidade_t7.pdf", data: "04/08/2026" },
+    { id: 41, grade: "eja-mat", trimestre: 3, tipo: "pdf",
+      titulo: "T8 – Apostila 01 – Equação do 2º Grau e Bhaskara",
+      link: "materiais/eja/matematica/apostila01_equacao2grau_t8.pdf", data: "04/08/2026" },
+    { id: 42, grade: "eja-mat", trimestre: 3, tipo: "pdf",
+      titulo: "T9 – Apostila 01 – Estatística, Médias, Tabelas e Gráficos",
+      link: "materiais/eja/matematica/apostila01_estatistica_t9.pdf", data: "04/08/2026" },
+    { id: 43, grade: "eja-fis", trimestre: 3, tipo: "pdf",
+      titulo: "T7 – Apostila 01 – Grandezas, Unidades e Notação Científica",
+      link: "materiais/eja/fisica/apostila01_grandezas_t7.pdf", data: "04/08/2026" },
+    { id: 44, grade: "eja-fis", trimestre: 3, tipo: "pdf",
+      titulo: "T8 – Apostila 01 – Temperatura, Calor e suas Escalas",
+      link: "materiais/eja/fisica/apostila01_temperatura_calor_t8.pdf", data: "04/08/2026" },
+    { id: 45, grade: "eja-fis", trimestre: 3, tipo: "pdf",
+      titulo: "T9 – Apostila 01 – Eletricidade, Carga, Corrente e Tensão",
+      link: "materiais/eja/fisica/apostila01_eletricidade_t9.pdf", data: "04/08/2026" }
   ];
 
   const VIDEOS = [
@@ -1208,12 +1233,14 @@
 
   /* ── Renderizar materiais ── */
   function gradeLabel(g) {
+    if (g === 'eja-mat') return 'EJA – Matemática';
+    if (g === 'eja-fis') return 'EJA – Física';
     if (g === 'eja') return 'EJA';
     if (g === 'temporarios') return 'Temporário';
     return g.replace('ano', '.º Ano');
   }
   function renderMateriais() {
-    ['6ano','7ano','8ano','9ano','eja','temporarios'].forEach(grade => {
+    ['6ano','7ano','8ano','9ano','eja-mat','eja-fis','temporarios'].forEach(grade => {
       const grid = document.getElementById('grid-' + grade);
       const items = MATERIAIS.filter(m => m.grade === grade);
       if (!items.length) {

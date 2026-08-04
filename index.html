@@ -270,6 +270,16 @@
 
     .grade-panel { display: none; }
     .grade-panel.active { display: block; animation: fadeIn .3s ease; }
+
+    /* EJA sub-tabs */
+    .eja-sub-tabs { display:flex; gap:.75rem; padding:1rem 2rem .5rem; flex-wrap:wrap; border-bottom:1px solid #f0f0f0; margin-bottom:.5rem; }
+    .eja-disc-btn { font-size:.95rem; font-weight:700; padding:.45rem 1.2rem; border-radius:999px; border:2px solid #e65100; color:#e65100; background:transparent; cursor:pointer; transition:all .2s; }
+    .eja-disc-btn.active { background:#e65100; color:#fff; box-shadow:0 3px 10px rgba(230,81,0,.25); }
+    .eja-turma-tabs { display:flex; gap:.5rem; padding:.75rem 2rem 1rem; }
+    .eja-turma-btn { font-size:.9rem; font-weight:700; padding:.4rem 1.1rem; border-radius:8px; border:2px solid #ccc; color:#666; background:#fff; cursor:pointer; transition:all .2s; }
+    .eja-turma-btn.active { background:#e65100; border-color:#e65100; color:#fff; }
+    .eja-grid { display:none !important; }
+    .eja-grid.active { display:grid !important; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     .grade-panel-header {
@@ -785,14 +795,21 @@
       <div class="grade-panel-header">
         <h3><span class="dot" style="background:#e65100"></span> EJA — Materiais</h3>
       </div>
-      <div style="padding:1rem 2rem .25rem; font-weight:700; color:#e65100; font-size:1.05rem; display:flex; align-items:center; gap:.5rem;">
-        <span>📐</span> Matemática
+      <div class="eja-sub-tabs">
+        <button class="eja-disc-btn active" onclick="switchEjaDisc('mat',this)">📐 Matemática</button>
+        <button class="eja-disc-btn" onclick="switchEjaDisc('fis',this)">⚗️ Física</button>
       </div>
-      <div class="materials-grid" id="grid-eja-mat"></div>
-      <div style="padding:1.5rem 2rem .25rem; font-weight:700; color:#1565c0; font-size:1.05rem; display:flex; align-items:center; gap:.5rem;">
-        <span>⚗️</span> Física
+      <div class="eja-turma-tabs">
+        <button class="eja-turma-btn active" onclick="switchEjaTurma('t7',this)">T7</button>
+        <button class="eja-turma-btn" onclick="switchEjaTurma('t8',this)">T8</button>
+        <button class="eja-turma-btn" onclick="switchEjaTurma('t9',this)">T9</button>
       </div>
-      <div class="materials-grid" id="grid-eja-fis"></div>
+      <div class="materials-grid eja-grid active" id="grid-eja-mat-t7"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-mat-t8"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-mat-t9"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-fis-t7"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-fis-t8"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-fis-t9"></div>
     </div>
 
     <!-- ── TEMPORÁRIOS ── -->
@@ -1133,23 +1150,23 @@
       descricao: "Slides interativos sobre Bitcoin, blockchain, história, exercícios matemáticos e debate. Inclui vídeo explicativo.",
       link: "materiais/temporarios/aula_bitcoin_6ano.html", data: "04/08/2026"
     },
-    { id: 40, grade: "eja-mat", trimestre: 3, tipo: "pdf",
-      titulo: "T7 – Apostila 01 – Proporcionalidade e Regra de Três",
+    { id: 40, grade: "eja-mat-t7", trimestre: 3, tipo: "pdf",
+      titulo: "Apostila 01 – Proporcionalidade e Regra de Três",
       link: "materiais/eja/matematica/apostila01_proporcionalidade_t7.pdf", data: "04/08/2026" },
-    { id: 41, grade: "eja-mat", trimestre: 3, tipo: "pdf",
-      titulo: "T8 – Apostila 01 – Equação do 2º Grau e Bhaskara",
+    { id: 41, grade: "eja-mat-t8", trimestre: 3, tipo: "pdf",
+      titulo: "Apostila 01 – Equação do 2º Grau e Bhaskara",
       link: "materiais/eja/matematica/apostila01_equacao2grau_t8.pdf", data: "04/08/2026" },
-    { id: 42, grade: "eja-mat", trimestre: 3, tipo: "pdf",
-      titulo: "T9 – Apostila 01 – Estatística, Médias, Tabelas e Gráficos",
+    { id: 42, grade: "eja-mat-t9", trimestre: 3, tipo: "pdf",
+      titulo: "Apostila 01 – Estatística, Médias, Tabelas e Gráficos",
       link: "materiais/eja/matematica/apostila01_estatistica_t9.pdf", data: "04/08/2026" },
-    { id: 43, grade: "eja-fis", trimestre: 3, tipo: "pdf",
-      titulo: "T7 – Apostila 01 – Grandezas, Unidades e Notação Científica",
+    { id: 43, grade: "eja-fis-t7", trimestre: 3, tipo: "pdf",
+      titulo: "Apostila 01 – Grandezas, Unidades e Notação Científica",
       link: "materiais/eja/fisica/apostila01_grandezas_t7.pdf", data: "04/08/2026" },
-    { id: 44, grade: "eja-fis", trimestre: 3, tipo: "pdf",
-      titulo: "T8 – Apostila 01 – Temperatura, Calor e suas Escalas",
+    { id: 44, grade: "eja-fis-t8", trimestre: 3, tipo: "pdf",
+      titulo: "Apostila 01 – Temperatura, Calor e suas Escalas",
       link: "materiais/eja/fisica/apostila01_temperatura_calor_t8.pdf", data: "04/08/2026" },
-    { id: 45, grade: "eja-fis", trimestre: 3, tipo: "pdf",
-      titulo: "T9 – Apostila 01 – Eletricidade, Carga, Corrente e Tensão",
+    { id: 45, grade: "eja-fis-t9", trimestre: 3, tipo: "pdf",
+      titulo: "Apostila 01 – Eletricidade, Carga, Corrente e Tensão",
       link: "materiais/eja/fisica/apostila01_eletricidade_t9.pdf", data: "04/08/2026" }
   ];
 
@@ -1233,15 +1250,19 @@
 
   /* ── Renderizar materiais ── */
   function gradeLabel(g) {
-    if (g === 'eja-mat') return 'EJA – Matemática';
-    if (g === 'eja-fis') return 'EJA – Física';
+    if (g.startsWith('eja-mat')) return 'EJA – Matemática';
+    if (g.startsWith('eja-fis')) return 'EJA – Física';
     if (g === 'eja') return 'EJA';
     if (g === 'temporarios') return 'Temporário';
     return g.replace('ano', '.º Ano');
   }
   function renderMateriais() {
-    ['6ano','7ano','8ano','9ano','eja-mat','eja-fis','temporarios'].forEach(grade => {
+    ['6ano','7ano','8ano','9ano',
+     'eja-mat-t7','eja-mat-t8','eja-mat-t9',
+     'eja-fis-t7','eja-fis-t8','eja-fis-t9',
+     'temporarios'].forEach(grade => {
       const grid = document.getElementById('grid-' + grade);
+      if (!grid) return;
       const items = MATERIAIS.filter(m => m.grade === grade);
       if (!items.length) {
         grid.innerHTML = `<div class="empty-state">
@@ -1251,12 +1272,13 @@
         </div>`;
         return;
       }
+      const isTemp = grade === 'temporarios';
+      const isEja  = grade.startsWith('eja-');
       const byTri = {};
       items.forEach(m => { (byTri[m.trimestre] = byTri[m.trimestre]||[]).push(m); });
       let html = '';
-      const isTemp = grade === 'temporarios';
       Object.keys(byTri).sort((a,b)=>a-b).forEach(tri => {
-        if (!isTemp) {
+        if (!isTemp && !isEja) {
           html += `<div style="grid-column:1/-1;margin:0 0 .25rem;">
             <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);background:#e3f2fd;padding:.3rem .85rem;border-radius:999px;">
               <i class="fa-solid fa-calendar-days"></i> ${tri}º Trimestre
@@ -1266,7 +1288,9 @@
           const iconMap = {pdf:'fa-file-pdf pdf',doc:'fa-file-word doc',img:'fa-image img',link:'fa-link link'};
           const [icon, cls] = (iconMap[m.tipo]||'fa-file link').split(' ');
           const tipoLabel = {pdf:'PDF',doc:'Word',img:'Imagem',link:'Link'}[m.tipo]||'Arquivo';
-          const metaLine = isTemp ? `${tipoLabel} · Avulso` : `${tipoLabel} · ${tri}º Trim · ${gradeLabel(grade)}`;
+          const metaLine = isTemp ? `${tipoLabel} · Avulso`
+                         : isEja  ? `${tipoLabel} · EJA`
+                         : `${tipoLabel} · ${tri}º Trim · ${gradeLabel(grade)}`;
           html += `<div class="material-card">
             <div class="material-card-top">
               <div class="material-icon ${cls||'link'}"><i class="fa-solid ${icon}"></i></div>
@@ -1281,6 +1305,25 @@
       });
       grid.innerHTML = html;
     });
+  }
+
+  /* ── EJA sub-tab navigation ── */
+  let _ejaDiscipline = 'mat', _ejaTurma = 't7';
+  function switchEjaDisc(disc, btn) {
+    _ejaDiscipline = disc;
+    document.querySelectorAll('.eja-disc-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _showEjaGrid();
+  }
+  function switchEjaTurma(turma, btn) {
+    _ejaTurma = turma;
+    document.querySelectorAll('.eja-turma-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _showEjaGrid();
+  }
+  function _showEjaGrid() {
+    document.querySelectorAll('.eja-grid').forEach(g => g.classList.remove('active'));
+    document.getElementById('grid-eja-' + _ejaDiscipline + '-' + _ejaTurma).classList.add('active');
   }
 
   /* ── Renderizar vídeos ── */

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitcoin: O Dinheiro Digital — 6º Ano</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; font-family:'Rubik',sans-serif; color:#fff; background:#0a0a0a; }
+
+  /* fundo animado */
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(247,147,26,.18) 0, transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(247,147,26,.12) 0, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(10,10,10,1) 0, transparent 100%);
+    animation: pulse 6s ease-in-out infinite alternate;
+  }
+  @keyframes pulse { from { opacity:.7; } to { opacity:1; } }
+
+  /* grade digital */
+  body::after {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.05;
+    background-image: linear-gradient(#f7931a 1px, transparent 1px), linear-gradient(90deg, #f7931a 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .slide {
+    position:absolute; inset:0; display:none; flex-direction:column;
+    justify-content:center; align-items:center; text-align:center;
+    padding:5vh 6vw; overflow:hidden; z-index:1;
+  }
+  .slide.active { display:flex; animation:pop .45s ease; }
+  @keyframes pop { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+
+  /* símbolo ₿ flutuante na capa */
+  .btc-bg {
+    position:absolute; font-size:52vw; color:rgba(247,147,26,.04);
+    font-family:'Orbitron',monospace; font-weight:900; pointer-events:none;
+    line-height:1; user-select:none;
+  }
+
+  h1 {
+    font-family:'Orbitron',monospace; font-weight:900;
+    font-size:clamp(2.5rem,7.5vw,6.5rem); line-height:1.1;
+    background:linear-gradient(90deg,#f7931a,#ffd700,#f7931a);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 18px rgba(247,147,26,.6));
+  }
+  h2 {
+    font-family:'Orbitron',monospace; font-weight:700;
+    font-size:clamp(1.6rem,4.2vw,3.2rem); color:#f7931a;
+    text-shadow:0 0 20px rgba(247,147,26,.5); margin-bottom:3.5vh;
+  }
+  .sub { font-size:clamp(1rem,2.2vw,1.6rem); color:#aaa; letter-spacing:4px; text-transform:uppercase; margin-top:2.5vh; }
+  .emoji-big { font-size:clamp(3rem,7vw,5.5rem); margin-bottom:1.5vh; }
+
+  .card {
+    background:rgba(255,255,255,.06); border:2px solid rgba(247,147,26,.4);
+    border-radius:20px; padding:3.5vh 3.5vw; max-width:1000px;
+    font-size:clamp(1.2rem,2.6vw,2rem); line-height:1.6;
+    box-shadow:0 0 30px rgba(247,147,26,.1), inset 0 0 40px rgba(247,147,26,.03);
+    backdrop-filter:blur(6px);
+  }
+  .card b { color:#f7931a; }
+  .card .verde { color:#00e676; font-weight:700; }
+  .card .azul { color:#40c4ff; font-weight:700; }
+  .card .amarelo { color:#ffd740; font-weight:700; }
+
+  .exemplo {
+    margin-top:2.5vh; background:rgba(247,147,26,.12); border:2px dashed #f7931a;
+    border-radius:14px; padding:1.5vh 2vw;
+    font-family:'Orbitron',monospace; font-weight:700;
+    font-size:clamp(1.2rem,2.6vw,2rem); color:#ffd700;
+  }
+
+  /* comparativo */
+  .vs { display:flex; gap:3vw; flex-wrap:wrap; justify-content:center; margin-top:1.5vh; }
+  .vcard {
+    background:rgba(255,255,255,.06); border:2px solid; border-radius:18px;
+    padding:3vh 2.5vw; width:min(380px,78vw);
+    font-size:clamp(1.1rem,2.2vw,1.65rem); line-height:1.5;
+    backdrop-filter:blur(4px);
+  }
+  .vcard h3 { font-family:'Orbitron',monospace; font-size:clamp(1.5rem,3vw,2.3rem); margin-bottom:1.5vh; }
+  .vcard.trad { border-color:#40c4ff; }
+  .vcard.trad h3 { color:#40c4ff; }
+  .vcard.btc  { border-color:#f7931a; }
+  .vcard.btc  h3 { color:#f7931a; }
+
+  /* exercícios */
+  .exlist { display:flex; flex-direction:column; gap:2vh; width:min(960px,90vw); }
+  .ex {
+    display:flex; align-items:center; justify-content:space-between; gap:2vw;
+    background:rgba(255,255,255,.06); border:1px solid rgba(247,147,26,.3);
+    border-radius:16px; padding:1.6vh 2.5vw; backdrop-filter:blur(4px);
+  }
+  .ex .q { font-size:clamp(1.1rem,2.4vw,1.75rem); font-weight:700; text-align:left; color:#eee; }
+  .ex .q small { display:block; font-size:.65em; color:#aaa; font-weight:400; }
+  .resp {
+    font-family:'Orbitron',monospace; font-weight:700; white-space:nowrap;
+    font-size:clamp(.95rem,1.8vw,1.4rem);
+    background:#f7931a; color:#000; border:none; border-radius:12px;
+    padding:1.2vh 1.6vw; cursor:pointer;
+    box-shadow:0 4px 14px rgba(247,147,26,.4);
+    transition:transform .1s; min-width:110px;
+  }
+  .resp:hover { transform:scale(1.06); }
+  .resp.revelada { background:#00e676; color:#003300; animation:tada .4s ease; }
+  @keyframes tada { 0%{transform:scale(.8) rotate(-3deg);} 60%{transform:scale(1.15) rotate(2deg);} 100%{transform:scale(1);} }
+
+  /* historia */
+  .historia {
+    background:rgba(255,255,255,.06); border:2px solid rgba(247,147,26,.35);
+    border-radius:20px; padding:3.5vh 3.5vw; max-width:980px;
+    font-size:clamp(1.2rem,2.5vw,1.9rem); line-height:1.6; text-align:left;
+    backdrop-filter:blur(6px);
+  }
+  .historia .cena { font-size:clamp(2rem,5vw,3.5rem); text-align:center; margin-bottom:1.5vh; }
+  .historia b { color:#f7931a; }
+  .historia .pergunta { font-weight:800; color:#40c4ff; margin-top:1.5vh; display:block; }
+  .historia .resp { display:block; margin:2vh auto 0; }
+
+  /* timeline */
+  .timeline { display:flex; flex-direction:column; gap:1.8vh; width:min(900px,90vw); text-align:left; }
+  .titem {
+    display:flex; align-items:flex-start; gap:2vw;
+    background:rgba(255,255,255,.06); border-left:4px solid #f7931a;
+    border-radius:0 14px 14px 0; padding:1.4vh 2vw;
+    font-size:clamp(1rem,2.1vw,1.55rem);
+  }
+  .titem .ano {
+    font-family:'Orbitron',monospace; font-weight:900; color:#f7931a;
+    font-size:clamp(1rem,2vw,1.5rem); min-width:3.5em;
+  }
+
+  /* vídeo */
+  .videowrap { width:min(1050px,88vw); aspect-ratio:16/9; border:3px solid #f7931a; border-radius:14px; box-shadow:0 0 30px rgba(247,147,26,.35); margin-top:2vh; }
+  .videowrap iframe { width:100%; height:100%; border:0; border-radius:11px; }
+
+  /* debate */
+  ol.perguntas { text-align:left; max-width:950px; font-size:clamp(1.15rem,2.5vw,1.9rem); line-height:1.5; }
+  ol.perguntas li { margin-bottom:2.2vh; padding-left:.4em; }
+  ol.perguntas li::marker { color:#f7931a; font-weight:900; font-family:'Orbitron',monospace; }
+
+  /* nav */
+  .nav { position:fixed; bottom:24px; right:28px; display:flex; gap:14px; z-index:10; }
+  .nav button {
+    font-family:'Orbitron',monospace; font-size:1.5rem; font-weight:900; color:#000;
+    background:#f7931a; border:none; border-radius:50%;
+    width:64px; height:64px; cursor:pointer;
+    box-shadow:0 0 20px rgba(247,147,26,.5); transition:transform .1s;
+  }
+  .nav button:hover { transform:scale(1.1); }
+  .counter { position:fixed; bottom:34px; left:32px; font-family:'Orbitron',monospace; font-weight:700; font-size:1.3rem; color:#f7931a; z-index:10; text-shadow:0 0 10px rgba(247,147,26,.5); }
+  .dica { position:fixed; top:18px; right:28px; font-size:.9rem; color:rgba(255,255,255,.35); z-index:10; }
+  .turma-tag {
+    position:fixed; top:18px; left:28px; z-index:10;
+    font-family:'Orbitron',monospace; font-weight:700; font-size:.9rem;
+    background:rgba(247,147,26,.15); color:#f7931a; padding:.5vh 1.2vw;
+    border:1px solid #f7931a; border-radius:20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 CAPA -->
+<section class="slide active">
+  <div class="btc-bg">₿</div>
+  <h1>BITCOIN</h1>
+  <h1 style="font-size:clamp(1.8rem,4.5vw,3.5rem); margin-top:1vh;">O DINHEIRO DIGITAL</h1>
+  <div class="sub">Matemática • 6º Ano • 04/08/2026</div>
+</section>
+
+<!-- 2 O QUE É DINHEIRO -->
+<section class="slide">
+  <h2>💵 O que é dinheiro?</h2>
+  <div class="card">
+    Dinheiro é algo que todo mundo <b>aceita em troca</b> de produtos e serviços.<br><br>
+    Já usamos <span class="azul">conchas, pedras, ouro e papel</span> como dinheiro ao longo da história.<br><br>
+    Agora existe uma nova forma: o <b>dinheiro digital</b> — que existe só na internet!
+  </div>
+</section>
+
+<!-- 3 O QUE É BITCOIN -->
+<section class="slide">
+  <h2>₿ O que é Bitcoin?</h2>
+  <div class="card">
+    Bitcoin é uma <b>moeda digital</b> criada em <span class="amarelo">2009</span> por uma pessoa (ou grupo)
+    com o pseudônimo <b>Satoshi Nakamoto</b> — até hoje ninguém sabe quem é de verdade!<br><br>
+    Ela não existe em papel nem em metal. Existe apenas como <span class="verde">informação registrada na internet</span>,
+    em um sistema chamado <b>blockchain</b>.
+  </div>
+</section>
+
+<!-- 4 DINHEIRO NORMAL x BITCOIN -->
+<section class="slide">
+  <h2>⚖️ Dinheiro comum ✕ Bitcoin</h2>
+  <div class="vs">
+    <div class="vcard trad">
+      <h3>💵 Real / Dólar</h3>
+      Controlado pelo <b style="color:#40c4ff">governo e bancos</b>.<br>
+      Existe em papel e moedas.<br>
+      Pode ser impresso a qualquer hora.<br>
+      Transferência pode demorar dias.
+    </div>
+    <div class="vcard btc">
+      <h3>₿ Bitcoin</h3>
+      <b style="color:#f7931a">Sem banco</b>, sem governo controlando.<br>
+      Existe só digitalmente.<br>
+      Quantidade <b style="color:#f7931a">limitada a 21 milhões</b>.<br>
+      Transferência em minutos, para qualquer país.
+    </div>
+  </div>
+</section>
+
+<!-- 5 BLOCKCHAIN SIMPLES -->
+<section class="slide">
+  <h2>🔗 Blockchain: o livro que ninguém apaga</h2>
+  <div class="card">
+    Imagine um <b>caderno gigante</b> onde todas as transações de Bitcoin são anotadas.<br><br>
+    Esse caderno fica copiado em <span class="amarelo">milhares de computadores</span> ao redor do mundo ao mesmo tempo.<br><br>
+    Para alterar uma informação, seria necessário mudar <span class="verde">todos os computadores simultaneamente</span>
+    — o que é praticamente impossível. Por isso é considerado <b>seguro</b>.
+  </div>
+</section>
+
+<!-- 6 HISTÓRIA / LINHA DO TEMPO -->
+<section class="slide">
+  <h2>📅 Uma história rápida</h2>
+  <div class="timeline">
+    <div class="titem"><span class="ano">2009</span><span>Bitcoin é criado. 1 BTC valia quase <b>nada</b>.</span></div>
+    <div class="titem"><span class="ano">2010</span><span>Primeira compra real: <b>2 pizzas</b> por 10.000 BTC (hoje valeria bilhões!).</span></div>
+    <div class="titem"><span class="ano">2017</span><span>1 BTC chega a <b>R$ 60.000</b> pela primeira vez e cai muito logo depois.</span></div>
+    <div class="titem"><span class="ano">2021</span><span>Recorde histórico: 1 BTC ultrapassou <b>R$ 350.000</b>.</span></div>
+    <div class="titem"><span class="ano">hoje</span><span>Preço varia todo dia — é uma moeda muito <b>volátil</b>.</span></div>
+  </div>
+</section>
+
+<!-- 7 VÍDEO -->
+<section class="slide">
+  <h2>🎬 Bora entender melhor!</h2>
+  <div class="videowrap">
+    <iframe src="https://www.youtube.com/embed/Ehk8RGi_Xwc" title="O que é Bitcoin?"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</section>
+
+<!-- 8 EXERCÍCIOS MATEMÁTICOS -->
+<section class="slide">
+  <h2>🧮 Matemática com Bitcoin</h2>
+  <div class="exlist">
+    <div class="ex">
+      <div class="q">a) Em 2010, 10.000 BTC compraram 2 pizzas. Quantos BTC por pizza?</div>
+      <button class="resp" onclick="rev(this,'5.000 BTC')">Resposta?</button>
+    </div>
+    <div class="ex">
+      <div class="q">b) Se 1 BTC vale R$ 300.000, quanto valem 3 BTC?</div>
+      <button class="resp" onclick="rev(this,'R$ 900.000')">Resposta?</button>
+    </div>
+    <div class="ex">
+      <div class="q">c) O limite de Bitcoin é 21 milhões. Já foram minerados 19,5 milhões. Quantos faltam?<small>em milhões de BTC</small></div>
+      <button class="resp" onclick="rev(this,'1,5 milhão de BTC')">Resposta?</button>
+    </div>
+    <div class="ex">
+      <div class="q">d) Em jan. o BTC valia R$ 200.000. Em dez. valia R$ 300.000. Quanto subiu?</div>
+      <button class="resp" onclick="rev(this,'R$ 100.000 a mais')">Resposta?</button>
+    </div>
+  </div>
+</section>
+
+<!-- 9 HISTORINHA -->
+<section class="slide">
+  <h2>📖 Historinha do Lucas</h2>
+  <div class="historia">
+    <div class="cena">👦💻₿</div>
+    Lucas recebeu <b>R$ 150</b> de presente de aniversário. Ele decidiu guardar
+    <b>R$ 50</b> na poupança e usar <b>R$ 100</b> para comprar uma fração de Bitcoin,
+    quando 1 BTC valia <b>R$ 500.000</b>.
+    <span class="pergunta">Que fração de 1 Bitcoin Lucas conseguiu comprar?<br>
+    <small style="font-weight:400; color:#aaa;">Dica: R$ 100 ÷ R$ 500.000</small></span>
+    <button class="resp" onclick="rev(this,'100 ÷ 500.000 = 1/5.000 de BTC')">Resposta?</button>
+  </div>
+</section>
+
+<!-- 10 RISCOS -->
+<section class="slide">
+  <h2>⚠️ Cuidados importantes</h2>
+  <div class="card">
+    <span class="amarelo">Volatilidade:</span> o preço sobe e desce muito — em um dia pode cair 20%!<br><br>
+    <span style="color:#ff5252; font-weight:700;">Golpes:</span> existem muitas fraudes ligadas a criptomoedas — desconfie de promessas de lucro fácil.<br><br>
+    <span class="verde">Regulação:</span> no Brasil, o Bitcoin é legal, mas não é garantido pelo governo como o Real.<br><br>
+    <b>Regra de ouro:</b> nunca investir dinheiro que você não pode perder!
+  </div>
+</section>
+
+<!-- 11 PERGUNTAS PARA DEBATE -->
+<section class="slide">
+  <h2>💬 Vamos debater! ✏️</h2>
+  <p style="font-size:clamp(1rem,1.8vw,1.35rem); color:#aaa; margin-bottom:2.5vh;">Copie e responda no caderno:</p>
+  <ol class="perguntas">
+    <li>O que é Bitcoin e como ele é diferente do dinheiro comum?</li>
+    <li>Por que a quantidade de Bitcoin é limitada a 21 milhões?</li>
+    <li>O que é blockchain? Por que é considerado seguro?</li>
+    <li>Se você tivesse R$ 100, investiria em Bitcoin? Por quê?</li>
+    <li>Pesquise: quanto vale 1 Bitcoin hoje? Compare com R$ 1.000.</li>
+  </ol>
+</section>
+
+<!-- 12 FIM -->
+<section class="slide">
+  <div class="btc-bg" style="opacity:.06">₿</div>
+  <div class="emoji-big">🌟₿🌟</div>
+  <h1 style="font-size:clamp(2.2rem,6vw,5rem);">Parabéns, turma!</h1>
+  <div class="sub" style="color:#f7931a; margin-top:2vh;">O futuro do dinheiro começa com conhecimento!</div>
+</section>
+
+<div class="turma-tag">6º Ano • 04/08</div>
+<div class="counter" id="counter">1 / 12</div>
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Anterior">←</button>
+  <button onclick="go(1)" aria-label="Próximo">→</button>
+</div>
+<div class="dica">use as setas do teclado ou toque nos botões</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let i = 0;
+  function show(n){
+    slides[i].classList.remove('active');
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides[i].classList.add('active');
+    document.getElementById('counter').textContent = (i+1)+' / '+slides.length;
+    document.querySelectorAll('iframe').forEach(f=>{ if(!slides[i].contains(f)) f.src = f.src; });
+  }
+  function go(d){ show(i+d); }
+  function rev(btn, resposta){
+    if(btn.classList.contains('revelada')) return;
+    btn.textContent = resposta;
+    btn.classList.add('revelada');
+  }
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) go(1);
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) go(-1);
+  });
+  let x0=null;
+  document.addEventListener('touchstart', e=>{ if(e.target.closest('.resp,.nav')) return; x0=e.touches[0].clientX; });
+  document.addEventListener('touchend', e=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx)>60) go(dx<0?1:-1);
+    x0=null;
+  });
+</script>
+</body>
+</html>

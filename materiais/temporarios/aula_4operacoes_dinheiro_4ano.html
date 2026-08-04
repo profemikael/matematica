@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>As 4 Operações e o Dinheiro — 4º Ano</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; font-family:'Baloo 2',sans-serif; }
+
+  body {
+    background:linear-gradient(160deg,#4a148c,#1a237e 55%,#004d40);
+  }
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; opacity:.14;
+    background-image:
+      radial-gradient(circle 3px at 40px 60px, #fff 98%, transparent),
+      radial-gradient(circle 2px at 160px 140px, #fff 98%, transparent),
+      radial-gradient(circle 2.5px at 300px 80px, #fff 98%, transparent),
+      radial-gradient(circle 2px at 220px 240px, #fff 98%, transparent),
+      radial-gradient(circle 3px at 90px 300px, #fff 98%, transparent);
+    background-size:360px 360px;
+  }
+
+  .slide {
+    position:absolute; inset:0; display:none; flex-direction:column;
+    justify-content:center; align-items:center; text-align:center;
+    padding:5vh 6vw; overflow:hidden;
+  }
+  .slide.active { display:flex; animation:pop .45s ease; }
+  @keyframes pop { from { opacity:0; transform:scale(.95); } to { opacity:1; transform:scale(1); } }
+
+  h1 {
+    font-family:'Fredoka',sans-serif; font-weight:700;
+    font-size:clamp(2.8rem,8vw,6.5rem); line-height:1.1; color:#fff;
+    text-shadow:5px 5px 0 #ff6f00, 10px 10px 0 rgba(0,0,0,.35);
+  }
+  h2 {
+    font-family:'Fredoka',sans-serif; font-weight:700;
+    font-size:clamp(2rem,5vw,3.8rem); color:#ffd54f;
+    text-shadow:4px 4px 0 rgba(0,0,0,.4); margin-bottom:3.5vh;
+  }
+  .emoji-big { font-size:clamp(3rem,8vw,6rem); margin-bottom:2vh; }
+  .sub { font-size:clamp(1.2rem,2.6vw,1.9rem); color:#80deea; font-weight:700; margin-top:3vh; letter-spacing:3px; text-transform:uppercase; }
+
+  .card {
+    background:rgba(255,255,255,.96); color:#311b92; border-radius:24px;
+    padding:4vh 4vw; max-width:1000px; font-size:clamp(1.3rem,2.8vw,2.1rem);
+    line-height:1.55; box-shadow:0 12px 0 rgba(0,0,0,.3);
+  }
+  .card b { color:#d81b60; }
+  .card .verde { color:#00897b; font-weight:800; }
+  .card .azul { color:#1565c0; font-weight:800; }
+  .card .laranja { color:#ef6c00; font-weight:800; }
+  .exemplo {
+    margin-top:2.5vh; background:#fff8e1; border:3px dashed #ff9800; border-radius:16px;
+    padding:1.5vh 2vw; font-weight:800; font-size:clamp(1.4rem,3vw,2.3rem); color:#e65100;
+  }
+
+  .exlist { display:flex; flex-direction:column; gap:2.2vh; width:min(900px,90vw); }
+  .ex {
+    display:flex; align-items:center; justify-content:space-between; gap:2vw;
+    background:rgba(255,255,255,.96); border-radius:18px; padding:1.6vh 2.5vw;
+    box-shadow:0 8px 0 rgba(0,0,0,.3);
+  }
+  .ex .q { font-size:clamp(1.3rem,2.8vw,2.1rem); font-weight:700; color:#311b92; text-align:left; }
+  .ex .q small { display:block; font-size:.65em; color:#7b1fa2; font-weight:500; }
+  .resp {
+    font-family:'Fredoka',sans-serif; font-weight:700; white-space:nowrap;
+    font-size:clamp(1.1rem,2.2vw,1.7rem);
+    background:#ffd54f; color:#4e342e; border:none; border-radius:14px;
+    padding:1.2vh 1.8vw; cursor:pointer; box-shadow:0 5px 0 #ff8f00;
+    transition:transform .1s; min-width:120px;
+  }
+  .resp:hover { transform:scale(1.05); }
+  .resp.revelada { background:#69f0ae; box-shadow:0 5px 0 #00c853; color:#1b5e20; animation:tada .4s ease; }
+  @keyframes tada { 0%{transform:scale(.8) rotate(-4deg);} 60%{transform:scale(1.15) rotate(3deg);} 100%{transform:scale(1);} }
+
+  .historia {
+    background:rgba(255,255,255,.96); border-radius:24px; padding:3.5vh 3.5vw;
+    max-width:1000px; box-shadow:0 12px 0 rgba(0,0,0,.3); color:#311b92;
+    font-size:clamp(1.25rem,2.7vw,2rem); line-height:1.6; text-align:left;
+  }
+  .historia .cena { font-size:clamp(2rem,5vw,3.2rem); text-align:center; margin-bottom:1.5vh; }
+  .historia b { color:#d81b60; }
+  .historia .pergunta { font-weight:800; color:#1565c0; margin-top:1.5vh; display:block; }
+  .historia .resp { display:block; margin:2.5vh auto 0; }
+
+  .nav { position:fixed; bottom:24px; right:28px; display:flex; gap:14px; z-index:10; }
+  .nav button {
+    font-family:'Fredoka',sans-serif; font-size:1.7rem; font-weight:700; color:#311b92;
+    background:#ffd54f; border:none; border-radius:50%;
+    width:66px; height:66px; cursor:pointer; box-shadow:0 6px 0 #ff8f00;
+    transition:transform .1s;
+  }
+  .nav button:hover { transform:scale(1.1); }
+  .counter { position:fixed; bottom:34px; left:32px; font-family:'Fredoka',sans-serif; font-weight:700; font-size:1.4rem; color:#80deea; z-index:10; text-shadow:2px 2px 0 rgba(0,0,0,.5); }
+  .dica { position:fixed; top:18px; right:28px; font-size:.95rem; color:rgba(255,255,255,.5); z-index:10; }
+  .videowrap { width:min(1000px,85vw); aspect-ratio:16/9; border:6px solid #ffd54f; border-radius:14px; box-shadow:0 10px 0 rgba(0,0,0,.3); margin-top:2vh; }
+  .videowrap iframe { width:100%; height:100%; border:0; border-radius:8px; }
+  .turma-tag {
+    position:fixed; top:18px; left:28px; z-index:10;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:1rem;
+    background:#ffd54f; color:#4e342e; padding:.5vh 1.2vw; border-radius:20px;
+    box-shadow:0 4px 0 #ff8f00;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 CAPA -->
+<section class="slide active">
+  <div class="emoji-big">🧮💰</div>
+  <h1>AS 4 OPERAÇÕES<br>E O DINHEIRO</h1>
+  <div class="sub">Matemática • 4º Ano B</div>
+  <div class="sub" style="margin-top:1vh; color:#ffd54f;">04/08</div>
+</section>
+
+<!-- 2 ADIÇÃO -->
+<section class="slide">
+  <h2>➕ Adição: juntar!</h2>
+  <div class="card">
+    Adicionar é <b>juntar</b> quantidades.<br>
+    Se você tem <span class="verde">R$ 5</span> e ganha mais <span class="azul">R$ 3</span>,
+    você <b>junta tudo</b> e fica com <span class="laranja">R$ 8</span>!
+    <div class="exemplo">5 + 3 = 8</div>
+  </div>
+</section>
+
+<!-- 3 EXERCÍCIOS ADIÇÃO -->
+<section class="slide">
+  <h2>➕ Treinando adição</h2>
+  <div class="exlist">
+    <div class="ex"><div class="q">a) 245 + 132 = ?</div><button class="resp" onclick="rev(this,'377')">Resposta?</button></div>
+    <div class="ex"><div class="q">b) 380 + 245 = ?</div><button class="resp" onclick="rev(this,'625')">Resposta?</button></div>
+    <div class="ex"><div class="q">c) R$ 12 + R$ 25 = ?</div><button class="resp" onclick="rev(this,'R$ 37')">Resposta?</button></div>
+    <div class="ex"><div class="q">d) 467 + 298 = ? <small>cuidado com o "vai um"!</small></div><button class="resp" onclick="rev(this,'765')">Resposta?</button></div>
+  </div>
+</section>
+
+<!-- 4 SUBTRAÇÃO -->
+<section class="slide">
+  <h2>➖ Subtração: tirar!</h2>
+  <div class="card">
+    Subtrair é <b>tirar</b> uma quantidade de outra.<br>
+    É a operação do <span class="laranja">TROCO</span>: se algo custa <span class="verde">R$ 7</span>
+    e você paga com <span class="azul">R$ 10</span>, o troco é <b>R$ 3</b>!
+    <div class="exemplo">10 − 7 = 3</div>
+  </div>
+</section>
+
+<!-- 5 EXERCÍCIOS SUBTRAÇÃO -->
+<section class="slide">
+  <h2>➖ Treinando subtração</h2>
+  <div class="exlist">
+    <div class="ex"><div class="q">a) 587 − 234 = ?</div><button class="resp" onclick="rev(this,'353')">Resposta?</button></div>
+    <div class="ex"><div class="q">b) 400 − 158 = ?</div><button class="resp" onclick="rev(this,'242')">Resposta?</button></div>
+    <div class="ex"><div class="q">c) Paguei R$ 50 numa compra de R$ 32. Troco?</div><button class="resp" onclick="rev(this,'R$ 18')">Resposta?</button></div>
+    <div class="ex"><div class="q">d) 703 − 289 = ? <small>cuidado com o "empresta"!</small></div><button class="resp" onclick="rev(this,'414')">Resposta?</button></div>
+  </div>
+</section>
+
+<!-- 6 MULTIPLICAÇÃO -->
+<section class="slide">
+  <h2>✖️ Multiplicação: grupos iguais!</h2>
+  <div class="card">
+    Multiplicar é <b>somar grupos iguais</b> bem rapidinho.<br>
+    <span class="azul">4 pacotes</span> com <span class="verde">6 figurinhas</span> cada um:<br>
+    6 + 6 + 6 + 6 = <span class="laranja">4 × 6 = 24 figurinhas!</span>
+    <div class="exemplo">4 × 6 = 24</div>
+  </div>
+</section>
+
+<!-- 7 EXERCÍCIOS MULTIPLICAÇÃO -->
+<section class="slide">
+  <h2>✖️ Treinando multiplicação</h2>
+  <div class="exlist">
+    <div class="ex"><div class="q">a) 7 × 8 = ?</div><button class="resp" onclick="rev(this,'56')">Resposta?</button></div>
+    <div class="ex"><div class="q">b) 6 × 9 = ?</div><button class="resp" onclick="rev(this,'54')">Resposta?</button></div>
+    <div class="ex"><div class="q">c) 23 × 4 = ?</div><button class="resp" onclick="rev(this,'92')">Resposta?</button></div>
+    <div class="ex"><div class="q">d) 5 balas de R$ 2 cada. Total?</div><button class="resp" onclick="rev(this,'R$ 10')">Resposta?</button></div>
+  </div>
+</section>
+
+<!-- 8 DIVISÃO -->
+<section class="slide">
+  <h2>➗ Divisão: repartir igualmente!</h2>
+  <div class="card">
+    Dividir é <b>repartir em partes iguais</b>.<br>
+    <span class="verde">R$ 20</span> repartidos igualmente entre <span class="azul">4 amigos</span>:
+    cada um recebe <span class="laranja">R$ 5</span>!
+    <div class="exemplo">20 ÷ 4 = 5</div>
+  </div>
+</section>
+
+<!-- 9 EXERCÍCIOS DIVISÃO -->
+<section class="slide">
+  <h2>➗ Treinando divisão</h2>
+  <div class="exlist">
+    <div class="ex"><div class="q">a) 45 ÷ 9 = ?</div><button class="resp" onclick="rev(this,'5')">Resposta?</button></div>
+    <div class="ex"><div class="q">b) 72 ÷ 8 = ?</div><button class="resp" onclick="rev(this,'9')">Resposta?</button></div>
+    <div class="ex"><div class="q">c) 96 ÷ 3 = ?</div><button class="resp" onclick="rev(this,'32')">Resposta?</button></div>
+    <div class="ex"><div class="q">d) R$ 36 divididos entre 6 crianças?</div><button class="resp" onclick="rev(this,'R$ 6 cada')">Resposta?</button></div>
+  </div>
+</section>
+
+<!-- 9b VÍDEO -->
+<section class="slide">
+  <h2>🎬 Vamos assistir!</h2>
+  <div class="videowrap">
+    <iframe src="https://www.youtube.com/embed/h0CMabcdo_c" title="Dinheiro na mão - desafios de compra e venda - 4º Ano"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</section>
+
+<!-- 10 HISTORINHA 1 -->
+<section class="slide">
+  <h2>📖 Historinha do mercadinho</h2>
+  <div class="historia">
+    <div class="cena">🛒🍞🥛</div>
+    Dona Maria foi ao mercadinho e comprou um pão por <b>R$ 8</b> e um leite por <b>R$ 6</b>.
+    Ela pagou com uma nota de <b>R$ 20</b>.
+    <span class="pergunta">Quanto ela gastou? E quanto recebeu de troco?</span>
+    <button class="resp" onclick="rev(this,'Gastou R$ 14 • Troco: R$ 6')">Resposta?</button>
+  </div>
+</section>
+
+<!-- 11 HISTORINHA 2 -->
+<section class="slide">
+  <h2>📖 Historinha da cantina</h2>
+  <div class="historia">
+    <div class="cena">🧃🧃🧃🧃</div>
+    Pedro comprou <b>4 sucos</b> na cantina. Cada suco custa <b>R$ 3</b>.
+    Ele tinha <b>R$ 15</b> na carteira.
+    <span class="pergunta">Quanto Pedro gastou? Sobrou dinheiro? Quanto?</span>
+    <button class="resp" onclick="rev(this,'Gastou 4 × 3 = R$ 12 • Sobraram R$ 3')">Resposta?</button>
+  </div>
+</section>
+
+<!-- 12 HISTORINHA 3 -->
+<section class="slide">
+  <h2>📖 Historinha da pipoca</h2>
+  <div class="historia">
+    <div class="cena">🍿👧👦👧👦</div>
+    Ana e seus <b>3 amigos</b> juntaram dinheiro e compraram um balde de pipoca gigante por <b>R$ 28</b>.
+    Eles dividiram o valor <b>igualmente entre os 4</b>.
+    <span class="pergunta">Quanto cada um pagou?</span>
+    <button class="resp" onclick="rev(this,'28 ÷ 4 = R$ 7 cada')">Resposta?</button>
+  </div>
+</section>
+
+<!-- 13 DESAFIO FINAL -->
+<section class="slide">
+  <h2>🏆 Desafio final!</h2>
+  <div class="historia">
+    <div class="cena">🎂🎈🎁</div>
+    Para a festa da turma, a professora comprou <b>3 pacotes de balões por R$ 9 cada</b>
+    e <b>1 bolo por R$ 45</b>. Ela pagou com uma nota de <b>R$ 100</b>.
+    <span class="pergunta">Quanto ela gastou no total? E quanto recebeu de troco?</span>
+    <button class="resp" onclick="rev(this,'Balões: 3 × 9 = R$ 27 • Total: 27 + 45 = R$ 72 • Troco: 100 − 72 = R$ 28')">Resposta?</button>
+  </div>
+</section>
+
+<!-- 14 FIM -->
+<section class="slide">
+  <div class="emoji-big">🌟🧮🌟</div>
+  <h1 style="font-size:clamp(2.5rem,7vw,5.5rem);">Parabéns, turma!</h1>
+  <div class="sub">Vocês são feras nas 4 operações!</div>
+</section>
+
+<div class="turma-tag">Turma 4B • 04/08</div>
+<div class="counter" id="counter">1 / 15</div>
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Anterior">←</button>
+  <button onclick="go(1)" aria-label="Próximo">→</button>
+</div>
+<div class="dica">use as setas do teclado ou toque nos botões</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let i = 0;
+  function show(n){
+    slides[i].classList.remove('active');
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides[i].classList.add('active');
+    document.getElementById('counter').textContent = (i+1)+' / '+slides.length;
+  }
+  function go(d){ show(i+d); }
+  function rev(btn, resposta){
+    if(btn.classList.contains('revelada')) return;
+    btn.textContent = resposta;
+    btn.classList.add('revelada');
+  }
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight','ArrowDown','PageDown'].includes(e.key)) go(1);
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) go(-1);
+  });
+  let x0=null;
+  document.addEventListener('touchstart', e=>{ if(e.target.closest('.resp,.nav')) return; x0=e.touches[0].clientX; });
+  document.addEventListener('touchend', e=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx)>60) go(dx<0?1:-1);
+    x0=null;
+  });
+</script>
+</body>
+</html>

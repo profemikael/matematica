@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primeira Guerra Mundial (1914–1918) · Turma 9B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#e7e1cf;
+    --paper-dim:#d8d1bb;
+    --ink:#2f3126;
+    --ink-soft:#4f5142;
+    --olive:#5c5d43;
+    --khaki:#9a8f68;
+    --rust:#8a3520;
+    --rust-dim:#a4553f;
+    --steel:#3f4a52;
+    --line:#b6ad92;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.35), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(90,80,50,.10), transparent 50%);
+    color:var(--ink);
+    font-family:'Lora',Georgia,serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+
+  /* ---------- Cabeçalho (documento carimbado) ---------- */
+  header{
+    border-bottom:3px double var(--ink);
+    padding:46px 0 26px;
+    margin-bottom:8px;
+  }
+  .eyebrow{
+    font-family:'Special Elite',monospace;
+    font-size:.72rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;margin-bottom:22px;
+  }
+  h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.3rem,7vw,4.4rem);
+    line-height:.98;
+    letter-spacing:.01em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  h1 .years{display:block;color:var(--rust);font-weight:600;font-size:.42em;letter-spacing:.28em;margin-top:12px}
+  .lead{
+    font-size:1.05rem;
+    max-width:60ch;
+    margin-top:18px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+  .stamp{
+    display:inline-block;margin-top:22px;
+    border:2px solid var(--rust);color:var(--rust);
+    font-family:'Oswald',sans-serif;font-weight:600;
+    text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;
+    padding:6px 14px;transform:rotate(-3deg);
+    box-shadow:inset 0 0 0 1px rgba(138,53,32,.25);
+  }
+
+  /* ---------- Linha do tempo ---------- */
+  .timeline{margin:44px 0 10px}
+  .sec-label{
+    font-family:'Special Elite',monospace;
+    font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:20px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
+  .tl-track{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:2px solid var(--ink);position:relative;
+  }
+  .tl-node{padding:16px 12px 4px;position:relative;border-right:1px dashed var(--line)}
+  .tl-node:last-child{border-right:none}
+  .tl-node::before{
+    content:"";position:absolute;top:-7px;left:12px;
+    width:11px;height:11px;border-radius:50%;
+    background:var(--rust);border:2px solid var(--paper);
+  }
+  .tl-year{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.5rem;color:var(--rust);line-height:1}
+  .tl-desc{font-size:.82rem;color:var(--ink-soft);margin-top:6px}
+
+  /* ---------- Questões ---------- */
+  .questions{margin:52px 0 20px}
+  .card{
+    background:rgba(255,255,255,.28);
+    border:1px solid var(--line);
+    border-left:5px solid var(--olive);
+    margin-bottom:16px;
+  }
+  .card.open{border-left-color:var(--rust);background:rgba(255,255,255,.42)}
+  .q-head{
+    display:flex;gap:16px;align-items:flex-start;
+    padding:18px 20px;cursor:pointer;user-select:none;
+    transition:background .15s ease;
+  }
+  .q-head:hover{background:rgba(154,143,104,.14)}
+  .q-num{
+    font-family:'Oswald',sans-serif;font-weight:700;
+    font-size:1.6rem;color:var(--khaki);line-height:1;
+    min-width:2.2ch;
+  }
+  .card.open .q-num{color:var(--rust)}
+  .q-text{font-family:'Oswald',sans-serif;font-weight:500;font-size:1.14rem;line-height:1.25;flex:1;padding-top:2px;text-transform:uppercase;letter-spacing:.01em}
+  .q-page{
+    font-family:'Special Elite',monospace;font-size:.66rem;
+    color:var(--ink-soft);white-space:nowrap;padding-top:6px;letter-spacing:.05em;
+  }
+  .toggle{
+    font-family:'Special Elite',monospace;font-size:.64rem;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--rust);
+    white-space:nowrap;padding-top:7px;
+  }
+  .answer{
+    max-height:0;overflow:hidden;
+    transition:max-height .35s ease;
+    padding:0 20px 0 58px;
+  }
+  .card.open .answer{max-height:420px;padding-bottom:20px}
+  .answer p{font-size:1rem;color:var(--ink)}
+  .answer .tag{
+    display:inline-block;background:var(--steel);color:var(--paper);
+    font-family:'Oswald',sans-serif;font-weight:500;font-size:.72rem;
+    letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 9px;margin:0 4px 4px 0;
+  }
+  .answer .tag.b{background:var(--rust)}
+
+  .reveal-all{
+    font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.14em;
+    font-size:.78rem;font-weight:500;
+    background:none;border:1.5px solid var(--ink);color:var(--ink);
+    padding:9px 18px;cursor:pointer;transition:all .15s ease;
+  }
+  .reveal-all:hover{background:var(--ink);color:var(--paper)}
+
+  /* ---------- Tarefa do livro ---------- */
+  .book-task{
+    margin:48px 0;border:2px solid var(--ink);
+    background:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(63,74,82,.10) 27px,rgba(63,74,82,.10) 28px);
+    padding:26px 24px;
+  }
+  .book-task h3{
+    font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.1em;
+    font-size:1.1rem;margin-bottom:14px;color:var(--steel);
+  }
+  .book-task ul{list-style:none}
+  .book-task li{
+    display:flex;gap:14px;align-items:baseline;padding:7px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .book-task li:last-child{border-bottom:none}
+  .pg{font-family:'Oswald',sans-serif;font-weight:600;color:var(--rust);min-width:120px}
+
+  footer{
+    border-top:3px double var(--ink);margin-top:40px;padding:22px 0 60px;
+    font-family:'Special Elite',monospace;font-size:.72rem;
+    color:var(--ink-soft);letter-spacing:.08em;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  }
+
+  @media (max-width:600px){
+    .tl-track{grid-template-columns:1fr 1fr;gap:0}
+    .tl-node{border-bottom:1px dashed var(--line)}
+    .q-page{display:none}
+    .answer{padding-left:20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">
+      <span>História · 9º ano</span>
+      <span>Turma 9B</span>
+      <span>Atividade de substituição</span>
+    </div>
+    <h1>Primeira Guerra<br>Mundial<span class="years">1914 — 1918 · A Grande Guerra</span></h1>
+    <p class="lead">O conflito que começou com um disparo em Sarajevo e mobilizou o mundo inteiro. Vamos entender por que a Europa foi à guerra, como ela foi travada e o que mudou o rumo do conflito.</p>
+    <span class="stamp">Grande Guerra</span>
+  </header>
+
+  <section class="timeline">
+    <div class="sec-label">Linha do tempo</div>
+    <div class="tl-track">
+      <div class="tl-node"><div class="tl-year">1914</div><div class="tl-desc">Atentado em Sarajevo dá início à guerra</div></div>
+      <div class="tl-node"><div class="tl-year">1915</div><div class="tl-desc">Guerra de trincheiras na Frente Ocidental</div></div>
+      <div class="tl-node"><div class="tl-year">1917</div><div class="tl-desc">Rússia sai · EUA entram no conflito</div></div>
+      <div class="tl-node"><div class="tl-year">1918</div><div class="tl-desc">Rendição alemã e fim da guerra</div></div>
+      <div class="tl-node"><div class="tl-year">1919</div><div class="tl-desc">Tratado de Versalhes</div></div>
+    </div>
+  </section>
+
+  <section class="questions">
+    <div class="sec-label">
+      <span>Questões</span>
+      <button class="reveal-all" id="revealBtn">Revelar todas</button>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">1</span>
+        <span class="q-text">Quais eram as tensões na Europa que antecederam à Grande Guerra?</span>
+        <span class="q-page">p. 44</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer"><p>Nacionalismo exaltado, disputas imperialistas por colônias e mercados, rivalidade econômica e industrial, militarismo (corrida armamentista) e o revanchismo francês pela perda da Alsácia-Lorena.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">2</span>
+        <span class="q-text">Quem formava a Tríplice Aliança e a Tríplice Entente?</span>
+        <span class="q-page">p. 45</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer">
+        <p><strong>a) Tríplice Aliança:</strong> <span class="tag">Alemanha</span><span class="tag">Áustria-Hungria</span><span class="tag">Itália</span></p>
+        <p style="margin-top:8px"><strong>b) Tríplice Entente:</strong> <span class="tag b">França</span><span class="tag b">Rússia</span><span class="tag b">Reino Unido</span></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">3</span>
+        <span class="q-text">O que foi a "Paz Armada"?</span>
+        <span class="q-page">p. 45</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer"><p>Período anterior à guerra em que as potências, mesmo em paz, se armavam intensamente e firmavam alianças militares, preparando-se para um conflito visto como inevitável.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">4</span>
+        <span class="q-text">Qual fato deu início à guerra?</span>
+        <span class="q-page">p. 46</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer"><p>O assassinato do arquiduque Francisco Ferdinando, herdeiro do trono austro-húngaro, em Sarajevo (1914), por Gavrilo Princip, um nacionalista sérvio. O episódio desencadeou a rede de alianças e levou as potências ao conflito.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">5</span>
+        <span class="q-text">O que eram as trincheiras?</span>
+        <span class="q-page">p. 47</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer"><p>Valas cavadas no solo onde os soldados se abrigavam e combatiam. Marcaram a "guerra de posição" na Frente Ocidental, com longos períodos parados sob condições péssimas — lama, doenças, fome e ataques constantes.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">6</span>
+        <span class="q-text">O que levou à saída da Rússia da guerra em 1917?</span>
+        <span class="q-page">p. 49</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer"><p>A Revolução Russa, que derrubou o czar e levou os bolcheviques ao poder. O novo governo assinou o Tratado de Brest-Litovsk com a Alemanha, retirando a Rússia do conflito.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <span class="q-num">7</span>
+        <span class="q-text">Por que os Estados Unidos entraram na guerra em 1917?</span>
+        <span class="q-page">p. 49</span>
+        <span class="toggle">▸ Resposta</span>
+      </div>
+      <div class="answer"><p>A guerra submarina irrestrita alemã (afundamento de navios, como o Lusitânia), o Telegrama Zimmermann — proposta alemã de aliança ao México contra os EUA — e os interesses econômicos americanos, que haviam emprestado recursos aos Aliados.</p></div>
+    </div>
+  </section>
+
+  <section class="book-task">
+    <h3>Para copiar e responder no caderno</h3>
+    <ul>
+      <li><span class="pg">Página 48</span><span>Questões nº 1, 2 e 3</span></li>
+      <li><span class="pg">Página 53</span><span>Pergunta no final da página</span></li>
+      <li><span class="pg">Página 55</span><span>Questões nº 2 e 3</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>EMEF · História — 9º ano</span>
+    <span>Copiar as perguntas e responder no caderno</span>
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.q-head').forEach(function(head){
+    head.addEventListener('click', function(){
+      var card = head.parentElement;
+      card.classList.toggle('open');
+      var t = head.querySelector('.toggle');
+      t.textContent = card.classList.contains('open') ? '▾ Ocultar' : '▸ Resposta';
+    });
+  });
+
+  var btn = document.getElementById('revealBtn');
+  btn.addEventListener('click', function(){
+    var cards = document.querySelectorAll('.card');
+    var anyClosed = Array.from(cards).some(function(c){return !c.classList.contains('open')});
+    cards.forEach(function(c){
+      var t = c.querySelector('.toggle');
+      if(anyClosed){ c.classList.add('open'); t.textContent='▾ Ocultar'; }
+      else { c.classList.remove('open'); t.textContent='▸ Resposta'; }
+    });
+    btn.textContent = anyClosed ? 'Ocultar todas' : 'Revelar todas';
+  });
+</script>
+</body>
+</html>

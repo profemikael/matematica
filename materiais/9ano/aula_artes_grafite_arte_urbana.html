@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafite e Arte Urbana — 9º Ano</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; background:#111; font-family:'Rubik',sans-serif; color:#fff; }
+
+  .slide {
+    position:absolute; inset:0; display:none; flex-direction:column;
+    justify-content:center; align-items:center; text-align:center;
+    padding:5vh 7vw; overflow:hidden;
+  }
+  .slide.active { display:flex; animation:pop .5s ease; }
+  @keyframes pop { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+
+  /* brick wall base */
+  .slide::before {
+    content:''; position:absolute; inset:0; z-index:-2;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 58px, rgba(0,0,0,.35) 58px 62px),
+      repeating-linear-gradient(90deg, transparent 0 118px, rgba(0,0,0,.25) 118px 122px),
+      linear-gradient(160deg,#2b2b2b,#161616);
+  }
+  /* spray splashes */
+  .slide::after {
+    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(255,0,128,.35) 0, transparent 18%),
+      radial-gradient(circle at 88% 12%, rgba(0,229,255,.30) 0, transparent 16%),
+      radial-gradient(circle at 85% 85%, rgba(255,214,0,.28) 0, transparent 20%),
+      radial-gradient(circle at 10% 88%, rgba(118,255,3,.25) 0, transparent 15%);
+    filter:blur(2px);
+  }
+
+  .tag { font-family:'Permanent Marker',cursive; letter-spacing:2px; }
+
+  h1.tag {
+    font-size:clamp(3rem,9vw,7.5rem); line-height:1.05;
+    background:linear-gradient(90deg,#ff0080,#ffd600,#00e5ff,#76ff03);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(4px 4px 0 #000);
+    transform:rotate(-2deg);
+  }
+  h2.tag {
+    font-size:clamp(2.2rem,5.5vw,4.2rem); color:#ffd600;
+    text-shadow:4px 4px 0 #ff0080, 8px 8px 0 rgba(0,0,0,.6);
+    transform:rotate(-1.5deg); margin-bottom:4vh;
+  }
+  .sub { font-size:clamp(1.1rem,2.5vw,1.8rem); color:#00e5ff; font-weight:700; margin-top:3vh; text-transform:uppercase; letter-spacing:4px; }
+
+  p.txt {
+    font-size:clamp(1.3rem,3vw,2.2rem); line-height:1.55; max-width:1050px; font-weight:400;
+    text-shadow:2px 2px 4px #000;
+  }
+  p.txt b { color:#ffd600; }
+  p.txt .rosa { color:#ff4da6; font-weight:700; }
+  p.txt .azul { color:#00e5ff; font-weight:700; }
+  p.txt .verde { color:#76ff03; font-weight:700; }
+
+  .vs { display:flex; gap:4vw; flex-wrap:wrap; justify-content:center; margin-top:2vh; }
+  .card {
+    background:rgba(0,0,0,.55); border:4px solid; border-radius:18px;
+    padding:3.5vh 2.5vw; width:min(430px,80vw); font-size:clamp(1.1rem,2.2vw,1.6rem);
+    line-height:1.5; box-shadow:8px 8px 0 rgba(0,0,0,.5);
+  }
+  .card h3 { font-family:'Permanent Marker',cursive; font-size:clamp(1.8rem,3.5vw,2.8rem); margin-bottom:1.5vh; }
+  .card.ok { border-color:#76ff03; transform:rotate(-1deg); }
+  .card.ok h3 { color:#76ff03; }
+  .card.no { border-color:#ff1744; transform:rotate(1deg); }
+  .card.no h3 { color:#ff1744; }
+
+  ol.perguntas { text-align:left; max-width:1000px; font-size:clamp(1.2rem,2.6vw,2rem); line-height:1.5; }
+  ol.perguntas li { margin-bottom:2.2vh; padding-left:.5em; text-shadow:2px 2px 4px #000; }
+  ol.perguntas li::marker { color:#ffd600; font-weight:900; font-family:'Permanent Marker',cursive; }
+
+  .videowrap { width:min(1100px,88vw); aspect-ratio:16/9; border:6px solid #ffd600; border-radius:14px; box-shadow:10px 10px 0 #ff0080; margin-top:2vh; }
+  .videowrap iframe { width:100%; height:100%; border:0; border-radius:8px; }
+
+  .nav {
+    position:fixed; bottom:24px; right:28px; display:flex; gap:14px; z-index:10;
+  }
+  .nav button {
+    font-family:'Permanent Marker',cursive; font-size:1.6rem; color:#111;
+    background:#ffd600; border:3px solid #000; border-radius:50%;
+    width:64px; height:64px; cursor:pointer; box-shadow:4px 4px 0 #ff0080;
+    transition:transform .1s;
+  }
+  .nav button:hover { transform:scale(1.1); }
+  .counter { position:fixed; bottom:34px; left:32px; font-family:'Permanent Marker',cursive; font-size:1.4rem; color:#00e5ff; z-index:10; text-shadow:2px 2px 0 #000; }
+
+  .dica { position:fixed; top:20px; right:28px; font-size:.95rem; color:rgba(255,255,255,.45); z-index:10; }
+</style>
+</head>
+<body>
+
+<!-- 1 CAPA -->
+<section class="slide active">
+  <h1 class="tag">GRAFITE &<br>ARTE URBANA</h1>
+  <div class="sub">Aula de Artes • 9º Ano</div>
+</section>
+
+<!-- 2 O QUE É -->
+<section class="slide">
+  <h2 class="tag">O que é grafite?</h2>
+  <p class="txt">É uma forma de <b>arte feita em espaços públicos</b>: muros, prédios e viadutos.<br><br>
+  Surgiu nos <span class="rosa">anos 1970, em Nova York</span>, ligado à cultura <span class="azul">hip-hop</span>,
+  e chegou ao Brasil na <span class="verde">década de 1980</span>, principalmente em São Paulo.</p>
+</section>
+
+<!-- 3 GRAFITE X PICHAÇÃO -->
+<section class="slide">
+  <h2 class="tag">Grafite ✕ Pichação</h2>
+  <div class="vs">
+    <div class="card ok">
+      <h3>GRAFITE</h3>
+      Desenho <b style="color:#76ff03">artístico</b>, geralmente <b style="color:#76ff03">autorizado</b>.<br>
+      Valoriza o espaço da cidade.
+    </div>
+    <div class="card no">
+      <h3>PICHAÇÃO</h3>
+      Escrita <b style="color:#ff1744">não autorizada</b>.<br>
+      Considerada <b style="color:#ff1744">crime</b> pela lei brasileira.
+    </div>
+  </div>
+</section>
+
+<!-- 4 ARTISTAS -->
+<section class="slide">
+  <h2 class="tag">Arte brasileira no mundo</h2>
+  <p class="txt">Artistas como <span class="rosa">Eduardo Kobra</span> e a dupla <span class="azul">OSGEMEOS</span>
+  são famosos no mundo inteiro.<br><br>
+  O <span class="verde">Beco do Batman</span>, em São Paulo, é um dos pontos de arte urbana mais visitados do país.</p>
+</section>
+
+<!-- 5 EXPRESSÃO -->
+<section class="slide">
+  <h2 class="tag">Arte que fala</h2>
+  <p class="txt">O grafite <b>dá cor às cidades</b> e é uma forma de <span class="rosa">expressão</span>:<br><br>
+  por meio dele, os artistas falam sobre a vida na cidade, <span class="azul">protestam</span>
+  e transmitem <span class="verde">mensagens</span> para todos que passam pelas ruas.</p>
+</section>
+
+<!-- 6 VÍDEO -->
+<section class="slide">
+  <h2 class="tag">Bora assistir!</h2>
+  <div class="videowrap">
+    <iframe src="https://www.youtube.com/embed/CvF_Z_DhCxk" title="Grafite e Arte Urbana no Brasil"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</section>
+
+<!-- 7 PERGUNTAS -->
+<section class="slide">
+  <h2 class="tag">Agora é com você! ✏️</h2>
+  <p class="txt" style="margin-bottom:3vh; font-size:clamp(1rem,2vw,1.4rem); color:#ffd600;">Copie e responda no caderno:</p>
+  <ol class="perguntas">
+    <li>Onde e quando surgiu o grafite?</li>
+    <li>Qual é a diferença entre grafite e pichação?</li>
+    <li>Cite dois artistas brasileiros de grafite famosos no mundo.</li>
+    <li>Por que o grafite é considerado uma forma de expressão?</li>
+    <li>Na sua opinião, o grafite valoriza ou prejudica a cidade? Justifique.</li>
+  </ol>
+</section>
+
+<!-- 8 DISCUSSÃO -->
+<section class="slide">
+  <h1 class="tag" style="font-size:clamp(2.5rem,7vw,5.5rem);">E aí: o grafite<br>valoriza ou prejudica<br>a cidade?</h1>
+  <div class="sub">Vamos debater! 🎨</div>
+</section>
+
+<div class="counter" id="counter">1 / 8</div>
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Anterior">←</button>
+  <button onclick="go(1)" aria-label="Próximo">→</button>
+</div>
+<div class="dica">use as setas do teclado ou toque nos botões</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let i = 0;
+  function show(n){
+    slides[i].classList.remove('active');
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides[i].classList.add('active');
+    document.getElementById('counter').textContent = (i+1)+' / '+slides.length;
+    // pause video when leaving its slide
+    document.querySelectorAll('iframe').forEach(f=>{ if(!slides[i].contains(f)) f.src = f.src; });
+  }
+  function go(d){ show(i+d); }
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) go(1);
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) go(-1);
+  });
+  // touch swipe for interactive screens
+  let x0=null;
+  document.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; });
+  document.addEventListener('touchend', e=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx)>60) go(dx<0?1:-1);
+    x0=null;
+  });
+</script>
+</body>
+</html>

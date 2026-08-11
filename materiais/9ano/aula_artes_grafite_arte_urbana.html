@@ -77,6 +77,21 @@
   ol.perguntas li { margin-bottom:2.2vh; padding-left:.5em; text-shadow:2px 2px 4px #000; }
   ol.perguntas li::marker { color:#ffd600; font-weight:900; font-family:'Permanent Marker',cursive; }
 
+  .galeria { display:flex; gap:3vw; justify-content:center; align-items:stretch; flex-wrap:wrap; margin-top:1vh; }
+  .obra { width:min(560px,42vw); display:flex; flex-direction:column; }
+  .obra img {
+    width:100%; height:52vh; object-fit:cover; border-radius:12px;
+    border:5px solid #ffd600; box-shadow:10px 10px 0 rgba(0,0,0,.6);
+    background:#000;
+  }
+  .obra:nth-child(2) img { border-color:#00e5ff; }
+  .obra:nth-child(3) img { border-color:#76ff03; }
+  .galeria.tres .obra { width:min(400px,29vw); }
+  .galeria.tres .obra img { height:46vh; }
+  .obra figcaption { font-size:clamp(.9rem,1.8vw,1.3rem); margin-top:1.5vh; color:#fff; text-shadow:2px 2px 3px #000; }
+  .obra figcaption b { color:#ffd600; }
+  .credito { position:absolute; bottom:14px; left:0; right:0; font-size:.8rem; color:rgba(255,255,255,.4); }
+
   .videowrap { width:min(1100px,88vw); aspect-ratio:16/9; border:6px solid #ffd600; border-radius:14px; box-shadow:10px 10px 0 #ff0080; margin-top:2vh; }
   .videowrap iframe { width:100%; height:100%; border:0; border-radius:8px; }
 
@@ -136,6 +151,42 @@
   O <span class="verde">Beco do Batman</span>, em São Paulo, é um dos pontos de arte urbana mais visitados do país.</p>
 </section>
 
+<!-- 4b OBRAS DO KOBRA -->
+<section class="slide">
+  <h2 class="tag" style="color:#ff4da6; text-shadow:4px 4px 0 #ffd600, 8px 8px 0 rgba(0,0,0,.6);">Obras de Eduardo Kobra</h2>
+  <div class="galeria tres">
+    <figure class="obra">
+      <img src="https://www.eduardokobra.com/uploads/img/projetos/26/projetos_fotos/thumb-1200-0/9d67f5d35604674edf6aeef145281b25.jpg" alt="Mural Etnias, Rio de Janeiro" loading="lazy">
+      <figcaption><b>Etnias</b> (Rio, 2016) — já foi o maior grafite do mundo!</figcaption>
+    </figure>
+    <figure class="obra">
+      <img src="https://www.eduardokobra.com/uploads/img/projetos/7/projetos_fotos/thumb-1200-0/8ad83f53ae435775829e7dc9dd9253f6.jpg" alt="Mural Monalisa, MIS Experience São Paulo" loading="lazy">
+      <figcaption><b>Monalisa</b> (São Paulo, 2019) — releitura de Da Vinci</figcaption>
+    </figure>
+    <figure class="obra">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Oscar%20Niemeyer%20by%20Eduardo%20Kobra%20(mural%2C%202013).jpg?width=1000" alt="Mural Oscar Niemeyer, Av. Paulista" loading="lazy">
+      <figcaption><b>Oscar Niemeyer</b> (Av. Paulista) — 52 metros de altura</figcaption>
+    </figure>
+  </div>
+  <div class="credito">Fotos: eduardokobra.com / Wikimedia Commons</div>
+</section>
+
+<!-- 4c OBRAS DOS OSGEMEOS -->
+<section class="slide">
+  <h2 class="tag" style="color:#00e5ff; text-shadow:4px 4px 0 #ff0080, 8px 8px 0 rgba(0,0,0,.6);">Obras dos OSGEMEOS</h2>
+  <div class="galeria">
+    <figure class="obra">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/O%20Estrangeiro%2C%20graffiti%20por%20Os%20G%C3%AAmeos%2C%20Vale%20do%20Anhangaba%C3%BA%2C%20S%C3%A3o%20Paulo.jpg?width=1400" alt="O Estrangeiro, Vale do Anhangabaú" loading="lazy">
+      <figcaption><b>O Estrangeiro</b> (Vale do Anhangabaú, São Paulo)</figcaption>
+    </figure>
+    <figure class="obra">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Grafite%20na%20entrada%20do%20MAM%2C%20osgemeos%20(5878026408).jpg?width=1400" alt="Grafite na entrada do MAM, São Paulo" loading="lazy">
+      <figcaption><b>Grafite no MAM</b> (Museu de Arte Moderna, São Paulo)</figcaption>
+    </figure>
+  </div>
+  <div class="credito">Fotos: Wikimedia Commons</div>
+</section>
+
 <!-- 5 EXPRESSÃO -->
 <section class="slide">
   <h2 class="tag">Arte que fala</h2>
@@ -172,7 +223,7 @@
   <div class="sub">Vamos debater! 🎨</div>
 </section>
 
-<div class="counter" id="counter">1 / 8</div>
+<div class="counter" id="counter">1 / 10</div>
 <div class="nav">
   <button onclick="go(-1)" aria-label="Anterior">←</button>
   <button onclick="go(1)" aria-label="Próximo">→</button>

@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decomposição em Fatores Primos — 6º Ano</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif}
+  body{background:#0b1230}
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 900px 500px at 12% 8%, rgba(59,130,246,.28), transparent 65%),
+      radial-gradient(ellipse 800px 500px at 88% 92%, rgba(168,85,247,.22), transparent 65%),
+      radial-gradient(ellipse 600px 400px at 85% 15%, rgba(16,185,129,.14), transparent 65%);
+  }
+  body::after{
+    content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,#000 40%,transparent 100%);
+  }
+
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    justify-content:center;align-items:center;text-align:center;
+    padding:6vh 6vw 12vh;overflow-y:auto;overflow-x:hidden;
+  }
+  .slide.active{display:flex;animation:up .5s cubic-bezier(.2,.8,.2,1)}
+  @keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(2.4rem,6.2vw,5rem);line-height:1.06;
+     background:linear-gradient(100deg,#fff 20%,#93c5fd 55%,#c4b5fd);
+     -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.02em}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.8vw,3rem);color:#fff;
+     margin-bottom:3.5vh;letter-spacing:-.01em}
+  h2 .n{color:#60a5fa;font-family:'JetBrains Mono',monospace;font-size:.75em;margin-right:.4em}
+
+  .eyebrow{font-size:clamp(.72rem,1.35vw,.95rem);letter-spacing:.28em;text-transform:uppercase;
+           color:#7dd3fc;font-weight:700;margin-bottom:2.4vh}
+  .lede{font-size:clamp(1rem,2.1vw,1.5rem);color:#c7d2fe;max-width:820px;margin-top:2.8vh;line-height:1.55}
+  .meta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4.5vh}
+  .pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#dbeafe;
+        padding:.7vh 1.4vw;border-radius:999px;font-size:clamp(.78rem,1.4vw,1rem);font-weight:600;backdrop-filter:blur(8px)}
+
+  .glass{
+    background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);
+    border-radius:22px;backdrop-filter:blur(14px);
+    box-shadow:0 22px 60px rgba(0,0,0,.42);
+  }
+  .concept{padding:4vh 4vw;max-width:960px;font-size:clamp(1.05rem,2.15vw,1.55rem);color:#e2e8f0;line-height:1.65}
+  .concept b{color:#fff}
+  .hl{color:#fbbf24;font-weight:700}
+  .hl2{color:#5eead4;font-weight:700}
+
+  .formula{
+    margin-top:3vh;font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:clamp(1.15rem,2.7vw,2.1rem);color:#fde68a;
+    background:rgba(251,191,36,.10);border:1px dashed rgba(251,191,36,.45);
+    border-radius:16px;padding:2.2vh 2.5vw;letter-spacing:.02em;
+  }
+  sup{font-size:.62em;vertical-align:super}
+
+  /* métodos lado a lado */
+  .metodos{display:flex;gap:2.5vw;flex-wrap:wrap;justify-content:center;width:100%}
+  .metodo{padding:3vh 2.5vw;width:min(420px,42vw);text-align:left}
+  .metodo h3{font-size:clamp(1rem,1.9vw,1.3rem);color:#93c5fd;margin-bottom:2.2vh;font-weight:700;
+             display:flex;align-items:center;gap:.6em}
+  .metodo h3 span{background:#3b82f6;color:#fff;width:1.9em;height:1.9em;border-radius:8px;
+                  display:grid;place-items:center;font-size:.82em;flex:none}
+  .divs{font-family:'JetBrains Mono',monospace;font-size:clamp(1rem,2vw,1.5rem);color:#e2e8f0;
+        display:grid;grid-template-columns:auto auto;gap:.35em 1em;justify-content:center}
+  .divs .l{text-align:right;border-right:2px solid rgba(147,197,253,.5);padding-right:.9em}
+  .divs .r{color:#f87171;font-weight:700;text-align:left}
+  .arvore{display:flex;flex-direction:column;align-items:center;gap:1.6vh;font-family:'JetBrains Mono',monospace}
+  .nivel{display:flex;gap:2.2vw;justify-content:center}
+  .no{width:2.5em;height:2.5em;border-radius:50%;display:grid;place-items:center;font-weight:700;
+      font-size:clamp(.85rem,1.7vw,1.15rem);color:#fff}
+  .no.raiz{background:#1e3a8a;box-shadow:0 0 0 3px rgba(147,197,253,.35)}
+  .no.meio{background:#3b82f6}
+  .no.folha{background:#dc2626}
+  .res-linha{margin-top:2.4vh;font-family:'JetBrains Mono',monospace;font-weight:700;
+             color:#7dd3fc;font-size:clamp(.92rem,1.8vw,1.25rem);text-align:center}
+
+  /* primos */
+  .primos{display:flex;flex-wrap:wrap;gap:.9vw;justify-content:center;max-width:900px}
+  .primo{
+    width:clamp(48px,5.2vw,74px);height:clamp(48px,5.2vw,74px);border-radius:16px;
+    display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:clamp(1rem,1.9vw,1.5rem);color:#fff;
+    background:linear-gradient(150deg,#2563eb,#1e40af);
+    box-shadow:0 8px 22px rgba(37,99,235,.4);
+    animation:float 3s ease-in-out infinite;
+  }
+  .primo:nth-child(even){background:linear-gradient(150deg,#7c3aed,#5b21b6);box-shadow:0 8px 22px rgba(124,58,237,.4)}
+  .primo:nth-child(3n){background:linear-gradient(150deg,#0d9488,#115e59);box-shadow:0 8px 22px rgba(13,148,136,.4)}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .primo:nth-child(2n){animation-delay:.2s}.primo:nth-child(3n){animation-delay:.4s}
+  .primo:nth-child(5n){animation-delay:.6s}.primo:nth-child(7n){animation-delay:.8s}
+
+  /* divisórias de parte */
+  .parte-num{font-family:'Fraunces',serif;font-size:clamp(4rem,13vw,10rem);font-weight:700;
+             color:rgba(255,255,255,.09);line-height:1;margin-bottom:-2vh}
+
+  /* exercícios */
+  .ex-wrap{width:min(980px,92vw);display:flex;flex-direction:column;gap:2.2vh}
+  .ex{padding:2.6vh 2.6vw;text-align:left}
+  .ex-head{display:flex;align-items:center;gap:1em;margin-bottom:1.8vh;flex-wrap:wrap}
+  .ex-num{background:linear-gradient(150deg,#3b82f6,#1d4ed8);color:#fff;width:2.2em;height:2.2em;
+          border-radius:11px;display:grid;place-items:center;font-weight:800;flex:none;
+          font-size:clamp(.9rem,1.7vw,1.15rem);box-shadow:0 6px 16px rgba(37,99,235,.4)}
+  .ex-titulo{font-size:clamp(1rem,2vw,1.45rem);font-weight:700;color:#fff;flex:1}
+  .tag{font-size:clamp(.6rem,1.1vw,.75rem);letter-spacing:.14em;font-weight:800;padding:.45em 1em;
+       border-radius:999px;text-transform:uppercase}
+  .tag.b{background:rgba(16,185,129,.18);color:#6ee7b7;border:1px solid rgba(16,185,129,.4)}
+  .tag.m{background:rgba(251,191,36,.16);color:#fcd34d;border:1px solid rgba(251,191,36,.4)}
+  .ex-corpo{font-size:clamp(.95rem,1.8vw,1.3rem);color:#cbd5e1;line-height:1.65}
+  .ex-corpo .itens{margin-top:1.2vh;display:flex;flex-direction:column;gap:.7vh}
+  .ex-corpo .itens li{list-style:none}
+  .ex-corpo .itens b{color:#93c5fd;font-family:'JetBrains Mono',monospace}
+  .ex-corpo code{font-family:'JetBrains Mono',monospace;background:rgba(147,197,253,.14);
+                 color:#bfdbfe;padding:.15em .5em;border-radius:7px;font-weight:700}
+  .inline-abc{display:flex;gap:2vw;flex-wrap:wrap;margin-top:1.2vh;font-family:'JetBrains Mono',monospace;
+              font-size:clamp(1rem,2.1vw,1.5rem);color:#fff;font-weight:700}
+
+  .btn-resp{
+    margin-top:2.2vh;font-family:'Inter',sans-serif;font-weight:700;
+    font-size:clamp(.85rem,1.6vw,1.05rem);
+    background:linear-gradient(150deg,#fbbf24,#f59e0b);color:#451a03;
+    border:none;border-radius:13px;padding:1.3vh 2vw;cursor:pointer;
+    box-shadow:0 6px 0 #b45309;transition:transform .12s,box-shadow .12s;
+    display:inline-flex;align-items:center;gap:.6em;
+  }
+
+  /* ---- itens com botão individual ---- */
+  .item{
+    display:flex;align-items:flex-start;gap:1.2vw;flex-wrap:wrap;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    border-radius:14px;padding:1.6vh 1.6vw;margin-top:1.2vh;
+  }
+  .item .pergunta{
+    flex:1;min-width:200px;font-size:clamp(.95rem,1.8vw,1.3rem);color:#e2e8f0;
+    line-height:1.6;font-weight:600;
+  }
+  .item .pergunta .letra{
+    font-family:'JetBrains Mono',monospace;color:#60a5fa;font-weight:700;margin-right:.5em;
+  }
+  .mini{
+    font-family:'Inter',sans-serif;font-weight:700;flex:none;
+    font-size:clamp(.72rem,1.35vw,.92rem);
+    background:linear-gradient(150deg,#fbbf24,#f59e0b);color:#451a03;
+    border:none;border-radius:11px;padding:1vh 1.4vw;cursor:pointer;
+    box-shadow:0 5px 0 #b45309;transition:transform .12s,box-shadow .12s;white-space:nowrap;
+  }
+  .mini:hover{transform:translateY(-2px);box-shadow:0 7px 0 #b45309}
+  .mini:active{transform:translateY(3px);box-shadow:0 2px 0 #b45309}
+  .mini.on{background:linear-gradient(150deg,#34d399,#10b981);color:#022c22;box-shadow:0 5px 0 #047857}
+  .r-item{
+    display:none;flex-basis:100%;margin-top:1.2vh;padding:1.5vh 1.6vw;border-radius:12px;
+    background:rgba(16,185,129,.12);border-left:4px solid #10b981;
+    font-size:clamp(.88rem,1.7vw,1.18rem);color:#d1fae5;line-height:1.7;text-align:left;
+  }
+  .r-item.show{display:block;animation:up .3s ease}
+  .r-item b{color:#6ee7b7}
+  .r-item code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.09);
+               color:#a7f3d0;padding:.15em .5em;border-radius:7px;font-weight:700}
+  .r-item ul{margin:.6vh 0 0 1.2em}
+  .r-item li{margin-bottom:.4vh}
+
+  /* etapas coloridas da fatoração */
+  .c-num,.c-mult,.c-pot{
+    font-family:'JetBrains Mono',monospace;font-weight:700;
+    padding:.15em .55em;border-radius:8px;display:inline-block;
+  }
+  .c-num{background:rgba(255,255,255,.12);color:#fff}                       /* número original */
+  .c-mult{background:rgba(96,165,250,.16);color:#93c5fd}                    /* multiplicação */
+  .c-pot{background:rgba(244,114,182,.16);color:#f9a8d4}                    /* com potência */
+  .seta{color:#64748b;font-weight:700;margin:0 .35em}
+
+  /* expoentes destacados */
+  .exp{
+    color:#fbbf24;font-weight:800;
+    text-shadow:0 0 12px rgba(251,191,36,.55);
+  }
+  .r-item .exp,.resposta .exp{
+    color:#fde047;
+    text-shadow:0 0 14px rgba(253,224,71,.7);
+  }
+  .c-pot .exp{color:#fde047;text-shadow:0 0 14px rgba(253,224,71,.8)}
+  sup{color:#fbbf24;font-weight:800}
+  .res-linha sup{color:#fbbf24}
+
+  .todos{
+    margin-top:2vh;font-family:'Inter',sans-serif;font-weight:700;
+    font-size:clamp(.75rem,1.4vw,.95rem);
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+    color:#cbd5e1;border-radius:11px;padding:1vh 1.6vw;cursor:pointer;transition:.15s;
+  }
+  .todos:hover{background:rgba(255,255,255,.16);color:#fff}
+  .btn-resp:hover{transform:translateY(-2px);box-shadow:0 8px 0 #b45309}
+  .btn-resp:active{transform:translateY(3px);box-shadow:0 3px 0 #b45309}
+  .btn-resp.on{background:linear-gradient(150deg,#34d399,#10b981);color:#022c22;box-shadow:0 6px 0 #047857}
+
+  .resposta{
+    display:none;margin-top:2vh;padding:2.2vh 2.2vw;border-radius:16px;
+    background:rgba(16,185,129,.12);border-left:5px solid #10b981;
+    font-size:clamp(.9rem,1.75vw,1.25rem);color:#d1fae5;line-height:1.7;text-align:left;
+  }
+  .resposta.show{display:block;animation:up .35s ease}
+  .resposta b,.resposta strong{color:#6ee7b7}
+  .resposta code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.09);
+                 color:#a7f3d0;padding:.15em .5em;border-radius:7px;font-weight:700}
+  .resposta ul{margin:.8vh 0 0 1.2em}
+  .resposta li{margin-bottom:.5vh}
+
+  /* serve para */
+  .serve{display:flex;flex-direction:column;gap:1.6vh;text-align:left;max-width:820px}
+  .serve div{background:rgba(255,255,255,.05);border-left:4px solid #34d399;border-radius:12px;
+             padding:1.8vh 2vw;font-size:clamp(.95rem,1.9vw,1.35rem);color:#e2e8f0}
+  .serve b{color:#6ee7b7}
+
+  /* curiosidades */
+  .curios{display:flex;gap:2.5vw;flex-wrap:wrap;justify-content:center;width:100%}
+  .curio{padding:3.2vh 2.6vw;width:min(440px,44vw);text-align:left;
+         font-size:clamp(.88rem,1.65vw,1.15rem);color:#cbd5e1;line-height:1.65}
+  .curio h3{font-size:clamp(1.05rem,2vw,1.4rem);margin-bottom:1.6vh;font-weight:700}
+  .curio.a h3{color:#c4b5fd}.curio.a{border-top:4px solid #8b5cf6}
+  .curio.b h3{color:#f9a8d4}.curio.b{border-top:4px solid #ec4899}
+  .curio .ico{font-size:2.2em;display:block;margin-bottom:1vh}
+
+  /* nav */
+  .nav{position:fixed;bottom:26px;right:30px;display:flex;gap:12px;z-index:20}
+  .nav button{width:60px;height:60px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
+    background:rgba(255,255,255,.1);backdrop-filter:blur(12px);color:#fff;font-size:1.5rem;
+    cursor:pointer;transition:.15s}
+  .nav button:hover{background:rgba(255,255,255,.22);transform:scale(1.08)}
+  .counter{position:fixed;bottom:40px;left:34px;z-index:20;font-family:'JetBrains Mono',monospace;
+    font-weight:700;font-size:1.05rem;color:#93c5fd}
+  .brand{position:fixed;top:22px;left:34px;z-index:20;font-size:.82rem;color:rgba(255,255,255,.4);
+    letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+  .progress{position:fixed;top:0;left:0;height:4px;z-index:30;
+    background:linear-gradient(90deg,#3b82f6,#8b5cf6,#34d399);transition:width .4s ease}
+  .dica{position:fixed;top:22px;right:34px;z-index:20;font-size:.82rem;color:rgba(255,255,255,.32)}
+</style>
+</head>
+<body>
+
+<!-- 1 CAPA -->
+<section class="slide active">
+  <div class="eyebrow">Matemática · 6º Ano · 2º Trimestre · Aula 05</div>
+  <h1>Decomposição em<br>Fatores Primos</h1>
+  <p class="lede">A "receita secreta" de cada número — e para que ela serve.</p>
+  <div class="meta">
+    <span class="pill">EMEF Ceará — Canoas/RS</span>
+    <span class="pill">Prof. Mikael</span>
+  </div>
+</section>
+
+<!-- 2 CONCEITO -->
+<section class="slide">
+  <h2>Todo número tem uma "receita"</h2>
+  <div class="glass concept">
+    Todo número natural maior que 1 pode ser escrito como uma
+    <b>multiplicação de números primos</b>.<br>
+    Essa é a <span class="hl">"receita secreta"</span> do número — e ela é
+    <span class="hl2">única</span> para cada número.
+    <div style="margin-top:3vh;font-size:clamp(1rem,2.2vw,1.7rem)">
+      <span class="c-num">60</span><span class="seta">=</span><span class="c-mult">2 × 2 × 3 × 5</span><span class="seta">=</span><span class="c-pot">2² × 3 × 5</span>
+    </div>
+    <div style="margin-top:2.5vh;font-size:clamp(.75rem,1.4vw,.98rem);color:#94a3b8;line-height:2">
+      <span style="color:#fff">■</span> número &nbsp;·&nbsp;
+      <span style="color:#93c5fd">■</span> multiplicação de primos &nbsp;·&nbsp;
+      <span style="color:#f9a8d4">■</span> forma com potência &nbsp;·&nbsp;
+      <span style="color:#fde047">■</span> expoente
+    </div>
+  </div>
+</section>
+
+<!-- 3 MÉTODOS -->
+<section class="slide">
+  <h2>Os dois métodos que você conhece</h2>
+  <div class="metodos">
+    <div class="glass metodo">
+      <h3><span>1</span> Divisões sucessivas</h3>
+      <div class="divs">
+        <div class="l">60</div><div class="r">2</div>
+        <div class="l">30</div><div class="r">2</div>
+        <div class="l">15</div><div class="r">3</div>
+        <div class="l">5</div><div class="r">5</div>
+        <div class="l">1</div><div class="r"></div>
+      </div>
+      <div class="res-linha">60 = 2<sup>2</sup> × 3 × 5</div>
+    </div>
+    <div class="glass metodo">
+      <h3><span>2</span> Árvore de fatores</h3>
+      <div class="arvore">
+        <div class="nivel"><div class="no raiz">60</div></div>
+        <div class="nivel"><div class="no meio">6</div><div class="no meio">10</div></div>
+        <div class="nivel" style="gap:1.1vw">
+          <div class="no folha">2</div><div class="no folha">3</div>
+          <div class="no folha">2</div><div class="no folha">5</div>
+        </div>
+      </div>
+      <div class="res-linha">60 = 2 × 3 × 2 × 5</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 PRIMOS -->
+<section class="slide">
+  <h2>Os primos que você mais vai usar</h2>
+  <div class="primos">
+    <div class="primo">2</div><div class="primo">3</div><div class="primo">5</div>
+    <div class="primo">7</div><div class="primo">11</div><div class="primo">13</div>
+    <div class="primo">17</div><div class="primo">19</div><div class="primo">23</div>
+    <div class="primo">29</div><div class="primo">31</div><div class="primo">37</div>
+    <div class="primo">41</div><div class="primo">43</div><div class="primo">47</div>
+  </div>
+  <p class="lede">Um número primo só tem <b style="color:#fbbf24">dois divisores</b>: o 1 e ele mesmo.</p>
+</section>
+
+<!-- 5 DIVISÓRIA PARTE 1 -->
+<section class="slide">
+  <div class="parte-num">01</div>
+  <h1 style="font-size:clamp(2rem,5.5vw,4.2rem)">Praticando<br>a fatoração</h1>
+  <p class="lede">Capriche na organização das divisões — confira sempre multiplicando de volta.</p>
+</section>
+
+<!-- 6 EX 1 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">1</div>
+        <div class="ex-titulo">Decomponha em fatores primos</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Use o método das divisões sucessivas.
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> Decomponha <b>24</b></div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">24</span><span class="seta">=</span><span class="c-mult">2 × 2 × 2 × 3</span><span class="seta">=</span><span class="c-pot">2³ × 3</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> Decomponha <b>45</b></div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">45</span><span class="seta">=</span><span class="c-mult">3 × 3 × 5</span><span class="seta">=</span><span class="c-pot">3² × 5</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">c)</span> Decomponha <b>72</b></div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">72</span><span class="seta">=</span><span class="c-mult">2 × 2 × 2 × 3 × 3</span><span class="seta">=</span><span class="c-pot">2³ × 3²</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">d)</span> Decomponha <b>100</b></div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">100</span><span class="seta">=</span><span class="c-mult">2 × 2 × 5 × 5</span><span class="seta">=</span><span class="c-pot">2² × 5²</span>
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+  </div>
+</section>
+
+<!-- 7 EX 2 e 3 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">2</div><div class="ex-titulo">Escreva com potências</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Escreva a forma fatorada usando potências:
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> 2 × 2 × 2 × 5 =</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-mult">2 × 2 × 2 × 5</span><span class="seta">=</span><span class="c-pot">2³ × 5</span><span class="seta">=</span><span class="c-num">40</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> 3 × 3 × 7 =</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-mult">3 × 3 × 7</span><span class="seta">=</span><span class="c-pot">3² × 7</span><span class="seta">=</span><span class="c-num">63</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">c)</span> 2 × 2 × 3 × 3 × 3 =</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-mult">2 × 2 × 3 × 3 × 3</span><span class="seta">=</span><span class="c-pot">2² × 3³</span><span class="seta">=</span><span class="c-num">108</span>
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">3</div><div class="ex-titulo">Que número é esse?</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Um número tem a forma fatorada <code>2³ × 5</code>. Que número é esse?
+      </div>
+      <button class="btn-resp" onclick="rev(this)">🔍 Ver resposta</button>
+      <div class="resposta">
+        <span class="c-pot">2³ × 5</span><span class="seta">=</span><span class="c-mult">2 × 2 × 2 × 5</span><span class="seta">=</span><span class="c-mult">8 × 5</span><span class="seta">=</span><span class="c-num">40</span>
+        <br><br>O número é <b>40</b>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 EX 4 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">4</div><div class="ex-titulo">Sem fazer divisões</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Observe: <code>36 = 2² × 3²</code>. Sem fazer divisões, responda:
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> O número 36 é divisível por <b>5</b>? Por quê?</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <b>Não.</b> O fator <code>5</code> não aparece na decomposição de 36. Se um primo não está
+            na "receita" do número, ele não divide esse número.
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> O número 36 é divisível por <b>9</b>? Por quê?</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <b>Sim.</b> Porque <code>9 = 3²</code> e o <code>3²</code> está presente em
+            <code>36 = 2² × 3²</code>. De fato, <code>36 ÷ 9 = 4</code>.
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+  </div>
+</section>
+
+<!-- 9 EX 5 e 6 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">5</div><div class="ex-titulo">Complete a fatoração</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Complete a fatoração que está faltando:
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> 90 = 2 × 3 × <b>___</b> × 5</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Falta o <b>3</b><br>
+            <span class="c-num">90</span><span class="seta">=</span><span class="c-mult">2 × 3 × 3 × 5</span><span class="seta">=</span><span class="c-pot">2 × 3² × 5</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> 84 = 2² × <b>___</b> × 7</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Falta o <b>3</b><br>
+            <span class="c-num">84</span><span class="seta">=</span><span class="c-mult">2 × 2 × 3 × 7</span><span class="seta">=</span><span class="c-pot">2² × 3 × 7</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">c)</span> 150 = 2 × 3 × <b>___</b>²</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Falta o <b>5</b><br>
+            <span class="c-num">150</span><span class="seta">=</span><span class="c-mult">2 × 3 × 5 × 5</span><span class="seta">=</span><span class="c-pot">2 × 3 × 5²</span>
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">6</div><div class="ex-titulo">Quem acertou?</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Marcos disse que <code>48 = 2⁴ × 3</code> e Júlia disse que <code>48 = 6 × 8</code>.
+        Quem escreveu a decomposição <b style="color:#fff">em fatores primos</b> corretamente?
+      </div>
+      <button class="btn-resp" onclick="rev(this)">🔍 Ver resposta</button>
+      <div class="resposta">
+        <b>Marcos.</b> Embora <code>6 × 8 = 48</code> esteja certo como multiplicação, o 6 e o 8
+        <b>não são primos</b> — ainda dá para decompor mais. Já <code>2⁴ × 3</code> usa só primos,
+        então é a decomposição em fatores primos.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 DIVISÓRIA PARTE 2 -->
+<section class="slide">
+  <div class="parte-num">02</div>
+  <h1 style="font-size:clamp(2rem,5.5vw,4.2rem)">Para que serve<br>na prática?</h1>
+  <p class="lede">A fatoração é uma ferramenta, não um fim.</p>
+</section>
+
+<!-- 11 SERVE PARA -->
+<section class="slide">
+  <h2>A fatoração serve para…</h2>
+  <div class="serve">
+    <div>Descobrir <b>todos os divisores</b> de um número rapidamente</div>
+    <div>Calcular <b>MMC e MDC</b> sem precisar listar múltiplos</div>
+    <div><b>Simplificar frações</b> de forma segura</div>
+    <div>Organizar quantidades em <b>grupos e embalagens</b></div>
+  </div>
+</section>
+
+<!-- 12 EX 7 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">7</div><div class="ex-titulo">Todos os divisores de 18</div>
+        <span class="tag b">Básico</span>
+      </div>
+      <div class="ex-corpo">
+        Sabendo que <code>18 = 2 × 3²</code>, liste todos os divisores de 18.<br>
+        <span style="color:#94a3b8">Dica: combine os fatores de todas as formas possíveis.</span>
+      </div>
+      <button class="btn-resp" onclick="rev(this)">🔍 Ver resposta</button>
+      <div class="resposta">
+        Combinando os fatores: <code>1, 2, 3, 6, 9, 18</code> → <b>6 divisores</b>.<br><br>
+        <span style="color:#a7f3d0">Truque:</span> em <code>2¹ × 3²</code>, some 1 a cada expoente e
+        multiplique: <code>(1+1) × (2+1) = 6</code> divisores.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 EX 8 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">8</div><div class="ex-titulo">MDC pela fatoração</div>
+        <span class="tag m">Médio</span>
+      </div>
+      <div class="ex-corpo">
+        Usando a fatoração, calcule o <b style="color:#fff">MDC entre 24 e 36</b>.<br>
+        <span style="color:#94a3b8">Multiplique os fatores <b style="color:#fcd34d">comuns</b> com o <b style="color:#fcd34d">menor</b> expoente.</span>
+      </div>
+      <button class="btn-resp" onclick="rev(this)">🔍 Ver resposta</button>
+      <div class="resposta">
+        <span class="c-num">24</span><span class="seta">=</span><span class="c-mult">2 × 2 × 2 × 3</span><span class="seta">=</span><span class="c-pot">2³ × 3</span><br><br>
+        <span class="c-num">36</span><span class="seta">=</span><span class="c-mult">2 × 2 × 3 × 3</span><span class="seta">=</span><span class="c-pot">2² × 3²</span><br><br>
+        Fatores comuns com o <b>menor</b> expoente: <span class="c-pot">2² × 3</span><br><br>
+        <b>MDC = 4 × 3 = 12</b>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 EX 9 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">9</div><div class="ex-titulo">MMC pela fatoração</div>
+        <span class="tag m">Médio</span>
+      </div>
+      <div class="ex-corpo">
+        Usando a fatoração, calcule o <b style="color:#fff">MMC entre 12 e 20</b>.<br>
+        <span style="color:#94a3b8">Multiplique <b style="color:#fcd34d">todos</b> os fatores com o <b style="color:#fcd34d">maior</b> expoente.</span>
+      </div>
+      <button class="btn-resp" onclick="rev(this)">🔍 Ver resposta</button>
+      <div class="resposta">
+        <span class="c-num">12</span><span class="seta">=</span><span class="c-mult">2 × 2 × 3</span><span class="seta">=</span><span class="c-pot">2² × 3</span><br><br>
+        <span class="c-num">20</span><span class="seta">=</span><span class="c-mult">2 × 2 × 5</span><span class="seta">=</span><span class="c-pot">2² × 5</span><br><br>
+        Todos os fatores com o <b>maior</b> expoente: <span class="c-pot">2² × 3 × 5</span><br><br>
+        <b>MMC = 4 × 3 × 5 = 60</b>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 DIVISÓRIA PARTE 3 -->
+<section class="slide">
+  <div class="parte-num">03</div>
+  <h1 style="font-size:clamp(2rem,5.5vw,4.2rem)">Situações-<br>problema</h1>
+  <p class="lede">Fatoração em ação: embalagens, kits e horários.</p>
+</section>
+
+<!-- 16 EX 10 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">10</div><div class="ex-titulo">🧁 A confeitaria</div>
+        <span class="tag m">Médio</span>
+      </div>
+      <div class="ex-corpo">
+        Uma confeitaria produziu <b style="color:#fff">120 brigadeiros</b> e quer montar caixas com a
+        mesma quantidade em cada uma, <b style="color:#fff">sem sobrar nenhum doce</b>.
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> Decomponha 120 em fatores primos.</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">120</span><span class="seta">=</span><span class="c-mult">2 × 2 × 2 × 3 × 5</span><span class="seta">=</span><span class="c-pot">2³ × 3 × 5</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> Cite pelo menos 5 formas de montar as caixas.</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Divisores de 120: <code>1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 30, 40, 60, 120</code><br>
+            Exemplos (por caixa × nº de caixas):
+            <code>5 × 24</code>, <code>6 × 20</code>, <code>8 × 15</code>,
+            <code>10 × 12</code>, <code>12 × 10</code>, <code>15 × 8</code>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">c)</span> Se cada caixa deve ter entre 8 e 15 brigadeiros, quais opções servem?</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Servem <b>8, 10, 12 ou 15</b> brigadeiros por caixa →
+            resultando em <code>15, 12, 10 e 8 caixas</code>, respectivamente.
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+  </div>
+</section>
+
+<!-- 17 EX 11 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">11</div><div class="ex-titulo">✏️ Kits de material</div>
+        <span class="tag m">Médio</span>
+      </div>
+      <div class="ex-corpo">
+        Uma escola vai montar kits com <b style="color:#fff">84 lápis</b> e <b style="color:#fff">126 canetas</b>.
+        Todos os kits devem ser iguais, usando todo o material, sem sobras.
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> Fatore 84 e 126 em números primos.</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">84</span><span class="seta">=</span><span class="c-mult">2 × 2 × 3 × 7</span><span class="seta">=</span><span class="c-pot">2² × 3 × 7</span><br><br>
+            <span class="c-num">126</span><span class="seta">=</span><span class="c-mult">2 × 3 × 3 × 7</span><span class="seta">=</span><span class="c-pot">2 × 3² × 7</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> Qual é o maior número de kits possível? (Use o MDC.)</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Fatores comuns com o menor expoente: <code>2 × 3 × 7</code><br>
+            <b>MDC = 42</b> → dá para montar <b>42 kits</b>.
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">c)</span> Quantos lápis e canetas vão em cada kit?</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <code>84 ÷ 42 = 2 lápis</code> e <code>126 ÷ 42 = 3 canetas</code> em cada kit.
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+  </div>
+</section>
+
+<!-- 18 EX 12 -->
+<section class="slide">
+  <div class="ex-wrap">
+    <div class="glass ex">
+      <div class="ex-head">
+        <div class="ex-num">12</div><div class="ex-titulo">🚌 Os dois ônibus</div>
+        <span class="tag m">Médio</span>
+      </div>
+      <div class="ex-corpo">
+        A linha A parte a cada <b style="color:#fff">18 minutos</b> e a linha B a cada
+        <b style="color:#fff">24 minutos</b>. Hoje, às <b style="color:#fff">7h</b>, os dois saíram juntos.
+        <div class="item">
+          <div class="pergunta"><span class="letra">a)</span> Fatore 18 e 24 em números primos.</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            <span class="c-num">18</span><span class="seta">=</span><span class="c-mult">2 × 3 × 3</span><span class="seta">=</span><span class="c-pot">2 × 3²</span><br><br>
+            <span class="c-num">24</span><span class="seta">=</span><span class="c-mult">2 × 2 × 2 × 3</span><span class="seta">=</span><span class="c-pot">2³ × 3</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">b)</span> Depois de quantos minutos voltarão a sair juntos? (Use o MMC.)</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            Todos os fatores com o maior expoente: <code>2³ × 3² = 8 × 9</code><br>
+            <b>MMC = 72 minutos</b>
+          </div>
+        </div>
+        <div class="item">
+          <div class="pergunta"><span class="letra">c)</span> Que horas serão nesse momento?</div>
+          <button class="mini" onclick="ri(this)">Resposta</button>
+          <div class="r-item">
+            72 min = <code>1 hora e 12 minutos</code>. Saindo às 7h → <b>8h12min</b>.
+          </div>
+        </div>
+      </div>
+      <button class="todos" onclick="todas(this)">Mostrar todas</button>
+    </div>
+  </div>
+</section>
+
+<!-- 19 CURIOSIDADES -->
+<section class="slide">
+  <h2>Você sabia?</h2>
+  <div class="curios">
+    <div class="glass curio a">
+      <span class="ico">🔐</span>
+      <h3>Os primos protegem seu dinheiro</h3>
+      Quando você compra algo pela internet, seus dados são embaralhados usando números primos
+      gigantescos — com centenas de dígitos. Multiplicar dois primos é fácil para um computador,
+      mas descobrir <b style="color:#fff">quais</b> primos foram multiplicados levaria milhares de anos.
+      É essa dificuldade que mantém suas compras seguras.
+    </div>
+    <div class="glass curio b">
+      <span class="ico">🦗</span>
+      <h3>As cigarras que sabem matemática</h3>
+      Existem cigarras nos EUA que saem do solo a cada <b style="color:#fff">13 ou 17 anos</b> — os dois
+      são primos! Como esses números têm poucos divisores, fica muito difícil para os predadores
+      sincronizarem seus ciclos com o das cigarras. A natureza descobriu os primos antes de nós.
+    </div>
+  </div>
+</section>
+
+<!-- 20 FIM -->
+<section class="slide">
+  <div style="font-size:clamp(3rem,8vw,6rem);margin-bottom:2vh">🧱</div>
+  <h1 style="font-size:clamp(2.2rem,6vw,4.5rem)">Ótimo trabalho!</h1>
+  <p class="lede">Os números primos são as <b style="color:#fbbf24">"peças de LEGO"</b> da matemática —
+  com eles, todo número pode ser construído.</p>
+  <div class="meta"><span class="pill">EMEF Ceará · 6º ano · 2026</span></div>
+</section>
+
+<div class="progress" id="progress"></div>
+<div class="brand">Aula 05 · Fatores Primos</div>
+<div class="dica">setas do teclado · toque · swipe</div>
+<div class="counter" id="counter">01 / 20</div>
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Anterior">←</button>
+  <button onclick="go(1)" aria-label="Próximo">→</button>
+</div>
+
+<script>
+  const slides=document.querySelectorAll('.slide');
+  let i=0;
+  function show(n){
+    slides[i].classList.remove('active');
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides[i].classList.add('active');
+    slides[i].scrollTop=0;
+    document.getElementById('counter').textContent=
+      String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    document.getElementById('progress').style.width=((i+1)/slides.length*100)+'%';
+  }
+  function go(d){show(i+d)}
+  function rev(btn){
+    const r=btn.nextElementSibling;
+    const aberto=r.classList.toggle('show');
+    btn.classList.toggle('on',aberto);
+    btn.textContent=aberto?'✓ Ocultar resposta':'🔍 Ver resposta';
+  }
+  // botão de um item individual
+  function ri(btn){
+    const r=btn.nextElementSibling;
+    const aberto=r.classList.toggle('show');
+    btn.classList.toggle('on',aberto);
+    btn.textContent=aberto?'✓ Ocultar':'Resposta';
+  }
+  // mostrar / ocultar todas as respostas do exercício
+  function todas(btn){
+    const ex=btn.closest('.ex');
+    const minis=ex.querySelectorAll('.mini');
+    const abrir=[...ex.querySelectorAll('.r-item')].some(r=>!r.classList.contains('show'));
+    minis.forEach(m=>{
+      const r=m.nextElementSibling;
+      r.classList.toggle('show',abrir);
+      m.classList.toggle('on',abrir);
+      m.textContent=abrir?'✓ Ocultar':'Resposta';
+    });
+    btn.textContent=abrir?'Ocultar todas':'Mostrar todas';
+  }
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown'].includes(e.key))go(1);
+    if(['ArrowLeft','PageUp'].includes(e.key))go(-1);
+  });
+  let x0=null;
+  document.addEventListener('touchstart',e=>{if(e.target.closest('.btn-resp,.mini,.todos,.nav'))return;x0=e.touches[0].clientX});
+  document.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>60)go(dx<0?1:-1);
+    x0=null;
+  });
+  // destaca automaticamente todos os expoentes (²³⁴⁵…) em cor diferente
+  (function(){
+    const re=/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/;
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+      acceptNode:n=>re.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT
+    });
+    const alvos=[];
+    while(walker.nextNode())alvos.push(walker.currentNode);
+    alvos.forEach(n=>{
+      const span=document.createElement('span');
+      span.innerHTML=n.nodeValue.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,m=>'<span class="exp">'+m+'</span>');
+      n.parentNode.replaceChild(span,n);
+    });
+  })();
+
+  show(0);
+</script>
+</body>
+</html>

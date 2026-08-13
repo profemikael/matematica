@@ -81,6 +81,17 @@
   .result .score{font-size:44px;font-weight:800;color:var(--navy);}
   .foot{text-align:center;color:var(--mute);font-size:13px;margin-top:26px;}
   .kbd{background:#eef;border:1px solid #ccd;border-radius:5px;padding:1px 6px;font-weight:700;color:var(--navy);}
+  .qa{border-top:1px solid var(--line);padding:12px 0;}
+  .qa:first-of-type{border-top:none;}
+  .qa-q{font-weight:700;color:var(--navy);margin:0 0 6px;}
+  .qa-a{margin:0 0 4px;background:var(--green);border-left:5px solid var(--greenb);padding:6px 10px;border-radius:8px;}
+  .qa-e{margin:0;color:var(--mute);font-size:14px;}
+  @media print{
+    body{background:#fff;}
+    header.top,.progress,.steplabel,#theory,.qhead,.qcounter,#qnav,.foot{display:none !important;}
+    .card{box-shadow:none;border:none;}
+    .qa{page-break-inside:avoid;}
+  }
 </style>
 </head>
 <body>
@@ -157,7 +168,7 @@
   <section id="quiz" class="hidden">
     <div class="qhead">
       <h2>Exercícios — escolha a resposta certa</h2>
-      <p>Cada pergunta tem 5 alternativas e só uma correta. Clique numa opção para verificar e ver a explicação.</p>
+      <p>Cada pergunta tem 5 alternativas e só uma correta. <b>Copie a pergunta no caderno e escreva a sua resposta</b> antes de clicar para verificar.</p>
     </div>
     <div class="qcounter" id="qcounter"></div>
     <div id="qbox"></div>
@@ -266,7 +277,8 @@ function renderQuestion(i){
   idx = i;
   var Q = questions[i];
   qcounter.textContent = 'Pergunta ' + (i+1) + ' de ' + questions.length + '  ·  Acertos: ' + score;
-  var html = '<div class="card"><div class="qtext">'+ (i+1) +'. '+ Q.q +'</div>';
+  var html = '<div class="card"><span class="copy">✍️ Copie a pergunta e escreva a resposta no caderno</span>'+
+             '<div class="qtext">'+ (i+1) +'. '+ Q.q +'</div>';
   Q.opts.forEach(function(o,j){
     html += '<button class="opt" data-j="'+j+'"><span class="lt">'+letters[j]+'</span>'+o+'</button>';
   });
@@ -309,8 +321,32 @@ function showResult(){
   qcounter.textContent = '';
   qbox.innerHTML = '<div class="card result"><div class="score">'+score+' / '+questions.length+'</div>'+
     '<p style="font-size:18px;margin:8px 0 2px;">'+pct+'% de acerto</p><p>'+msg+'</p></div>';
-  qnav.innerHTML = '<button class="btn ghost" id="again">↺ Refazer os exercícios</button>';
+  qnav.innerHTML = '<button class="btn" id="copylist">📝 Perguntas e respostas para copiar</button>'+
+    '<div style="height:10px"></div>'+
+    '<button class="btn ghost" id="again">↺ Refazer os exercícios</button>';
+  document.getElementById('copylist').addEventListener('click', renderCopyList);
   document.getElementById('again').addEventListener('click', function(){ score=0; renderQuestion(0); window.scrollTo({top: document.getElementById('quiz').offsetTop-10, behavior:'smooth'}); });
+}
+
+function renderCopyList(){
+  qcounter.textContent = '';
+  var html = '<div class="card copysheet"><h2 style="margin-top:0"><span class="num">✎</span> Para copiar no caderno</h2>'+
+    '<p style="color:#5B6472;margin-top:0">Copie cada pergunta com a sua resposta correta.</p>';
+  questions.forEach(function(Q,i){
+    html += '<div class="qa">'+
+      '<p class="qa-q">'+(i+1)+'. '+Q.q+'</p>'+
+      '<p class="qa-a"><b>Resposta:</b> ('+letters[Q.correct]+') '+Q.opts[Q.correct]+'</p>'+
+      '<p class="qa-e"><b>Porquê:</b> '+Q.exp+'</p>'+
+    '</div>';
+  });
+  html += '</div>';
+  qbox.innerHTML = html;
+  qnav.innerHTML = '<button class="btn" id="print">🖨️ Imprimir / salvar</button>'+
+    '<div style="height:10px"></div>'+
+    '<button class="btn ghost" id="back">◂ Voltar ao resultado</button>';
+  document.getElementById('print').addEventListener('click', function(){ window.print(); });
+  document.getElementById('back').addEventListener('click', showResult);
+  window.scrollTo({top: document.getElementById('quiz').offsetTop-10, behavior:'smooth'});
 }
 </script>
 </body>

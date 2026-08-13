@@ -799,6 +799,7 @@
       <div class="eja-sub-tabs">
         <button class="eja-disc-btn active" onclick="switchEjaDisc('mat',this)">📐 Matemática</button>
         <button class="eja-disc-btn" onclick="switchEjaDisc('fis',this)">⚗️ Física</button>
+        <button class="eja-disc-btn" onclick="switchEjaDisc('exc',this)">✏️ Exercícios</button>
       </div>
       <div class="eja-turma-tabs">
         <button class="eja-turma-btn active" onclick="switchEjaTurma('t7',this)">T7</button>
@@ -811,6 +812,9 @@
       <div class="materials-grid eja-grid" id="grid-eja-fis-t7"></div>
       <div class="materials-grid eja-grid" id="grid-eja-fis-t8"></div>
       <div class="materials-grid eja-grid" id="grid-eja-fis-t9"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-exc-t7"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-exc-t8"></div>
+      <div class="materials-grid eja-grid" id="grid-eja-exc-t9"></div>
     </div>
 
     <!-- ── TEMPORÁRIOS ── -->
@@ -1164,7 +1168,19 @@
       link: "materiais/eja/fisica/apostila01_temperatura_calor_t8.pdf", data: "04/08/2026" },
     { id: 45, grade: "eja-fis-t9", trimestre: 3, tipo: "pdf",
       titulo: "Apostila 01 – Eletricidade, Carga, Corrente e Tensão",
-      link: "materiais/eja/fisica/apostila01_eletricidade_t9.pdf", data: "04/08/2026" }
+      link: "materiais/eja/fisica/apostila01_eletricidade_t9.pdf", data: "04/08/2026" },
+    { id: 59, grade: "eja-exc-t7", trimestre: 3, tipo: "html",
+      titulo: "Física – Apostila 01 – Exercícios Interativos",
+      descricao: "Grandezas, Unidades e Notação Científica. Exercícios com correção automática.",
+      link: "materiais/eja/exercicios/t7_fisica_apostila01_exercicios.html", data: "13/08/2026" },
+    { id: 60, grade: "eja-exc-t8", trimestre: 3, tipo: "html",
+      titulo: "Física – Apostila 01 – Exercícios Interativos",
+      descricao: "Temperatura, Calor e suas Escalas. Exercícios com correção automática.",
+      link: "materiais/eja/exercicios/t8_fisica_apostila01_exercicios.html", data: "13/08/2026" },
+    { id: 61, grade: "eja-exc-t9", trimestre: 3, tipo: "html",
+      titulo: "Física – Apostila 01 – Exercícios Interativos",
+      descricao: "Eletricidade, Carga, Corrente e Tensão. Exercícios com correção automática.",
+      link: "materiais/eja/exercicios/t9_fisica_apostila01_exercicios.html", data: "13/08/2026" }
   ];
 
   const VIDEOS = [
@@ -1257,6 +1273,7 @@
     ['6ano','7ano','8ano','9ano',
      'eja-mat-t7','eja-mat-t8','eja-mat-t9',
      'eja-fis-t7','eja-fis-t8','eja-fis-t9',
+     'eja-exc-t7','eja-exc-t8','eja-exc-t9',
      'temporarios'].forEach(grade => {
       const grid = document.getElementById('grid-' + grade);
       if (!grid) return;

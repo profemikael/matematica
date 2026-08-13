@@ -337,6 +337,7 @@
     .material-icon.doc   { background: #e3f2fd; color: #1565c0; }
     .material-icon.img   { background: #e8f5e9; color: #2e7d32; }
     .material-icon.link  { background: #fff3e0; color: #e65100; }
+    .material-icon.html  { background: #f3e8ff; color: #7c3aed; }
     .material-meta h4 { font-size: .9rem; font-weight: 600; line-height: 1.3; }
     .material-meta span { font-size: .75rem; color: var(--text-muted); }
     .material-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.5; }
@@ -1066,6 +1067,10 @@
       descricao: "Padrões na natureza, na arte e na literatura. Termos, lei de recorrência, sequência de Fibonacci e 10 exercícios.",
       link: "materiais/7ano/aula04_sequencias_recursivas_nao_recursivas.pdf", data: "13/07/2026"
     },
+    { id: 56, grade: "7ano", trimestre: 2, tipo: "html",
+      titulo: "Aula 07-08 – Equivalência de Expressões Algébricas (Interativa)",
+      descricao: "Teoria em 4 partes + 8 exercícios com correção automática. Propriedade distributiva e formas fatorada/expandida.",
+      link: "materiais/7ano/aula07-08_equivalencia_interativa.html", data: "13/08/2026" },
     { id: 46, grade: "7ano", trimestre: 2, tipo: "pdf",
       titulo: "Aula 05 – Regularidades",
       link: "materiais/7ano/aula05_regularidades.pdf", data: "04/08/2026" },
@@ -1276,9 +1281,9 @@
             </span></div>`;
         }
         byTri[tri].forEach(m => {
-          const iconMap = {pdf:'fa-file-pdf pdf',doc:'fa-file-word doc',img:'fa-image img',link:'fa-link link'};
+          const iconMap = {pdf:'fa-file-pdf pdf',doc:'fa-file-word doc',img:'fa-image img',link:'fa-link link',html:'fa-display html'};
           const [icon, cls] = (iconMap[m.tipo]||'fa-file link').split(' ');
-          const tipoLabel = {pdf:'PDF',doc:'Word',img:'Imagem',link:'Link'}[m.tipo]||'Arquivo';
+          const tipoLabel = {pdf:'PDF',doc:'Word',img:'Imagem',link:'Link',html:'Interativo'}[m.tipo]||'Arquivo';
           const metaLine = isTemp ? `${tipoLabel} · Avulso`
                          : isEja  ? `${tipoLabel} · EJA`
                          : `${tipoLabel} · ${tri}º Trim · ${gradeLabel(grade)}`;

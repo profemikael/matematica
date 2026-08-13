@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula Interativa — A Reta no Plano Cartesiano · 8º Ano</title>
+<style>
+  * { box-sizing: border-box; }
+  html { background: #EEF2F6; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         color: #22303C; margin: 0; line-height: 1.55; }
+  .wrap { max-width: 900px; margin: 0 auto; background: #fff; min-height: 100vh;
+          box-shadow: 0 0 26px rgba(20,57,92,.10); }
+
+  .topbar { position: sticky; top: 0; z-index: 50; background: #14395C; color: #fff;
+            padding: 12px 22px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+  .topbar .ttl { font-size: 15px; font-weight: 700; }
+  .topbar .ttl small { display: block; font-size: 11px; font-weight: 400; color: #B9CBDD;
+                       letter-spacing: 1.4px; margin-top: 1px; }
+  .placar { background: #1E5386; border: 1px solid #2E6BA3; border-radius: 999px;
+            padding: 7px 16px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .placar b { color: #7FE0A6; font-size: 16px; }
+
+  .content { padding: 26px 30px 60px 30px; }
+  h1 { font-size: 26px; color: #14395C; margin: 4px 0 2px; }
+  .lead { color: #4A6076; font-size: 15px; margin: 0 0 6px; }
+
+  .card { border: 1px solid #D9E3EC; border-radius: 12px; margin: 24px 0; overflow: hidden; }
+  .card > .head { background: #F4F8FC; border-bottom: 1px solid #E1EAF2; padding: 13px 18px;
+                  display: flex; align-items: center; gap: 12px; }
+  .card > .head .n { background: #2E75B6; color: #fff; width: 30px; height: 30px; border-radius: 8px;
+                     display: grid; place-items: center; font-weight: 700; font-size: 15px; flex: none; }
+  .card.locked > .head .n { background: #9DB0C2; }
+  .card.done > .head .n { background: #1E8449; }
+  .card > .head .t { font-weight: 700; color: #14395C; font-size: 17px; flex: 1; }
+  .card > .head .tag { font-size: 11px; letter-spacing: 1px; font-weight: 700; padding: 4px 9px;
+                       border-radius: 6px; background: #E6F4EA; color: #1E8449; border: 1px solid #BFE3CC; }
+  .card > .head .tag.m { background: #FEF3E2; color: #B9651A; border-color: #F0D6B0; }
+  .body { padding: 18px; }
+  .lockbar { padding: 20px 18px; background: #F7F9FB; color: #7C8896; font-weight: 600;
+             font-size: 15px; text-align: center; }
+
+  .plane { width: 100%; max-width: 380px; height: auto; display: block; margin: 0 auto;
+           touch-action: manipulation; }
+  .planebox { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
+  .planebox .col { flex: 1; min-width: 250px; }
+
+  .prompt { font-size: 16px; margin: 4px 0 10px; }
+  .eqchip { background: #EDF3F9; border-radius: 6px; padding: 2px 8px; font-weight: 700; color: #14395C; }
+  .big { font-size: 21px; font-weight: 700; color: #14395C; }
+
+  .fb { min-height: 22px; font-weight: 700; font-size: 15px; margin-top: 8px; }
+  .fb.ok { color: #1E8449; } .fb.no { color: #C0392B; } .fb.info { color: #2E75B6; }
+
+  .btn { background: #2E75B6; color: #fff; border: none; border-radius: 9px; padding: 10px 18px;
+         font-size: 15px; font-weight: 700; cursor: pointer; transition: background .15s; }
+  .btn:hover { background: #245e94; }
+  .btn.ghost { background: #EDF3F9; color: #14395C; }
+  .btn.ghost:hover { background: #dde8f3; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+
+  .progress-dots { display: flex; gap: 7px; margin: 6px 0 12px; }
+  .progress-dots span { width: 12px; height: 12px; border-radius: 50%; background: #D9E3EC; }
+  .progress-dots span.done { background: #1E8449; }
+  .progress-dots span.cur { background: #2E75B6; box-shadow: 0 0 0 3px #cfe3f5; }
+  .progress-dots span.miss { background: #E8A33D; }
+
+  table.coord { border-collapse: collapse; width: 100%; font-size: 15px; }
+  table.coord th { background: #14395C; color: #fff; padding: 8px 10px; text-align: left; }
+  table.coord td { border-bottom: 1px solid #E1EAF2; padding: 8px 10px; }
+  .ptlabel { font-weight: 700; color: #14395C; }
+  input.coord-in { width: 62px; padding: 7px 8px; border: 1.5px solid #B7C4D1; border-radius: 7px;
+                   font-size: 15px; text-align: center; }
+  input.coord-in.ok { border-color: #1E8449; background: #EAF7EF; }
+  input.coord-in.no { border-color: #C0392B; background: #FBECEC; }
+  .paren { font-size: 16px; color: #4A6076; }
+
+  .qrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 9px 0;
+          border-bottom: 1px solid #EEF2F6; }
+  .qrow:last-child { border-bottom: none; }
+  .qrow .plabel { font-weight: 700; color: #14395C; min-width: 104px; }
+  .qbtn { border: 1.5px solid #C6D3DF; background: #fff; border-radius: 8px; padding: 7px 12px;
+          font-weight: 700; font-size: 14px; cursor: pointer; color: #22303C; }
+  .qbtn:hover { border-color: #2E75B6; background: #F4F8FC; }
+  .qbtn.ok { border-color: #1E8449; background: #EAF7EF; color: #1E6b3a; }
+  .qbtn.no { border-color: #C0392B; background: #FBECEC; color: #a5352b; }
+  .qbtn:disabled { cursor: default; }
+  .qfb { font-size: 13px; font-weight: 700; margin-left: 2px; }
+
+  .eqfill { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 22px;
+            font-weight: 700; color: #14395C; margin: 12px 0; }
+  .eqfill input { width: 58px; padding: 8px; border: 1.5px solid #B7C4D1; border-radius: 8px;
+                  font-size: 19px; text-align: center; font-weight: 700; }
+  .eqfill input.ok { border-color: #1E8449; background: #EAF7EF; }
+  .eqfill input.no { border-color: #C0392B; background: #FBECEC; }
+  .hint { font-size: 13.5px; color: #6E7B8B; }
+  .dica { background: #FFF8EC; border: 1px solid #E8CFA0; border-radius: 9px; padding: 12px 14px;
+          margin-top: 10px; font-size: 14px; display: none; }
+  .dica.show { display: block; }
+  .dica b { color: #B9651A; }
+
+  .opt { display: block; width: 100%; text-align: left; background: #fff; border: 1.5px solid #C6D3DF;
+         border-radius: 9px; padding: 12px 14px; font-size: 16px; margin: 8px 0; cursor: pointer;
+         transition: .12s; font-weight: 600; color: #22303C; }
+  .opt:hover { border-color: #2E75B6; background: #F4F8FC; }
+  .opt.ok { border-color: #1E8449; background: #EAF7EF; color: #1E6b3a; }
+  .opt.no { border-color: #C0392B; background: #FBECEC; color: #a5352b; }
+  .opt:disabled { cursor: default; }
+
+  .chk { display: flex; align-items: center; gap: 10px; border: 1.5px solid #C6D3DF; border-radius: 9px;
+         padding: 10px 14px; margin: 7px 0; cursor: pointer; font-size: 16px; font-weight: 600;
+         user-select: none; transition: .12s; }
+  .chk:hover { border-color: #2E75B6; background: #F4F8FC; }
+  .chk .box { width: 22px; height: 22px; border: 2px solid #9DB0C2; border-radius: 6px; flex: none;
+              display: grid; place-items: center; font-size: 15px; color: #fff; }
+  .chk.sel { border-color: #2E75B6; background: #EEF5FB; }
+  .chk.sel .box { background: #2E75B6; border-color: #2E75B6; }
+  .chk.ok { border-color: #1E8449; background: #EAF7EF; }
+  .chk.ok .box { background: #1E8449; border-color: #1E8449; }
+  .chk.no { border-color: #C0392B; background: #FBECEC; }
+  .chk.no .box { background: #C0392B; border-color: #C0392B; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+
+  .tf { display: flex; gap: 8px; }
+  .qtf { border-bottom: 1px solid #EEF2F6; padding: 12px 0; }
+  .qtf:last-child { border-bottom: none; }
+  .qtf .q { font-size: 15.5px; margin-bottom: 8px; }
+
+  .reveal { background: #F4F8FC; border: 1px solid #D9E3EC; border-radius: 9px; padding: 14px 16px;
+            margin-top: 10px; display: none; font-size: 15px; }
+  .reveal.show { display: block; }
+
+  .copybar { background: #FFF3D6; border: 1px solid #E8C983; border-radius: 9px; padding: 11px 14px;
+             font-size: 14.5px; color: #8A6212; font-weight: 600; margin-bottom: 12px; }
+  .revlock { background: #F7F9FB; border: 1px dashed #C6D3DF; border-radius: 12px; padding: 22px 18px;
+             text-align: center; color: #7C8896; font-weight: 600; font-size: 15px; margin: 8px 0; }
+
+  .revsplit { display: flex; align-items: center; gap: 14px; margin: 40px 0 4px; }
+  .revsplit .bar { flex: 1; height: 2px; background: #D9E3EC; }
+  .revhead { text-align: center; margin: 6px 0 4px; }
+  .revhead h2 { color: #14395C; margin: 0; font-size: 24px; }
+  .revhead p { color: #4A6076; font-size: 14.5px; margin: 6px 0 0; }
+  .revscore { display: inline-block; background: #EDF3F9; border: 1px solid #C9DAEA; border-radius: 999px;
+              padding: 5px 14px; font-weight: 700; color: #14395C; margin-top: 8px; }
+  .revscore b { color: #1E8449; }
+
+  .mcq { padding: 14px 0; border-bottom: 1px solid #EEF2F6; }
+  .mcq:last-child { border-bottom: none; }
+  .mq { font-size: 16px; font-weight: 600; color: #14395C; margin-bottom: 10px; }
+  .explain { background: #FEF7EE; border-left: 3px solid #E8A33D; border-radius: 0 8px 8px 0;
+             padding: 11px 14px; margin-top: 8px; font-size: 14.5px; display: none; color: #6b4e22; }
+  .explain.show { display: block; }
+  .explain.okmode { background: #EAF7EF; border-left-color: #1E8449; color: #1E5b34; }
+  sup { font-size: .72em; }
+
+  .final { text-align: center; border: 2px solid #14395C; border-radius: 14px; padding: 26px;
+           background: #F7FAFD; margin-top: 30px; }
+  .final h2 { color: #14395C; margin: 0 0 6px; }
+  .scorebig { font-size: 46px; font-weight: 800; color: #2E75B6; margin: 8px 0; }
+  .msg { font-size: 17px; font-weight: 700; margin: 6px 0 14px; min-height: 24px; }
+
+  svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+  .num { font-size: 12px; fill: #55636F; }
+  .axl { font-size: 13px; fill: #14395C; font-weight: bold; }
+  .ptxt { font-size: 13px; fill: #14395C; font-weight: bold; }
+  @media (max-width: 620px){ .content{padding:20px 16px 50px;} .grid2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="ttl">A Reta no Plano Cartesiano
+      <small>MATEMÁTICA · 8º ANO · ATIVIDADE INTERATIVA</small></div>
+    <div class="placar">Acertos: <b><span id="score">0</span></b> / <span id="total">21</span></div>
+  </div>
+
+  <div class="content">
+    <h1>Missão: dominar o plano cartesiano</h1>
+    <p class="lead">Resolva etapa por etapa. Você só desbloqueia a próxima quando acerta a atual. O placar conta os acertos de <b>primeira tentativa</b> — capriche!</p>
+
+    <!-- FASE 1 -->
+    <div class="card done" id="card1">
+      <div class="head"><span class="n">1</span><span class="t">Clique no ponto certo</span><span class="tag">FASE 1</span></div>
+      <div class="body">
+        <div class="planebox">
+          <div class="col" style="flex:none"><div id="a1plane"></div></div>
+          <div class="col">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a1target">(2, 3)</p>
+            <div class="progress-dots" id="a1dots"></div>
+            <div class="fb" id="a1fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 2 -->
+    <div class="card locked" id="card2">
+      <div class="head"><span class="n">2</span><span class="t">Escreva as coordenadas dos pontos</span><span class="tag">FASE 2</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 1 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="col" style="flex:none"><div id="a2plane"></div></div>
+          <div class="col">
+            <p class="prompt">Escreva as coordenadas (x, y) de cada ponto marcado:</p>
+            <table class="coord">
+              <tr><th>Ponto</th><th>Coordenadas</th></tr>
+              <tr><td class="ptlabel">A</td><td><span class="paren">(</span> <input class="coord-in" data-p="A" data-i="x"> <span class="paren">,</span> <input class="coord-in" data-p="A" data-i="y"> <span class="paren">)</span></td></tr>
+              <tr><td class="ptlabel">B</td><td><span class="paren">(</span> <input class="coord-in" data-p="B" data-i="x"> <span class="paren">,</span> <input class="coord-in" data-p="B" data-i="y"> <span class="paren">)</span></td></tr>
+              <tr><td class="ptlabel">C</td><td><span class="paren">(</span> <input class="coord-in" data-p="C" data-i="x"> <span class="paren">,</span> <input class="coord-in" data-p="C" data-i="y"> <span class="paren">)</span></td></tr>
+              <tr><td class="ptlabel">D</td><td><span class="paren">(</span> <input class="coord-in" data-p="D" data-i="x"> <span class="paren">,</span> <input class="coord-in" data-p="D" data-i="y"> <span class="paren">)</span></td></tr>
+            </table>
+            <div class="row"><button class="btn" id="a2check">Verificar</button></div>
+            <div class="fb" id="a2fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 3 — QUADRANTES -->
+    <div class="card locked" id="card3">
+      <div class="head"><span class="n">3</span><span class="t">Em qual quadrante está cada ponto?</span><span class="tag">FASE 3</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 2 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="col" style="flex:none"><div id="a3plane"></div></div>
+          <div class="col">
+            <p class="prompt">São os mesmos pontos da fase anterior. Clique no quadrante certo de cada um. Lembre dos sinais: (+,+)=1º · (−,+)=2º · (−,−)=3º · (+,−)=4º.</p>
+            <div id="a3rows"></div>
+            <div class="fb" id="a3fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 4 — QUAL EQUAÇÃO (múltipla escolha) -->
+    <div class="card locked" id="card4">
+      <div class="head"><span class="n">4</span><span class="t">Qual equação representa esta reta?</span><span class="tag m">FASE 4</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 3 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="col" style="flex:none"><div id="a4plane"></div></div>
+          <div class="col">
+            <p class="prompt">A reta vermelha corta os eixos em <b>(0, 6)</b> e <b>(6, 0)</b>. Qual equação ela representa?</p>
+            <div id="a4opts"></div>
+            <div class="fb" id="a4fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 5 — QUAIS PONTOS -->
+    <div class="card locked" id="card5">
+      <div class="head"><span class="n">5</span><span class="t">Quais pontos pertencem à reta?</span><span class="tag m">FASE 5</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 4 para desbloquear</div>
+      <div class="body" hidden>
+        <p class="prompt">Marque <b>todos</b> os pontos que fazem parte da reta <span class="eqchip">x + y = 6</span> (isto é, que são solução da equação):</p>
+        <div class="grid2" id="a5opts"></div>
+        <div class="row"><button class="btn" id="a5check">Verificar</button></div>
+        <div class="fb" id="a5fb"></div>
+      </div>
+    </div>
+
+    <!-- FASE 6 — V/F -->
+    <div class="card locked" id="card6">
+      <div class="head"><span class="n">6</span><span class="t">Verdadeiro ou Falso: é par solução?</span><span class="tag">FASE 6</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 5 para desbloquear</div>
+      <div class="body" hidden id="a6body">
+        <p class="prompt">Substitua os valores e decida se o par torna a equação verdadeira.</p>
+      </div>
+    </div>
+
+    <!-- FASE 7 — COMPLETAR EQUAÇÃO (reta decrescente, fácil) -->
+    <div class="card locked" id="card7">
+      <div class="head"><span class="n">7</span><span class="t">Descubra a equação — reta decrescente</span><span class="tag m">FASE 7</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 6 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="col" style="flex:none"><div id="a7plane"></div></div>
+          <div class="col">
+            <p class="prompt">Esta reta passa por <b>(5, 0)</b> e <b>(0, 5)</b>. Preencha os três espaços da equação:</p>
+            <div class="eqfill">
+              <input id="fa7" inputmode="numeric"><span>x +</span>
+              <input id="fb7" inputmode="numeric"><span>y =</span>
+              <input id="fc7" inputmode="numeric">
+            </div>
+            <p class="hint">Números que multiplicam x e y, e o termo independente (depois do =).</p>
+            <div class="row">
+              <button class="btn" id="a7check">Verificar</button>
+              <button class="btn ghost" id="a7dicabtn">💡 Ver dica</button>
+            </div>
+            <div class="dica" id="a7dica">
+              <b>Método fácil:</b> teste as duas contas mais simples nos <b>dois</b> pontos da reta —
+              primeiro <b>x + y</b>, depois <b>x − y</b>. A que der o <b>mesmo número</b> nos dois pontos é a equação certa,
+              e esse número é o termo independente. Se funcionou a de <b>somar</b>, os dois coeficientes são <b>1</b>.
+            </div>
+            <div class="fb" id="a7fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 8 — COMPLETAR EQUAÇÃO (reta crescente, com negativo) -->
+    <div class="card locked" id="card8">
+      <div class="head"><span class="n">8</span><span class="t">Descubra a equação — reta crescente</span><span class="tag m">FASE 8</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 7 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="col" style="flex:none"><div id="a8plane"></div></div>
+          <div class="col">
+            <p class="prompt">Esta reta passa por <b>(3, 0)</b> e <b>(0, −3)</b>. Preencha os três espaços. Atenção: um dos números é <b>negativo</b>!</p>
+            <div class="eqfill">
+              <input id="fa8" inputmode="numeric"><span>x +</span>
+              <input id="fb8" inputmode="numeric"><span>y =</span>
+              <input id="fc8" inputmode="numeric">
+            </div>
+            <p class="hint">Números que multiplicam x e y, e o termo independente (depois do =).</p>
+            <div class="row">
+              <button class="btn" id="a8check">Verificar</button>
+              <button class="btn ghost" id="a8dicabtn">💡 Ver dica</button>
+            </div>
+            <div class="dica" id="a8dica">
+              <b>Método fácil:</b> teste <b>x + y</b> e depois <b>x − y</b> nos dois pontos.
+              Em (3, 0): x + y = 3 e x − y = 3. Em (0, −3): x + y = −3, mas x − y = 0 − (−3) = <b>3</b>.
+              A conta que deu o <b>mesmo número (3)</b> nos dois foi a de <b>subtrair</b> → a equação é <b>x − y = 3</b>.
+              Como é <b>menos</b> y, o coeficiente do y é <b>−1</b>.
+            </div>
+            <div class="fb" id="a8fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 9 — DESAFIO FINAL -->
+    <div class="card locked" id="card9">
+      <div class="head"><span class="n">★</span><span class="t">Desafio final — ponto de equilíbrio</span><span class="tag m">BÔNUS</span></div>
+      <div class="lockbar">🔒 Conclua a Fase 8 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="copybar">✍️ Esta questão é para <b>copiar no caderno e responder</b> — é individual e vale como o seu registro. Só depois clique em "Revelar resposta" para conferir.</div>
+        <p class="prompt">Uma loja vende camisetas a R$ 12,00 (receita <span class="eqchip">R = 12x</span>) e tem custo <span class="eqchip">C = 3x + 540</span>. Quantas camisetas para o <b>ponto de equilíbrio</b> (receita = custo)? Resolva no caderno e confira.</p>
+        <div class="row"><button class="btn ghost" id="a9btn">Revelar resposta</button></div>
+        <div class="reveal" id="a9reveal">
+          No equilíbrio: <span class="eqchip">12x = 3x + 540</span> → 12x − 3x = 540 → 9x = 540 → x = 540 ÷ 9 = <b>60</b>.
+          A loja precisa vender <b>60 camisetas</b>. Nesse ponto, receita e custo se igualam em R$ 720,00 — a partir de 61, começa o lucro!
+        </div>
+      </div>
+    </div>
+
+    <div class="final">
+      <h2>Desempenho no jogo interativo</h2>
+      <div class="scorebig"><span id="finalscore">0</span> / 21</div>
+      <div class="msg" id="finalmsg">Complete as fases para ver seu resultado.</div>
+    </div>
+
+    <!-- ================= AULA DE REVISÃO ================= -->
+    <div class="revsplit"><div class="bar"></div></div>
+    <div id="revlock" class="revlock">🔒 A <b>Aula de Revisão</b> abre depois que você terminar a primeira parte — clique em "Revelar resposta" no Desafio final (Fase ★).</div>
+    <div id="revisao" hidden>
+    <div class="revhead">
+      <h2>📖 Aula de Revisão</h2>
+      <p>Responda cada questão. Se errar, abre uma explicação — leia com atenção e tente de novo.</p>
+      <div class="revscore">Revisão: <b id="revscore">0</b> / 11 acertos</div>
+    </div>
+
+    <div class="card">
+      <div class="head"><span class="n">B1</span><span class="t">Bloco 1 — Potências, notação científica e raízes</span><span class="tag">REVISÃO</span></div>
+      <div class="body" id="bloco1"></div>
+    </div>
+
+    <div class="card">
+      <div class="head"><span class="n">B2</span><span class="t">Bloco 2 — Receita, custo e ponto de equilíbrio</span><span class="tag">REVISÃO</span></div>
+      <div class="body" id="bloco2">
+        <p class="prompt">Um menino vende água mineral no sinal de trânsito para ajudar em casa. Ele <b>paga R$ 1,00</b> por cada garrafa e <b>vende por R$ 5,00</b>. Além disso, tem um <b>custo fixo de R$ 300,00</b>.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head"><span class="n">B3</span><span class="t">Bloco 3 — Equação linear com duas incógnitas</span><span class="tag">REVISÃO</span></div>
+      <div class="body" id="bloco3">
+        <p class="prompt">Um vendedor ambulante vende potinhos de sorvete a <b>R$ 5,00</b> e picolés a <b>R$ 10,00</b>. Um cliente tem <b>R$ 50,00</b> para gastar. Considere <b>x = sorvetes</b> e <b>y = picolés</b>.</p>
+      </div>
+    </div>
+
+    </div><!-- fim #revisao -->
+
+    <div class="final">
+      <button class="btn" id="resetbtn">Recomeçar tudo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+
+/* ---------- placar ---------- */
+const TOTAL=21; const scored=new Set(); let correct=0;
+function award(id){ if(!scored.has(id)){ scored.add(id); correct++; updateScore(); } }
+function updateScore(){
+  document.getElementById('score').textContent=correct;
+  document.getElementById('finalscore').textContent=correct;
+  const m=document.getElementById('finalmsg'), pct=correct/TOTAL;
+  if(correct===0){ m.textContent="Complete as fases para ver seu resultado."; m.style.color="#4A6076"; }
+  else if(pct>=0.9){ m.textContent="Excelente! Você domina o plano cartesiano! 🎉"; m.style.color="#1E8449"; }
+  else if(pct>=0.6){ m.textContent="Muito bem! Reveja o que errou e tente de novo. 💪"; m.style.color="#2E75B6"; }
+  else { m.textContent="Bom começo — pratique mais um pouco, você consegue! 🌱"; m.style.color="#B9651A"; }
+}
+
+/* ---------- desbloqueio de fases ---------- */
+function completeCard(n){
+  const c=document.getElementById('card'+n); if(c){ c.classList.remove('locked'); c.classList.add('done'); }
+  const nx=document.getElementById('card'+(n+1)); if(!nx) return;
+  nx.classList.remove('locked');
+  const lb=nx.querySelector('.lockbar'); if(lb) lb.style.display='none';
+  const bd=nx.querySelector('.body'); if(bd) bd.hidden=false;
+  nx.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ---------- construtor de plano ---------- */
+function buildPlane(host,o){
+  host.innerHTML="";
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const w=o.w||360,h=o.h||360,pad=o.pad||30;
+  const sx=(w-2*pad)/(xmax-xmin), sy=(h-2*pad)/(ymax-ymin);
+  const X=v=>pad+(v-xmin)*sx, Y=v=>h-pad-(v-ymin)*sy;
+  const invX=px=>xmin+(px-pad)/sx, invY=py=>ymin+(h-pad-py)/sy;
+  const svg=el("svg",{viewBox:`0 0 ${w} ${h}`,class:"plane"},host);
+  for(let v=xmin; v<=xmax; v++) el("line",{x1:X(v),y1:Y(ymin),x2:X(v),y2:Y(ymax),stroke:"#D6E1EC","stroke-width":1},svg);
+  for(let v=ymin; v<=ymax; v++) el("line",{x1:X(xmin),y1:Y(v),x2:X(xmax),y2:Y(v),stroke:"#D6E1EC","stroke-width":1},svg);
+  const ax0=Math.max(xmin,Math.min(0,xmax)), ay0=Math.max(ymin,Math.min(0,ymax));
+  el("line",{x1:X(xmin),y1:Y(ay0),x2:X(xmax),y2:Y(ay0),stroke:"#1F4E78","stroke-width":1.8},svg);
+  el("line",{x1:X(ax0),y1:Y(ymin),x2:X(ax0),y2:Y(ymax),stroke:"#1F4E78","stroke-width":1.8},svg);
+  el("text",{x:X(xmax)-3,y:Y(ay0)-6,class:"axl"},svg).textContent="x";
+  el("text",{x:X(ax0)+7,y:Y(ymax)+12,class:"axl"},svg).textContent="y";
+  for(let v=xmin; v<=xmax; v++){ if(v!==0&&v%2===0){ const t=el("text",{x:X(v),y:Y(ay0)+15,class:"num","text-anchor":"middle"},svg); t.textContent=v; } }
+  for(let v=ymin; v<=ymax; v++){ if(v!==0&&v%2===0){ const t=el("text",{x:X(ax0)-7,y:Y(v)+4,class:"num","text-anchor":"end"},svg); t.textContent=v; } }
+  if(xmin<=0&&0<=xmax&&ymin<=0&&0<=ymax){ const t=el("text",{x:X(0)-7,y:Y(0)+15,class:"num","text-anchor":"end"},svg); t.textContent="0"; }
+  return { svg,X,Y,invX,invY,w,h,xmin,xmax,ymin,ymax,
+    dot(x,y,c){ return el("circle",{cx:X(x),cy:Y(y),r:5,fill:c||"#14395C"},svg); },
+    label(x,y,t,dx,dy){ const e2=el("text",{x:X(x)+(dx||8),y:Y(y)+(dy||-8),class:"ptxt"},svg); e2.textContent=t; return e2; },
+    line(x1,y1,x2,y2,c){ return el("line",{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),stroke:c||"#C0392B","stroke-width":2.6},svg); } };
+}
+
+/* verificação genérica: (A,B,C) descreve a mesma reta que (a0,b0,c0)? */
+function sameLine(A,B,C,a0,b0,c0){
+  return (A*b0===B*a0)&&(A*c0===C*a0)&&(B*c0===C*b0)&&!(A===0&&B===0);
+}
+
+/* ================= FASE 1 ================= */
+(function(){
+  const targets=[[2,3],[-4,1],[-3,-2],[4,-3],[0,4]];
+  const fb=document.getElementById('a1fb'), tg=document.getElementById('a1target'), dots=document.getElementById('a1dots');
+  let idx=0, lost=false;
+  const P=buildPlane(document.getElementById('a1plane'),{xmin:-6,xmax:6,ymin:-6,ymax:6,w:360,h:360});
+  const hit=el("rect",{x:0,y:0,width:P.w,height:P.h,fill:"transparent",style:"cursor:crosshair"},P.svg);
+  targets.forEach(()=>dots.appendChild(document.createElement('span')));
+  function rd(){ [...dots.children].forEach((s,i)=>s.className=i<idx?'done':(i===idx?'cur':'')); }
+  function setT(){ if(idx>=targets.length){ tg.textContent="✔ Fase concluída!"; fb.textContent="Você marcou todos os pontos!"; fb.className="fb ok"; hit.style.cursor="default"; completeCard(1); return; }
+    tg.textContent="("+targets[idx][0]+", "+targets[idx][1]+")"; lost=false; rd(); }
+  hit.addEventListener('click',function(e){
+    if(idx>=targets.length) return;
+    const r=P.svg.getBoundingClientRect();
+    const px=(e.clientX-r.left)*(P.w/r.width), py=(e.clientY-r.top)*(P.h/r.height);
+    let gx=Math.round(P.invX(px)), gy=Math.round(P.invY(py));
+    gx=Math.max(P.xmin,Math.min(P.xmax,gx)); gy=Math.max(P.ymin,Math.min(P.ymax,gy));
+    const [tx,ty]=targets[idx];
+    if(gx===tx&&gy===ty){ P.dot(gx,gy,"#1E8449"); if(!lost) award('a1-'+idx);
+      fb.textContent="Isso! ("+gx+", "+gy+") correto."; fb.className="fb ok"; idx++; setTimeout(setT,650); }
+    else { const m=P.dot(gx,gy,"#C0392B"); setTimeout(()=>m.remove(),600); lost=true; dots.children[idx].className='cur miss';
+      fb.textContent="Você clicou em ("+gx+", "+gy+"). Primeiro ande no x, depois no y."; fb.className="fb no"; }
+  });
+  setT();
+})();
+
+/* pontos usados nas fases 2 e 3 */
+const PTS={A:[3,5],B:[-4,2],C:[-2,-4],D:[5,-1]};
+
+/* ================= FASE 2 ================= */
+(function(){
+  const P=buildPlane(document.getElementById('a2plane'),{xmin:-6,xmax:6,ymin:-6,ymax:6,w:360,h:360});
+  for(const k in PTS){ P.dot(PTS[k][0],PTS[k][1],"#14395C"); P.label(PTS[k][0],PTS[k][1],k,(k==='B'||k==='C')?-16:8,-9); }
+  const done={};
+  document.getElementById('a2check').addEventListener('click',function(){
+    let filled=0;
+    for(const k in PTS){
+      const xi=document.querySelector('input[data-p="'+k+'"][data-i="x"]');
+      const yi=document.querySelector('input[data-p="'+k+'"][data-i="y"]');
+      if(done[k]){ filled++; continue; }
+      if(xi.value.trim()===''||yi.value.trim()===''){ continue; }
+      filled++;
+      if(parseInt(xi.value,10)===PTS[k][0]&&parseInt(yi.value,10)===PTS[k][1]){ xi.className='coord-in ok'; yi.className='coord-in ok'; done[k]=true; award('a2-'+k); }
+      else { xi.className='coord-in no'; yi.className='coord-in no'; }
+    }
+    const fb=document.getElementById('a2fb'), total=Object.keys(PTS).length, ok=Object.keys(done).length;
+    if(ok===total){ fb.textContent="Perfeito! Todas corretas. ✓"; fb.className="fb ok"; completeCard(2); }
+    else if(filled<total){ fb.textContent="Preencha todos os campos e clique em Verificar."; fb.className="fb info"; }
+    else { fb.textContent="Acertou "+ok+" de "+total+". Corrija os campos em vermelho."; fb.className="fb no"; }
+  });
+})();
+
+/* ================= FASE 3 — QUADRANTES ================= */
+(function(){
+  const P=buildPlane(document.getElementById('a3plane'),{xmin:-6,xmax:6,ymin:-6,ymax:6,w:360,h:360});
+  for(const k in PTS){ P.dot(PTS[k][0],PTS[k][1],"#14395C"); P.label(PTS[k][0],PTS[k][1],k,(k==='B'||k==='C')?-16:8,-9); }
+  function quad(x,y){ if(x>0&&y>0)return 1; if(x<0&&y>0)return 2; if(x<0&&y<0)return 3; return 4; }
+  const rows=document.getElementById('a3rows'); let resolved=0; const nQ=Object.keys(PTS).length;
+  for(const k in PTS){
+    const [x,y]=PTS[k], correctQ=quad(x,y);
+    const row=document.createElement('div'); row.className='qrow';
+    const lab=document.createElement('span'); lab.className='plabel'; lab.textContent="Ponto "+k+" ("+x+", "+y+")"; row.appendChild(lab);
+    const fbq=document.createElement('span'); fbq.className='qfb';
+    let lost=false, solved=false;
+    [1,2,3,4].forEach(q=>{
+      const b=document.createElement('button'); b.className='qbtn'; b.textContent=q+"º";
+      b.addEventListener('click',function(){
+        if(solved) return;
+        if(q===correctQ){ solved=true; b.className='qbtn ok'; if(!lost) award('q-'+k);
+          fbq.textContent="✓"; fbq.style.color="#1E8449";
+          [...row.querySelectorAll('.qbtn')].forEach(c=>c.disabled=true);
+          resolved++; if(resolved===nQ){ document.getElementById('a3fb').textContent="Muito bem! Todos os quadrantes corretos. ✓"; document.getElementById('a3fb').className="fb ok"; completeCard(3); } }
+        else { b.className='qbtn no'; b.disabled=true; lost=true; fbq.textContent="tente outro"; fbq.style.color="#C0392B"; }
+      });
+      row.appendChild(b);
+    });
+    row.appendChild(fbq); rows.appendChild(row);
+  }
+})();
+
+/* ================= FASE 4 — QUAL EQUAÇÃO ================= */
+(function(){
+  const P=buildPlane(document.getElementById('a4plane'),{xmin:0,xmax:8,ymin:0,ymax:8,w:330,h:330});
+  P.line(0,6,6,0,"#C0392B"); P.dot(0,6,"#C0392B"); P.label(0,6,"(0, 6)",8,-6); P.dot(6,0,"#C0392B"); P.label(6,0,"(6, 0)",-6,18);
+  const opts=[["x + y = 6",true],["x − y = 6",false],["2x + y = 6",false],["y = x + 6",false]];
+  const box=document.getElementById('a4opts'), fb=document.getElementById('a4fb'); let lost=false, solved=false;
+  opts.forEach(([txt,ok])=>{
+    const b=document.createElement('button'); b.className='opt'; b.textContent=txt;
+    b.addEventListener('click',function(){
+      if(solved) return;
+      if(ok){ b.className='opt ok'; solved=true; if(!lost) award('eqmc');
+        fb.textContent="Correto! (0,6): 0+6=6 ✓  e  (6,0): 6+0=6 ✓."; fb.className="fb ok";
+        [...box.children].forEach(c=>c.disabled=true); completeCard(4); }
+      else { b.className='opt no'; b.disabled=true; lost=true;
+        fb.textContent="Não é essa. Teste os pontos (0,6) e (6,0) na equação."; fb.className="fb no"; }
+    });
+    box.appendChild(b);
+  });
+})();
+
+/* ================= FASE 5 — QUAIS PONTOS ================= */
+(function(){
+  const cands=[[2,4],[3,3],[5,2],[0,6],[4,1],[6,0]];
+  const box=document.getElementById('a5opts'), sel=new Set();
+  cands.forEach(([x,y],i)=>{
+    const d=document.createElement('div'); d.className='chk';
+    d.innerHTML='<span class="box"></span><span>('+x+', '+y+')</span>';
+    d.addEventListener('click',function(){
+      if(d.classList.contains('lock')) return;
+      if(sel.has(i)){ sel.delete(i); d.classList.remove('sel'); d.querySelector('.box').textContent=''; }
+      else { sel.add(i); d.classList.add('sel'); d.querySelector('.box').textContent='✓'; }
+    });
+    box.appendChild(d);
+  });
+  document.getElementById('a5check').addEventListener('click',function(){
+    const fb=document.getElementById('a5fb'); let allok=true;
+    cands.forEach(([x,y],i)=>{
+      const isSol=(x+y===6), picked=sel.has(i), d=box.children[i]; d.classList.remove('sel');
+      if(isSol&&picked){ d.className='chk ok'; d.querySelector('.box').textContent='✓'; }
+      else if(!isSol&&!picked){ /* ok */ }
+      else { d.className='chk no'; d.querySelector('.box').textContent=picked?'✗':''; allok=false; }
+    });
+    if(allok){ fb.textContent="Perfeito! São os pontos cuja soma x + y dá 6. ✓"; fb.className="fb ok"; award('pts');
+      [...box.children].forEach(c=>c.classList.add('lock')); completeCard(5); }
+    else { fb.textContent="Ainda não. O ponto pertence à reta só se x + y = 6. Ajuste e verifique."; fb.className="fb no"; }
+  });
+})();
+
+/* ================= FASE 6 — V/F ================= */
+(function(){
+  const qs=[
+    {t:"O par (1, 4) é solução de x + 2y = 9?", ok:true,  why:"1 + 2·4 = 9 ✓"},
+    {t:"O par (2, 2) é solução de 3x + y = 10?", ok:false, why:"3·2 + 2 = 8 ≠ 10 ✗"},
+    {t:"O par (0, 5) é solução de x + y = 5?",   ok:true,  why:"0 + 5 = 5 ✓"},
+    {t:"O par (3, 1) é solução de 2x − y = 5?",  ok:true,  why:"2·3 − 1 = 5 ✓"}
+  ];
+  const body=document.getElementById('a6body'); let resolved=0;
+  qs.forEach((q,i)=>{
+    const wrap=document.createElement('div'); wrap.className='qtf';
+    const qd=document.createElement('div'); qd.className='q'; qd.textContent=(i+1)+") "+q.t; wrap.appendChild(qd);
+    const tf=document.createElement('div'); tf.className='tf'; const fb=document.createElement('div'); fb.className='fb';
+    let lost=false, solved=false;
+    ['Verdadeiro','Falso'].forEach((lab,bi)=>{
+      const b=document.createElement('button'); b.className='btn ghost'; b.textContent=lab;
+      b.addEventListener('click',function(){
+        if(solved) return; const ans=(bi===0);
+        if(ans===q.ok){ solved=true; if(!lost) award('vf-'+i); b.className='btn';
+          fb.textContent="Certo! "+q.why; fb.className="fb ok"; [...tf.children].forEach(c=>c.disabled=true);
+          resolved++; if(resolved===qs.length) completeCard(6); }
+        else { lost=true; b.disabled=true; b.style.opacity=.5;
+          fb.textContent="Não é. Substitua os valores e refaça a conta."; fb.className="fb no"; }
+      });
+      tf.appendChild(b);
+    });
+    wrap.appendChild(tf); wrap.appendChild(fb); body.appendChild(wrap);
+  });
+})();
+
+/* ================= FASE 7 — DESCOBRIR EQUAÇÃO (decrescente x+y=5) ================= */
+(function(){
+  const P=buildPlane(document.getElementById('a7plane'),{xmin:0,xmax:8,ymin:0,ymax:8,w:330,h:330});
+  P.line(0,5,5,0,"#C0392B"); P.dot(5,0,"#C0392B"); P.label(5,0,"(5, 0)",-6,18); P.dot(0,5,"#C0392B"); P.label(0,5,"(0, 5)",8,-6);
+  const a0=1,b0=1,c0=5; let lost=false;
+  document.getElementById('a7dicabtn').addEventListener('click',()=>document.getElementById('a7dica').classList.toggle('show'));
+  document.getElementById('a7check').addEventListener('click',function(){
+    const fa=document.getElementById('fa7'), fbb=document.getElementById('fb7'), fc=document.getElementById('fc7'), fb=document.getElementById('a7fb');
+    if(fa.value.trim()===''||fbb.value.trim()===''||fc.value.trim()===''){ fb.textContent="Preencha os três espaços."; fb.className="fb info"; lost=true; return; }
+    const A=parseInt(fa.value,10),B=parseInt(fbb.value,10),C=parseInt(fc.value,10);
+    if([A,B,C].some(isNaN)){ fb.textContent="Use apenas números inteiros."; fb.className="fb no"; lost=true; return; }
+    if(sameLine(A,B,C,a0,b0,c0)){ fa.className='ok'; fbb.className='ok'; fc.className='ok';
+      fb.textContent="Perfeito! "+A+"x + "+B+"y = "+C+" representa esta reta. ✓"; fb.className="fb ok"; if(!lost) award('fill7'); completeCard(7); }
+    else { fa.className='no'; fbb.className='no'; fc.className='no'; lost=true;
+      fb.textContent="Ainda não. Teste x + y nos pontos (5,0) e (0,5) — clique em Ver dica se precisar."; fb.className="fb no"; }
+  });
+})();
+
+/* ================= FASE 8 — DESCOBRIR EQUAÇÃO (crescente x−y=3) ================= */
+(function(){
+  const P=buildPlane(document.getElementById('a8plane'),{xmin:-6,xmax:6,ymin:-6,ymax:6,w:330,h:330});
+  P.line(-1,-4,6,3,"#C0392B"); P.dot(3,0,"#C0392B"); P.label(3,0,"(3, 0)",8,18); P.dot(0,-3,"#C0392B"); P.label(0,-3,"(0, −3)",-42,18);
+  const a0=1,b0=-1,c0=3; let lost=false;
+  document.getElementById('a8dicabtn').addEventListener('click',()=>document.getElementById('a8dica').classList.toggle('show'));
+  document.getElementById('a8check').addEventListener('click',function(){
+    const fa=document.getElementById('fa8'), fbb=document.getElementById('fb8'), fc=document.getElementById('fc8'), fb=document.getElementById('a8fb');
+    if(fa.value.trim()===''||fbb.value.trim()===''||fc.value.trim()===''){ fb.textContent="Preencha os três espaços."; fb.className="fb info"; lost=true; return; }
+    const A=parseInt(fa.value,10),B=parseInt(fbb.value,10),C=parseInt(fc.value,10);
+    if([A,B,C].some(isNaN)){ fb.textContent="Use apenas números inteiros."; fb.className="fb no"; lost=true; return; }
+    if(sameLine(A,B,C,a0,b0,c0)){ fa.className='ok'; fbb.className='ok'; fc.className='ok';
+      fb.textContent="Isso! "+A+"x + ("+B+")y = "+C+" representa esta reta. ✓"; fb.className="fb ok"; if(!lost) award('fill8'); completeCard(8); }
+    else { fa.className='no'; fbb.className='no'; fc.className='no'; lost=true;
+      fb.textContent="Ainda não. Lembre do sinal negativo! Clique em Ver dica se precisar."; fb.className="fb no"; }
+  });
+})();
+
+/* ================= FASE 9 — DESAFIO ================= */
+document.getElementById('a9btn').addEventListener('click',function(){
+  document.getElementById('a9reveal').classList.add('show'); this.disabled=true; this.textContent='Resposta revelada';
+  document.getElementById('revlock').style.display='none';
+  const rev=document.getElementById('revisao'); rev.hidden=false;
+  rev.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+/* ================= AULA DE REVISÃO ================= */
+let revCorrect=0;
+function revAward(){ revCorrect++; document.getElementById('revscore').textContent=revCorrect; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function mcq(host,q){
+  const wrap=document.createElement('div'); wrap.className='mcq';
+  const qd=document.createElement('div'); qd.className='mq'; qd.innerHTML=q.q; wrap.appendChild(qd);
+  const ex=document.createElement('div'); ex.className='explain'; ex.innerHTML='<b>Explicação:</b> '+q.explain;
+  let lost=false, solved=false;
+  shuffle(q.opts).forEach(([txt,ok])=>{
+    const b=document.createElement('button'); b.className='opt'; b.innerHTML=txt;
+    b.addEventListener('click',function(){
+      if(solved) return;
+      if(ok){ solved=true; b.className='opt ok'; [...wrap.querySelectorAll('.opt')].forEach(c=>c.disabled=true);
+        if(!lost) revAward(); ex.className='explain show okmode'; }
+      else { b.className='opt no'; b.disabled=true; lost=true; ex.className='explain show'; }
+    });
+    wrap.appendChild(b);
+  });
+  wrap.appendChild(ex); host.appendChild(wrap);
+}
+
+/* --- Bloco 1 --- */
+const b1=document.getElementById('bloco1');
+mcq(b1,{ q:"1) Quanto é 9<sup>−2</sup>?",
+  opts:[["1/81",true],["−81",false],["81",false],["−1/81",false],["1/18",false]],
+  explain:"Expoente negativo inverte a base: 9<sup>−2</sup> = 1/9<sup>2</sup> = 1/81." });
+mcq(b1,{ q:"2) Em notação científica, (2 × 10<sup>2</sup>) × (3 × 10<sup>3</sup>) é igual a:",
+  opts:[["6 × 10<sup>5</sup>",true],["6 × 10<sup>6</sup>",false],["5 × 10<sup>5</sup>",false],["6 × 10<sup>4</sup>",false],["23 × 10<sup>5</sup>",false]],
+  explain:"Multiplique os números (2 × 3 = 6) e some os expoentes (10<sup>2</sup> × 10<sup>3</sup> = 10<sup>5</sup>): 6 × 10<sup>5</sup>." });
+mcq(b1,{ q:"3) Uma transação rendeu 0,000004 unidades de uma criptomoeda. Em notação científica, isso é:",
+  opts:[["4 × 10<sup>−6</sup>",true],["4 × 10<sup>−5</sup>",false],["4 × 10<sup>−7</sup>",false],["4 × 10<sup>6</sup>",false],["6 × 10<sup>−4</sup>",false]],
+  explain:"Conte as casas até o algarismo 4: em 0,000004 o 4 está na 6ª casa decimal → 4 × 10<sup>−6</sup> (expoente negativo porque o número é menor que 1)." });
+mcq(b1,{ q:"4) Um terreno quadrado tem 121 m² de área. Qual é a medida do lado?",
+  opts:[["11 m",true],["12 m",false],["10,5 m",false],["60,5 m",false],["21 m",false]],
+  explain:"O lado é a raiz quadrada da área: √121 = 11 m, porque 11 × 11 = 121." });
+
+/* --- Bloco 2 --- */
+const b2=document.getElementById('bloco2');
+mcq(b2,{ q:"a) Qual equação representa o custo total C (custo das garrafas + custo fixo)?",
+  opts:[["C = x + 300",true],["C = 5x + 300",false],["C = 300x + 1",false],["C = x + 5",false],["C = 5x",false]],
+  explain:"Cada garrafa custa R$ 1 (custo variável = 1·x = x) e há R$ 300 fixos: C = x + 300." });
+mcq(b2,{ q:"b) Se ele vender 50 garrafas, qual é o custo total (aquisição + fixo)?",
+  opts:[["R$ 350",true],["R$ 300",false],["R$ 250",false],["R$ 50",false],["R$ 400",false]],
+  explain:"C = 50 + 300 = R$ 350 (as 50 garrafas custam R$ 50, mais os R$ 300 fixos)." });
+mcq(b2,{ q:"c) Qual é a receita se ele vender essas mesmas 50 garrafas?",
+  opts:[["R$ 250",true],["R$ 350",false],["R$ 50",false],["R$ 300",false],["R$ 500",false]],
+  explain:"R = 5 · 50 = R$ 250 (cada garrafa é vendida por R$ 5)." });
+mcq(b2,{ q:"d) Qual é o ponto de equilíbrio, quando a receita se iguala ao custo?",
+  opts:[["75 garrafas",true],["60 garrafas",false],["100 garrafas",false],["50 garrafas",false],["300 garrafas",false]],
+  explain:"5x = x + 300 → 4x = 300 → x = 75 garrafas. Abaixo disso há prejuízo; acima, lucro." });
+
+/* --- Bloco 3 --- */
+const b3=document.getElementById('bloco3');
+mcq(b3,{ q:"a) Qual equação representa quanto o cliente pode gastar?",
+  opts:[["5x + 10y = 50",true],["10x + 5y = 50",false],["5x + 10y = 100",false],["5x · 10y = 50",false],["x + y = 50",false]],
+  explain:"Sorvete R$ 5 (5x) somado ao picolé R$ 10 (10y), totalizando R$ 50: 5x + 10y = 50." });
+mcq(b3,{ q:"b) O par (4, 3) — 4 sorvetes e 3 picolés — é solução da equação?",
+  opts:[["Verdadeiro",true],["Falso",false]],
+  explain:"5·4 + 10·3 = 20 + 30 = 50 ✓. Como o resultado é 50, o par (4, 3) é solução." });
+mcq(b3,{ q:"c) Se ele comprar 3 picolés, quantos sorvetes cabem nos R$ 50?",
+  opts:[["4 sorvetes",true],["7 sorvetes",false],["3 sorvetes",false],["5 sorvetes",false],["2 sorvetes",false]],
+  explain:"5x + 10·3 = 50 → 5x + 30 = 50 → 5x = 20 → x = 4 sorvetes." });
+
+document.getElementById('resetbtn').addEventListener('click',()=>location.reload());
+updateScore();
+</script>
+</body>
+</html>

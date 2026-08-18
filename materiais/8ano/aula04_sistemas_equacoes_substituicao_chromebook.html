@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sala de Fuga Matemática — Sistemas de Equações · 8º Ano</title>
+<style>
+  :root{ --azul:#14395C; --azul2:#2E75B6; --linha:#D9E3EC; }
+  * { box-sizing: border-box; }
+  html { background: #101A2B; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         color: #22303C; margin: 0; line-height: 1.55; }
+  .wrap { max-width: 900px; margin: 0 auto; background: #fff; min-height: 100vh;
+          box-shadow: 0 0 30px rgba(0,0,0,.4); }
+
+  .topbar { position: sticky; top: 0; z-index: 50; background: #0F1F33; color: #fff;
+            padding: 12px 22px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,.3); border-bottom: 2px solid #C89B3C; }
+  .topbar .ttl { font-size: 15px; font-weight: 700; }
+  .topbar .ttl small { display: block; font-size: 11px; font-weight: 400; color: #9FB4CC;
+                       letter-spacing: 1.4px; margin-top: 1px; }
+  .placar { background: #1B3A5C; border: 1px solid #C89B3C; border-radius: 999px;
+            padding: 7px 16px; font-size: 14px; font-weight: 700; white-space: nowrap; color: #FFE9B3; }
+  .placar b { color: #FFD87A; font-size: 16px; }
+
+  .page { padding: 0 0 60px 0; }
+  .hero { background: #0F1F33; color: #fff; padding: 16px 30px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .hero .badge { display: inline-block; background: #C89B3C; color: #1B1200; font-weight: 700;
+                 font-size: 11px; letter-spacing: 1.6px; padding: 4px 12px; border-radius: 999px; flex: none; }
+  .hero p { color: #C9D8E8; font-size: 14px; margin: 0; }
+
+  .inner { padding: 20px 30px 10px 30px; }
+
+  .room { border: 1px solid #E1D8C4; border-radius: 13px; margin: 22px 0; overflow: hidden;
+          background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .room > .head { background: #17263B; color: #fff; padding: 14px 20px; display: flex; align-items: center; gap: 13px; }
+  .room > .head .n { background: #C89B3C; color: #1B1200; width: 34px; height: 34px; border-radius: 9px;
+                     display: grid; place-items: center; font-weight: 800; font-size: 16px; flex: none; }
+  .room.locked > .head .n { background: #4B5A6E; color: #C7D2DD; }
+  .room.done > .head .n { background: #2E9E5B; color: #fff; }
+  .room > .head .t { font-weight: 700; font-size: 17px; flex: 1; }
+  .room > .head .sub { font-size: 12px; color: #9FB4CC; margin-top: 2px; }
+  .lockbar { padding: 22px 20px; background: #F6F4EE; color: #8A7F68; font-weight: 600;
+             font-size: 15px; text-align: center; border-top: 1px dashed #DDD2B6; }
+  .lockbar .ic { font-size: 20px; display: block; margin-bottom: 4px; }
+  .body { padding: 20px 22px; }
+
+  .lesson p { margin: 0 0 10px; font-size: 15px; }
+  .lesson h3 { font-size: 16px; color: var(--azul); margin: 4px 0 8px; }
+
+  .sys { display: inline-flex; align-items: stretch; gap: 8px; font-size: 19px; font-weight: 700; color: var(--azul);
+         background: #EDF3F9; border-radius: 9px; padding: 10px 16px; margin: 6px 0; }
+  .sys .brace { font-size: 32px; line-height: 1; display: flex; align-items: center; }
+  .sys .eqs span { display: block; padding: 2px 0; }
+  .eqchip { background: #EDF3F9; border-radius: 6px; padding: 2px 8px; font-weight: 700; color: var(--azul); }
+
+  .defbox{border-left:4px solid var(--azul2);background:#F2F7FC;border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;}
+  .defbox .t{font-weight:700;color:var(--azul);font-size:15px;margin-bottom:3px;}
+  .warn{border-left:4px solid #E67E22;background:#FEF7EE;border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;font-size:14.5px;}
+  .warn b{color:#B9651A;}
+
+  .passos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0;}
+  .passo{border:1px solid var(--linha);border-radius:10px;padding:10px;background:#FBFDFF;}
+  .passo .t{font-size:11px;letter-spacing:.6px;color:var(--azul2);font-weight:700;margin-bottom:4px;}
+  .passo .d{font-size:12.5px;}
+  @media (max-width:760px){ .passos{grid-template-columns:repeat(2,1fr);} }
+
+  .ex-work{border:1px solid var(--linha);border-radius:11px;padding:14px 18px;margin:12px 0;background:#FCFDFE;}
+  .ex-work .h{font-weight:700;color:var(--azul);font-size:15.5px;margin-bottom:6px;}
+  .step{margin:5px 0;font-size:14.5px;}
+  .step b{color:var(--azul);}
+  .res{background:#EAF7EF;border-radius:8px;padding:8px 12px;font-weight:700;color:#1E6b3a;display:inline-block;margin-top:6px;}
+
+  .figbox{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin:10px 0;}
+  .figbox .t{flex:1;min-width:220px;font-size:14.5px;}
+  .plano{width:270px;max-width:100%;height:auto;}
+  .plano text.num{font-size:11px;fill:#55636F;} .plano text.axl{font-size:12px;fill:#14395C;font-weight:bold;}
+  .plano text.pt{font-size:12px;fill:#14395C;font-weight:bold;} .plano text.lbl{font-size:12px;font-weight:bold;}
+
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;}
+  th{background:var(--azul);color:#fff;text-align:left;padding:7px 10px;font-size:13px;}
+  td{border-bottom:1px solid #E1EAF2;padding:7px 10px;}
+  tr:nth-child(even) td{background:#F7FAFD;}
+
+  .divider { display: flex; align-items: center; gap: 10px; margin: 20px 0 14px; }
+  .divider .l { flex: 1; height: 1px; background: #E1D8C4; }
+  .divider .t { font-size: 12px; letter-spacing: 1.2px; font-weight: 700; color: #B9651A;
+                background: #FBF7EC; border: 1px solid #E8D9AE; border-radius: 999px; padding: 5px 14px; }
+
+  .charada { background: #FBF7EC; border: 1px solid #E8D9AE; border-radius: 10px; padding: 15px 18px;
+             margin-bottom: 14px; font-size: 15px; }
+  .charada .frase { display: block; font-size: 18px; font-weight: 700; color: #17263B; margin: 8px 0;
+                    letter-spacing: .3px; }
+  .charada .tabela { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .charada .tabela span { background: #17263B; color: #FFE9B3; font-weight: 700; font-size: 13.5px;
+                          padding: 4px 10px; border-radius: 6px; }
+
+  .senha-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .senha-in { width: 220px; max-width: 100%; padding: 12px 14px; border: 2px solid #C7D2DD; border-radius: 9px;
+              font-size: 18px; font-weight: 700; letter-spacing: 1px; text-align: center; color: #17263B;
+              text-transform: uppercase; }
+  .senha-in:focus { outline: none; border-color: #C89B3C; }
+  .senha-in.ok { border-color: #2E9E5B; background: #EAF7EF; }
+  .senha-in.no { border-color: #C0392B; background: #FBECEC; }
+
+  .btn { background: #17263B; color: #fff; border: none; border-radius: 9px; padding: 12px 20px;
+         font-size: 15px; font-weight: 700; cursor: pointer; transition: background .15s; }
+  .btn:hover { background: #223a58; }
+  .btn.gold { background: #C89B3C; color: #1B1200; }
+  .btn.gold:hover { background: #b8892c; }
+  .btn.ghost { background: #EDF3F9; color: #17263B; }
+  .btn.ghost:hover { background: #dde8f3; }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  .fb { min-height: 22px; font-weight: 700; font-size: 15px; margin-top: 10px; }
+  .fb.ok { color: #1E8449; } .fb.no { color: #C0392B; } .fb.info { color: #2E75B6; }
+  .tent { font-size: 12.5px; color: #97A2AD; margin-top: 4px; }
+
+  .dica { background: #FFF8EC; border: 1px solid #E8CFA0; border-radius: 9px; padding: 12px 14px;
+          margin-top: 12px; font-size: 14px; display: none; }
+  .dica.show { display: block; }
+  .dica b { color: #B9651A; }
+
+  .copybar { background: #FFF3D6; border: 1px solid #E8C983; border-radius: 9px; padding: 11px 14px;
+             font-size: 14.5px; color: #8A6212; font-weight: 600; margin-bottom: 12px; }
+  .reveal { background: #F4F8FC; border: 1px solid #D9E3EC; border-radius: 9px; padding: 14px 16px;
+            margin-top: 10px; display: none; font-size: 15px; }
+  .reveal.show { display: block; }
+
+  .conexao{border:1px solid var(--linha);background:#F7FAFD;border-radius:11px;padding:14px 18px;margin:22px 0 0;}
+  .conexao .t{font-size:15.5px;font-weight:700;color:var(--azul);margin-bottom:4px;}
+
+  .final-msg { text-align: center; padding: 40px 24px 10px; }
+  .final-msg .ic { font-size: 52px; }
+  .final-msg h2 { color: #17263B; margin: 8px 0 6px; }
+  .final-msg p { color: #4A6076; font-size: 15px; }
+
+  @media (max-width: 620px){ .inner{padding:20px 16px;} .senha-in{width:100%;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="ttl">Sala de Fuga Matemática
+      <small>MATEMÁTICA · 8º ANO · SISTEMAS DE EQUAÇÕES</small></div>
+    <div class="placar">Salas abertas: <b><span id="score">0</span></b> / <span id="total">5</span></div>
+  </div>
+
+  <div class="page">
+    <div class="hero">
+      <span class="badge">🔒 SALA DE FUGA</span>
+      <p>Copie o conteúdo de cada sala no caderno e resolva o desafio para destrancar a próxima.</p>
+    </div>
+
+    <div class="inner">
+
+      <!-- SALA 1 -->
+      <div class="room" id="room1">
+        <div class="head"><span class="n">1</span><div><div class="t">O que é um sistema de equações?</div><div class="sub">Conceito e solução</div></div></div>
+        <div class="body">
+          <div class="lesson">
+            <p>Na aula passada, uma equação como <span class="eqchip">x + y = 10</span> tinha <b>infinitas soluções</b>. Mas e se duas condições precisarem valer <b>ao mesmo tempo</b>? Aí temos um <b>sistema</b>: duas equações que compartilham as mesmas incógnitas, unidas por uma chave.</p>
+
+            <div class="figbox">
+              <div class="t">
+                <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 10</span><span>y = x + 2</span></span></span>
+                <p style="margin-top:8px">A <b>solução do sistema</b> é o par (x, y) que torna <b>as duas</b> equações verdadeiras ao mesmo tempo. No gráfico, é exatamente o <b>ponto onde as duas retas se cruzam</b> — aqui, o ponto <b>(4, 6)</b>.</p>
+              </div>
+              <div><svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" class="plano"><g stroke="#D6E1EC" stroke-width="1"><line x1="32.0" y1="308.0" x2="32.0" y2="32.0"/><line x1="59.6" y1="308.0" x2="59.6" y2="32.0"/><line x1="87.2" y1="308.0" x2="87.2" y2="32.0"/><line x1="114.8" y1="308.0" x2="114.8" y2="32.0"/><line x1="142.4" y1="308.0" x2="142.4" y2="32.0"/><line x1="170.0" y1="308.0" x2="170.0" y2="32.0"/><line x1="197.6" y1="308.0" x2="197.6" y2="32.0"/><line x1="225.2" y1="308.0" x2="225.2" y2="32.0"/><line x1="252.8" y1="308.0" x2="252.8" y2="32.0"/><line x1="280.4" y1="308.0" x2="280.4" y2="32.0"/><line x1="308.0" y1="308.0" x2="308.0" y2="32.0"/><line x1="32.0" y1="308.0" x2="308.0" y2="308.0"/><line x1="32.0" y1="280.4" x2="308.0" y2="280.4"/><line x1="32.0" y1="252.8" x2="308.0" y2="252.8"/><line x1="32.0" y1="225.2" x2="308.0" y2="225.2"/><line x1="32.0" y1="197.6" x2="308.0" y2="197.6"/><line x1="32.0" y1="170.0" x2="308.0" y2="170.0"/><line x1="32.0" y1="142.4" x2="308.0" y2="142.4"/><line x1="32.0" y1="114.8" x2="308.0" y2="114.8"/><line x1="32.0" y1="87.2" x2="308.0" y2="87.2"/><line x1="32.0" y1="59.6" x2="308.0" y2="59.6"/><line x1="32.0" y1="32.0" x2="308.0" y2="32.0"/></g><line x1="32.0" y1="308.0" x2="320.0" y2="308.0" stroke="#1F4E78" stroke-width="1.8"/><line x1="32.0" y1="308.0" x2="32.0" y2="20.0" stroke="#1F4E78" stroke-width="1.8"/><text x="323.0" y="312.0" class="axl">x</text><text x="38.0" y="16.0" class="axl">y</text><text x="87.2" y="322.0" class="num" text-anchor="middle">2</text><text x="142.4" y="322.0" class="num" text-anchor="middle">4</text><text x="197.6" y="322.0" class="num" text-anchor="middle">6</text><text x="252.8" y="322.0" class="num" text-anchor="middle">8</text><text x="308.0" y="322.0" class="num" text-anchor="middle">10</text><text x="26.0" y="256.8" class="num" text-anchor="end">2</text><text x="26.0" y="201.6" class="num" text-anchor="end">4</text><text x="26.0" y="146.4" class="num" text-anchor="end">6</text><text x="26.0" y="91.2" class="num" text-anchor="end">8</text><text x="26.0" y="36.0" class="num" text-anchor="end">10</text><line x1="32.0" y1="32.0" x2="308.0" y2="308.0" stroke="#C0392B" stroke-width="2.6"/><text x="186.6" y="164.5" class="lbl" fill="#C0392B">x + y = 10</text><line x1="32.0" y1="252.8" x2="252.8" y2="32.0" stroke="#1E8449" stroke-width="2.6"/><text x="208.6" y="90.0" class="lbl" fill="#1E8449">y = x + 2</text><circle cx="142.4" cy="142.4" r="5.5" fill="#B7950B"/><text x="151.4" y="133.4" class="pt">(4, 6)</text></svg></div>
+            </div>
+
+            <div class="defbox"><div class="t">Solução de um sistema</div>
+            É o par ordenado (x, y) que satisfaz todas as equações do sistema simultaneamente. Graficamente, corresponde ao ponto de interseção das retas.</div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 CÓDIGO PARA DESTRANCAR</div><div class="l"></div></div>
+          <div class="charada">
+            A senha está escondida na palavra
+            <span class="frase">"MATEMÁTICA"</span>
+            Código: A = 1 ... Z = 26. <b>Some</b> o valor de todas as letras da palavra.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in1" placeholder="senha" maxlength="6">
+            <button class="btn gold" id="chk1">Destrancar</button>
+          </div>
+          <div class="tent" id="tent1"></div>
+          <div class="fb" id="fb1"></div>
+          <div class="dica" id="dica1"><b>Dica:</b> não esqueça de contar as letras repetidas.</div>
+        </div>
+      </div>
+
+      <!-- SALA 2 -->
+      <div class="room locked" id="room2">
+        <div class="head"><span class="n">2</span><div><div class="t">O método da substituição</div><div class="sub">Passo a passo</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 1 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <p>Para resolver um sistema, usamos o <b>método da substituição</b>. Ele tem 5 passos:</p>
+            <div class="passos">
+              <div class="passo"><div class="t">PASSO 1</div><div class="d">Isole uma incógnita em uma das equações (escolha a mais fácil).</div></div>
+              <div class="passo"><div class="t">PASSO 2</div><div class="d">Substitua essa expressão na <i>outra</i> equação.</div></div>
+              <div class="passo"><div class="t">PASSO 3</div><div class="d">Resolva: agora só sobrou uma incógnita.</div></div>
+              <div class="passo"><div class="t">PASSO 4</div><div class="d">Volte e descubra o valor da outra incógnita.</div></div>
+              <div class="passo"><div class="t">PASSO 5</div><div class="d">Confira o par nas duas equações originais.</div></div>
+            </div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 CÓDIGO PARA DESTRANCAR</div><div class="l"></div></div>
+          <div class="charada">
+            Código diferente aqui — só as vogais, nesta ordem de valor:
+            <div class="tabela"><span>A = 1</span><span>E = 2</span><span>I = 3</span><span>O = 4</span><span>U = 5</span></div>
+            Na frase <span class="frase">"sistema de equações"</span>, pegue só as vogais e <b>multiplique</b> os valores.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in2" placeholder="senha" maxlength="6">
+            <button class="btn gold" id="chk2">Destrancar</button>
+          </div>
+          <div class="tent" id="tent2"></div>
+          <div class="fb" id="fb2"></div>
+          <div class="dica" id="dica2"><b>Dica:</b> são 9 vogais. Vá multiplicando uma de cada vez.</div>
+        </div>
+      </div>
+
+      <!-- SALA 3 -->
+      <div class="room locked" id="room3">
+        <div class="head"><span class="n">3</span><div><div class="t">Exemplo 1 — colocando em prática</div><div class="sub">Uma incógnita já está isolada</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 2 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="ex-work"><div class="h">Exemplo 1 — uma incógnita já está isolada</div>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 10</span><span>y = x + 2</span></span></span>
+            <div class="step"><b>Passo 2.</b> Como y já vale x + 2, substituo na 1ª equação: x + (x + 2) = 10</div>
+            <div class="step"><b>Passo 3.</b> 2x + 2 = 10 → 2x = 8 → <b>x = 4</b></div>
+            <div class="step"><b>Passo 4.</b> y = x + 2 = 4 + 2 → <b>y = 6</b></div>
+            <div class="step"><b>Passo 5.</b> Confiro: 4 + 6 = 10 ✓ e 6 = 4 + 2 ✓</div>
+            <span class="res">Solução: (4, 6)</span></div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 AGORA É COM VOCÊ</div><div class="l"></div></div>
+          <div class="charada">
+            Resolva:
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 11</span><span>y = x + 3</span></span></span>
+            Senha: valor de <b>x</b> + letra <b>E</b> + valor de <b>y</b>, junto e sem espaço (ex.: 2E9).
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in3" placeholder="senha" maxlength="8">
+            <button class="btn gold" id="chk3">Destrancar</button>
+          </div>
+          <div class="tent" id="tent3"></div>
+          <div class="fb" id="fb3"></div>
+          <div class="dica" id="dica3"><b>Dica:</b> substitua y por x + 3 na primeira equação.</div>
+        </div>
+      </div>
+
+      <!-- SALA 4 -->
+      <div class="room locked" id="room4">
+        <div class="head"><span class="n">4</span><div><div class="t">Exemplo 2 — isolando primeiro</div><div class="sub">Nenhuma incógnita está isolada ainda</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 3 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="ex-work"><div class="h">Exemplo 2 — isolando primeiro</div>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 8</span><span>2x + y = 11</span></span></span>
+            <div class="step"><b>Passo 1.</b> Isolo y na 1ª equação: y = 8 − x</div>
+            <div class="step"><b>Passo 2.</b> Substituo na 2ª: 2x + (8 − x) = 11</div>
+            <div class="step"><b>Passo 3.</b> x + 8 = 11 → <b>x = 3</b></div>
+            <div class="step"><b>Passo 4.</b> y = 8 − x = 8 − 3 → <b>y = 5</b></div>
+            <div class="step"><b>Passo 5.</b> Confiro: 3 + 5 = 8 ✓ e 2·3 + 5 = 11 ✓</div>
+            <span class="res">Solução: (3, 5)</span></div>
+            <div class="warn"><b>Dica de ouro:</b> escolha para isolar a incógnita que tem coeficiente <b>1</b> — assim você evita frações e o cálculo fica bem mais simples.</div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 CÓDIGO PARA DESTRANCAR</div><div class="l"></div></div>
+          <div class="charada">
+            "Sou um número de dois algarismos. A dezena é o <b>dobro</b> da unidade. A soma dos dois algarismos é <b>12</b>. Que número sou?"
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in4" placeholder="senha" maxlength="4">
+            <button class="btn gold" id="chk4">Destrancar</button>
+          </div>
+          <div class="tent" id="tent4"></div>
+          <div class="fb" id="fb4"></div>
+          <div class="dica" id="dica4"><b>Dica:</b> monte um sisteminha com dezena e unidade.</div>
+        </div>
+      </div>
+
+      <!-- SALA 5 -->
+      <div class="room locked" id="room5">
+        <div class="head"><span class="n">5</span><div><div class="t">Exemplo 3 — situação real</div><div class="sub">A loja de camisetas e bonés</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 4 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="ex-work"><div class="h">Exemplo 3 — a loja de camisetas e bonés</div>
+            <p>Uma loja vendeu <b>10 peças</b> no total, entre camisetas (x) a R$ 20 e bonés (y) a R$ 15, e arrecadou <b>R$ 175</b>. Quantas de cada?</p>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 10</span><span>20x + 15y = 175</span></span></span>
+            <div class="step"><b>Passo 1.</b> Isolo y na 1ª: y = 10 − x</div>
+            <div class="step"><b>Passo 2.</b> Substituo na 2ª: 20x + 15(10 − x) = 175</div>
+            <div class="step"><b>Passo 3.</b> 20x + 150 − 15x = 175 → 5x = 25 → <b>x = 5</b></div>
+            <div class="step"><b>Passo 4.</b> y = 10 − 5 → <b>y = 5</b></div>
+            <div class="step"><b>Passo 5.</b> Confiro: 5 + 5 = 10 ✓ e 20·5 + 15·5 = 175 ✓</div>
+            <span class="res">A loja vendeu 5 camisetas e 5 bonés</span></div>
+
+            <h3>Resumo — para consultar</h3>
+            <table>
+            <tr><th>Conceito</th><th>O que é</th><th>Exemplo</th></tr>
+            <tr><td><b>Sistema</b></td><td>Duas equações com as mesmas incógnitas, valendo juntas</td><td>x + y = 10 e y = x + 2</td></tr>
+            <tr><td><b>Solução</b></td><td>Par (x, y) que satisfaz as duas equações</td><td>(4, 6)</td></tr>
+            <tr><td><b>Substituição</b></td><td>Isolar uma incógnita e trocá-la na outra equação</td><td>y = 8 − x</td></tr>
+            <tr><td><b>Significado gráfico</b></td><td>Ponto onde as duas retas se cruzam</td><td>interseção</td></tr>
+            </table>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 ÚLTIMO CÓDIGO</div><div class="l"></div></div>
+          <div class="charada">
+            Resolva:
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 10</span><span>x − y = 4</span></span></span>
+            Transforme o valor de <b>x</b> em letra (A=1, B=2...). A letra é a senha.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in5" placeholder="senha" maxlength="2">
+            <button class="btn gold" id="chk5">Destrancar</button>
+          </div>
+          <div class="tent" id="tent5"></div>
+          <div class="fb" id="fb5"></div>
+          <div class="dica" id="dica5"><b>Dica:</b> some as duas equações para sumir com o y.</div>
+        </div>
+      </div>
+
+      <!-- DESAFIO FINAL -->
+      <div class="room locked" id="room6">
+        <div class="head"><span class="n">★</span><div><div class="t">Desafio Final — A Porta de Saída</div><div class="sub">Para copiar no caderno</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 5 primeiro</div>
+        <div class="body" hidden>
+          <div class="copybar">✍️ Este desafio é para <b>copiar no caderno e resolver</b> — é o registro individual de cada aluno.</div>
+          <p>Dois sócios investiram juntos <b>R$ 24 mil</b> em um negócio. A diferença entre o valor que cada um investiu foi de <b>R$ 6 mil</b>. Quanto investiu cada sócio? Monte o sistema e resolva.</p>
+          <div class="row" style="margin-top:10px"><button class="btn ghost" id="revbtn">Revelar resposta e abrir a porta</button></div>
+          <div class="reveal" id="revbox">
+            Sistema: <span class="eqchip">x + y = 24</span> e <span class="eqchip">x − y = 6</span>.
+            Somando as equações: 2x = 30 → x = 15. Substituindo: y = 24 − 15 = 9.
+            <br><br><b>Um sócio investiu R$ 15 mil e o outro R$ 9 mil.</b>
+          </div>
+
+          <div class="conexao"><div class="t">Conexão Empreendedora</div>
+          <p>Sistemas aparecem sempre que duas condições precisam bater ao mesmo tempo: total de peças <i>e</i> total arrecadado, dois fornecedores com preços diferentes, receita <i>e</i> custo. Resolver o sistema é encontrar o ponto exato em que as contas fecham — a mesma ideia do ponto de equilíbrio. Quem domina isso planeja melhor e decide com segurança!</p></div>
+        </div>
+      </div>
+
+      <div class="final-msg" id="finalmsg" hidden>
+        <div class="ic">🎉🗝️</div>
+        <h2>Parabéns! Vocês escaparam da Sala de Matemática!</h2>
+        <p>Todas as senhas foram decifradas. Bom trabalho, turma!</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let score=0;
+function bumpScore(){ score++; document.getElementById('score').textContent=score; }
+function unlock(n){
+  const cur=document.getElementById('room'+n); cur.classList.remove('locked'); cur.classList.add('done');
+  const nx=document.getElementById('room'+(n+1)); if(!nx) return;
+  nx.classList.remove('locked');
+  const lb=nx.querySelector('.lockbar'); if(lb) lb.style.display='none';
+  const bd=nx.querySelector('.body'); if(bd) bd.hidden=false;
+  nx.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function norm(s){ return s.trim().toUpperCase(); }
+
+function setupRoom(n, answer){
+  const input=document.getElementById('in'+n), btn=document.getElementById('chk'+n),
+        fb=document.getElementById('fb'+n), tentEl=document.getElementById('tent'+n),
+        dica=document.getElementById('dica'+n);
+  let tentativas=0, solved=false, scored=false;
+  function tryAnswer(){
+    if(solved) return;
+    const v=norm(input.value);
+    if(v===''){ fb.textContent="Digite uma senha."; fb.className="fb info"; return; }
+    tentativas++;
+    if(v===answer){
+      solved=true; input.className='senha-in ok'; input.disabled=true; btn.disabled=true;
+      fb.textContent="✓ Correto! Sala destrancada."; fb.className="fb ok";
+      if(!scored){ bumpScore(); scored=true; }
+      unlock(n);
+    } else {
+      input.className='senha-in no'; fb.textContent="Senha incorreta. Reveja a conta e tente de novo.";
+      fb.className="fb no"; tentEl.textContent="Tentativas: "+tentativas;
+      if(tentativas>=2 && dica) dica.classList.add('show');
+    }
+  }
+  btn.addEventListener('click', tryAnswer);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') tryAnswer(); });
+}
+
+setupRoom(1,'86');
+setupRoom(2,'960');
+setupRoom(3,'4E7');
+setupRoom(4,'84');
+setupRoom(5,'G');
+
+document.getElementById('revbtn').addEventListener('click', function(){
+  document.getElementById('revbox').classList.add('show');
+  this.disabled=true; this.textContent='Porta aberta!';
+  document.getElementById('finalmsg').hidden=false;
+  document.getElementById('finalmsg').scrollIntoView({behavior:'smooth', block:'start'});
+});
+</script>
+</body>
+</html>

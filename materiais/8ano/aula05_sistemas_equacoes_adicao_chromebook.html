@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sala de Fuga Matemática — Método da Adição · 8º Ano</title>
+<style>
+  :root{ --azul:#14395C; --azul2:#2E75B6; --linha:#D9E3EC; }
+  * { box-sizing: border-box; }
+  html { background: #101A2B; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         color: #22303C; margin: 0; line-height: 1.55; }
+  .wrap { max-width: 900px; margin: 0 auto; background: #fff; min-height: 100vh;
+          box-shadow: 0 0 30px rgba(0,0,0,.4); }
+
+  .topbar { position: sticky; top: 0; z-index: 50; background: #0F1F33; color: #fff;
+            padding: 12px 22px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,.3); border-bottom: 2px solid #C89B3C; }
+  .topbar .ttl { font-size: 15px; font-weight: 700; }
+  .topbar .ttl small { display: block; font-size: 11px; font-weight: 400; color: #9FB4CC;
+                       letter-spacing: 1.4px; margin-top: 1px; }
+  .placar { background: #1B3A5C; border: 1px solid #C89B3C; border-radius: 999px;
+            padding: 7px 16px; font-size: 14px; font-weight: 700; white-space: nowrap; color: #FFE9B3; }
+  .placar b { color: #FFD87A; font-size: 16px; }
+
+  .page { padding: 0 0 60px 0; }
+  .hero { background: #0F1F33; color: #fff; padding: 16px 30px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .hero .badge { display: inline-block; background: #C89B3C; color: #1B1200; font-weight: 700;
+                 font-size: 11px; letter-spacing: 1.6px; padding: 4px 12px; border-radius: 999px; flex: none; }
+  .hero p { color: #C9D8E8; font-size: 14px; margin: 0; }
+
+  .inner { padding: 20px 30px 10px 30px; }
+
+  .room { border: 1px solid #E1D8C4; border-radius: 13px; margin: 22px 0; overflow: hidden;
+          background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .room > .head { background: #17263B; color: #fff; padding: 14px 20px; display: flex; align-items: center; gap: 13px; }
+  .room > .head .n { background: #C89B3C; color: #1B1200; width: 34px; height: 34px; border-radius: 9px;
+                     display: grid; place-items: center; font-weight: 800; font-size: 16px; flex: none; }
+  .room.locked > .head .n { background: #4B5A6E; color: #C7D2DD; }
+  .room.done > .head .n { background: #2E9E5B; color: #fff; }
+  .room > .head .t { font-weight: 700; font-size: 17px; flex: 1; }
+  .room > .head .sub { font-size: 12px; color: #9FB4CC; margin-top: 2px; }
+  .lockbar { padding: 22px 20px; background: #F6F4EE; color: #8A7F68; font-weight: 600;
+             font-size: 15px; text-align: center; border-top: 1px dashed #DDD2B6; }
+  .lockbar .ic { font-size: 20px; display: block; margin-bottom: 4px; }
+  .body { padding: 20px 22px; }
+
+  .lesson p { margin: 0 0 10px; font-size: 15px; }
+  .lesson h3 { font-size: 16px; color: var(--azul); margin: 4px 0 8px; }
+
+  .sys { display: inline-flex; align-items: stretch; gap: 8px; font-size: 19px; font-weight: 700; color: var(--azul);
+         background: #EDF3F9; border-radius: 9px; padding: 10px 16px; margin: 6px 0; }
+  .sys .brace { font-size: 32px; line-height: 1; display: flex; align-items: center; }
+  .sys .eqs span { display: block; padding: 2px 0; }
+  .eqchip { background: #EDF3F9; border-radius: 6px; padding: 2px 8px; font-weight: 700; color: var(--azul); }
+
+  .defbox{border-left:4px solid var(--azul2);background:#F2F7FC;border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;}
+  .defbox .t{font-weight:700;color:var(--azul);font-size:15px;margin-bottom:3px;}
+  .warn{border-left:4px solid #E67E22;background:#FEF7EE;border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;font-size:14.5px;}
+  .warn b{color:#B9651A;}
+
+  .passos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0;}
+  .passo{border:1px solid var(--linha);border-radius:10px;padding:10px;background:#FBFDFF;}
+  .passo .t{font-size:11px;letter-spacing:.6px;color:var(--azul2);font-weight:700;margin-bottom:4px;}
+  .passo .d{font-size:12.5px;}
+  @media (max-width:760px){ .passos{grid-template-columns:repeat(2,1fr);} }
+
+  .ex-work{border:1px solid var(--linha);border-radius:11px;padding:14px 18px;margin:12px 0;background:#FCFDFE;}
+  .ex-work .h{font-weight:700;color:var(--azul);font-size:15.5px;margin-bottom:6px;}
+  .step{margin:5px 0;font-size:14.5px;}
+  .step b{color:var(--azul);}
+  .res{background:#EAF7EF;border-radius:8px;padding:8px 12px;font-weight:700;color:#1E6b3a;display:inline-block;margin-top:6px;}
+
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;}
+  th{background:var(--azul);color:#fff;text-align:left;padding:7px 10px;font-size:13px;}
+  td{border-bottom:1px solid #E1EAF2;padding:7px 10px;}
+  tr:nth-child(even) td{background:#F7FAFD;}
+
+  .divider { display: flex; align-items: center; gap: 10px; margin: 20px 0 14px; }
+  .divider .l { flex: 1; height: 1px; background: #E1D8C4; }
+  .divider .t { font-size: 12px; letter-spacing: 1.2px; font-weight: 700; color: #B9651A;
+                background: #FBF7EC; border: 1px solid #E8D9AE; border-radius: 999px; padding: 5px 14px; }
+
+  .charada { background: #FBF7EC; border: 1px solid #E8D9AE; border-radius: 10px; padding: 15px 18px;
+             margin-bottom: 14px; font-size: 15px; }
+  .charada .frase { display: block; font-size: 18px; font-weight: 700; color: #17263B; margin: 8px 0;
+                    letter-spacing: .3px; }
+
+  .senha-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .senha-in { width: 220px; max-width: 100%; padding: 12px 14px; border: 2px solid #C7D2DD; border-radius: 9px;
+              font-size: 18px; font-weight: 700; letter-spacing: 1px; text-align: center; color: #17263B;
+              text-transform: uppercase; }
+  .senha-in:focus { outline: none; border-color: #C89B3C; }
+  .senha-in.ok { border-color: #2E9E5B; background: #EAF7EF; }
+  .senha-in.no { border-color: #C0392B; background: #FBECEC; }
+
+  .btn { background: #17263B; color: #fff; border: none; border-radius: 9px; padding: 12px 20px;
+         font-size: 15px; font-weight: 700; cursor: pointer; transition: background .15s; }
+  .btn:hover { background: #223a58; }
+  .btn.gold { background: #C89B3C; color: #1B1200; }
+  .btn.gold:hover { background: #b8892c; }
+  .btn.ghost { background: #EDF3F9; color: #17263B; }
+  .btn.ghost:hover { background: #dde8f3; }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  .fb { min-height: 22px; font-weight: 700; font-size: 15px; margin-top: 10px; }
+  .fb.ok { color: #1E8449; } .fb.no { color: #C0392B; } .fb.info { color: #2E75B6; }
+  .tent { font-size: 12.5px; color: #97A2AD; margin-top: 4px; }
+
+  .dica { background: #FFF8EC; border: 1px solid #E8CFA0; border-radius: 9px; padding: 12px 14px;
+          margin-top: 12px; font-size: 14px; display: none; }
+  .dica.show { display: block; }
+  .dica b { color: #B9651A; }
+
+  .copybar { background: #FFF3D6; border: 1px solid #E8C983; border-radius: 9px; padding: 11px 14px;
+             font-size: 14.5px; color: #8A6212; font-weight: 600; margin-bottom: 12px; }
+  .reveal { background: #F4F8FC; border: 1px solid #D9E3EC; border-radius: 9px; padding: 14px 16px;
+            margin-top: 10px; display: none; font-size: 15px; }
+  .reveal.show { display: block; }
+
+  .conexao{border:1px solid var(--linha);background:#F7FAFD;border-radius:11px;padding:14px 18px;margin:22px 0 0;}
+  .conexao .t{font-size:15.5px;font-weight:700;color:var(--azul);margin-bottom:4px;}
+
+  .final-msg { text-align: center; padding: 40px 24px 10px; }
+  .final-msg .ic { font-size: 52px; }
+  .final-msg h2 { color: #17263B; margin: 8px 0 6px; }
+  .final-msg p { color: #4A6076; font-size: 15px; }
+
+  @media (max-width: 620px){ .inner{padding:20px 16px;} .senha-in{width:100%;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="ttl">Sala de Fuga Matemática
+      <small>MATEMÁTICA · 8º ANO · MÉTODO DA ADIÇÃO</small></div>
+    <div class="placar">Salas abertas: <b><span id="score">0</span></b> / <span id="total">5</span></div>
+  </div>
+
+  <div class="page">
+    <div class="hero">
+      <span class="badge">🔒 SALA DE FUGA</span>
+      <p>Copie o conteúdo de cada sala no caderno e resolva o desafio para destrancar a próxima.</p>
+    </div>
+
+    <div class="inner">
+
+      <!-- SALA 1 -->
+      <div class="room" id="room1">
+        <div class="head"><span class="n">1</span><div><div class="t">Coeficientes opostos</div><div class="sub">A ideia do método da adição</div></div></div>
+        <div class="body">
+          <div class="lesson">
+            <p>Já vimos que um <b>sistema</b> é um par de equações que precisam valer ao mesmo tempo, e que a solução é o ponto onde as retas se cruzam. Agora, um novo caminho: o método da <b>adição</b>.</p>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 10</span><span>x − y = 2</span></span></span>
+            <div class="defbox"><div class="t">A ideia do método da adição</div>
+            Quando uma incógnita aparece com coeficientes <b>opostos</b> (um positivo e outro negativo, mesmo valor), somar as equações membro a membro <b>elimina</b> essa incógnita.</div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 CÓDIGO PARA DESTRANCAR</div><div class="l"></div></div>
+          <div class="charada">
+            A pista está na frase
+            <span class="frase">"MÉTODO DA SOMA"</span>
+            Código do alfabeto (A=1...Z=26).
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in1" placeholder="senha" maxlength="6">
+            <button class="btn gold" id="chk1">Destrancar</button>
+          </div>
+          <div class="tent" id="tent1"></div>
+          <div class="fb" id="fb1"></div>
+          <div class="dica" id="dica1"><b>Dica:</b> é uma soma.</div>
+        </div>
+      </div>
+
+      <!-- SALA 2 -->
+      <div class="room locked" id="room2">
+        <div class="head"><span class="n">2</span><div><div class="t">Passo a passo</div><div class="sub">O método da adição</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 1 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="passos">
+              <div class="passo"><div class="t">PASSO 1</div><div class="d">Veja se alguma incógnita já tem coeficientes opostos. Se não, multiplique uma equação.</div></div>
+              <div class="passo"><div class="t">PASSO 2</div><div class="d">Some as duas equações — uma incógnita desaparece.</div></div>
+              <div class="passo"><div class="t">PASSO 3</div><div class="d">Resolva a equação que sobrou.</div></div>
+              <div class="passo"><div class="t">PASSO 4</div><div class="d">Substitua o valor numa equação original para achar a outra incógnita.</div></div>
+              <div class="passo"><div class="t">PASSO 5</div><div class="d">Confira o par nas duas equações.</div></div>
+            </div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 CÓDIGO PARA DESTRANCAR</div><div class="l"></div></div>
+          <div class="charada">
+            A pista está nas vogais de
+            <span class="frase">"COEFICIENTE"</span>
+            Código das vogais: A=1, E=2, I=3, O=4, U=5.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in2" placeholder="senha" maxlength="6">
+            <button class="btn gold" id="chk2">Destrancar</button>
+          </div>
+          <div class="tent" id="tent2"></div>
+          <div class="fb" id="fb2"></div>
+          <div class="dica" id="dica2"><b>Dica:</b> é um produto.</div>
+        </div>
+      </div>
+
+      <!-- SALA 3 -->
+      <div class="room locked" id="room3">
+        <div class="head"><span class="n">3</span><div><div class="t">Exemplo 1</div><div class="sub">Coeficientes já opostos</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 2 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="ex-work"><div class="h">Exemplo 1 — coeficientes já opostos</div>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 10</span><span>x − y = 2</span></span></span>
+            <div class="step"><b>Passo 2.</b> Somo as equações: (x + y) + (x − y) = 10 + 2 → 2x = 12</div>
+            <div class="step"><b>Passo 3.</b> 2x = 12 → <b>x = 6</b></div>
+            <div class="step"><b>Passo 4.</b> 6 + y = 10 → <b>y = 4</b></div>
+            <div class="step"><b>Passo 5.</b> Confiro: 6 + 4 = 10 ✓ e 6 − 4 = 2 ✓</div>
+            <span class="res">Solução: (6, 4)</span></div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 AGORA É COM VOCÊ</div><div class="l"></div></div>
+          <div class="charada">
+            Resolva:
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 11</span><span>x − y = 3</span></span></span>
+            Senha: x vezes y.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in3" placeholder="senha" maxlength="6">
+            <button class="btn gold" id="chk3">Destrancar</button>
+          </div>
+          <div class="tent" id="tent3"></div>
+          <div class="fb" id="fb3"></div>
+          <div class="dica" id="dica3"><b>Dica:</b> some as duas equações primeiro.</div>
+        </div>
+      </div>
+
+      <!-- SALA 4 -->
+      <div class="room locked" id="room4">
+        <div class="head"><span class="n">4</span><div><div class="t">Exemplo 2</div><div class="sub">Precisa multiplicar antes</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 3 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="ex-work"><div class="h">Exemplo 2 — precisa multiplicar antes</div>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + 2y = 8</span><span>3x − y = 3</span></span></span>
+            <div class="step"><b>Passo 1.</b> Multiplico a 2ª equação por 2: 6x − 2y = 6</div>
+            <div class="step"><b>Passo 2.</b> Somo com a 1ª: (x + 2y) + (6x − 2y) = 8 + 6 → 7x = 14</div>
+            <div class="step"><b>Passo 3.</b> 7x = 14 → <b>x = 2</b></div>
+            <div class="step"><b>Passo 4.</b> 2 + 2y = 8 → <b>y = 3</b></div>
+            <div class="step"><b>Passo 5.</b> Confiro: 2 + 2·3 = 8 ✓ e 3·2 − 3 = 3 ✓</div>
+            <span class="res">Solução: (2, 3)</span></div>
+            <div class="warn"><b>Dica de ouro:</b> se os coeficientes tiverem o mesmo sinal, multiplique uma equação por −1 antes de somar.</div>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 CÓDIGO PARA DESTRANCAR</div><div class="l"></div></div>
+          <div class="charada">
+            Resolva:
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + 3y = 11</span><span>2x − y = 1</span></span></span>
+            Senha: o número formado por x seguido de y.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in4" placeholder="senha" maxlength="4">
+            <button class="btn gold" id="chk4">Destrancar</button>
+          </div>
+          <div class="tent" id="tent4"></div>
+          <div class="fb" id="fb4"></div>
+          <div class="dica" id="dica4"><b>Dica:</b> multiplique a 2ª equação por 3.</div>
+        </div>
+      </div>
+
+      <!-- SALA 5 -->
+      <div class="room locked" id="room5">
+        <div class="head"><span class="n">5</span><div><div class="t">Exemplo 3</div><div class="sub">Situação real</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 4 primeiro</div>
+        <div class="body" hidden>
+          <div class="lesson">
+            <div class="ex-work"><div class="h">Exemplo 3 — o vendedor de suco e salgado</div>
+            <p>Um cliente levou 2 sucos e 3 salgados e pagou R$ 22; outro levou 2 sucos e 5 salgados e pagou R$ 30. Qual o preço de cada item?</p>
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>2x + 3y = 22</span><span>2x + 5y = 30</span></span></span>
+            <div class="step"><b>Passo 1.</b> Multiplico a 1ª por −1: −2x − 3y = −22</div>
+            <div class="step"><b>Passo 2.</b> Somo com a 2ª: 2y = 8 → <b>y = 4</b></div>
+            <div class="step"><b>Passo 4.</b> 2x + 3·4 = 22 → <b>x = 5</b></div>
+            <span class="res">Suco custa R$ 5 e salgado custa R$ 4</span></div>
+
+            <table>
+            <tr><th>Conceito</th><th>O que é</th></tr>
+            <tr><td><b>Coeficientes opostos</b></td><td>Mesma incógnita com sinais contrários</td></tr>
+            <tr><td><b>Multiplicar antes</b></td><td>Necessário quando nenhuma incógnita já tem coeficientes opostos</td></tr>
+            </table>
+          </div>
+
+          <div class="divider"><div class="l"></div><div class="t">🔑 ÚLTIMO CÓDIGO</div><div class="l"></div></div>
+          <div class="charada">
+            Resolva:
+            <span class="sys"><span class="brace">{</span><span class="eqs"><span>x + y = 14</span><span>x − y = 6</span></span></span>
+            Transforme x em letra (A=1, B=2...). A senha é a letra.
+          </div>
+          <div class="senha-row">
+            <input class="senha-in" id="in5" placeholder="senha" maxlength="2">
+            <button class="btn gold" id="chk5">Destrancar</button>
+          </div>
+          <div class="tent" id="tent5"></div>
+          <div class="fb" id="fb5"></div>
+          <div class="dica" id="dica5"><b>Dica:</b> some as duas equações primeiro.</div>
+        </div>
+      </div>
+
+      <!-- DESAFIO FINAL -->
+      <div class="room locked" id="room6">
+        <div class="head"><span class="n">★</span><div><div class="t">Desafio Final — A Porta de Saída</div><div class="sub">Para copiar no caderno</div></div></div>
+        <div class="lockbar"><span class="ic">🔒</span>Destranque a Sala 5 primeiro</div>
+        <div class="body" hidden>
+          <div class="copybar">✍️ Este desafio é para <b>copiar no caderno e resolver</b> — registro individual.</div>
+          <p>Dois amigos venderam brigadeiros numa festa junina. Juntos venderam <b>70 unidades</b>. Um vendeu <b>16 a mais</b> que o outro. Quanto cada um vendeu?</p>
+          <div class="row" style="margin-top:10px"><button class="btn ghost" id="revbtn">Revelar resposta e abrir a porta</button></div>
+          <div class="reveal" id="revbox">
+            Sistema: <span class="eqchip">x + y = 70</span> e <span class="eqchip">x − y = 16</span>.
+            Somando: 2x = 86 → x = 43. Substituindo: y = 70 − 43 = 27.
+            <br><br><b>Um amigo vendeu 43 e o outro 27 brigadeiros.</b>
+          </div>
+
+          <div class="conexao"><div class="t">Conexão Empreendedora</div>
+          <p>O método da adição é útil quando duas vendas usam os mesmos produtos em quantidades diferentes. Perceber que dá pra "cancelar" uma variável somando as contas é uma forma rápida de descobrir preços e quantidades sem testar valor por valor.</p></div>
+        </div>
+      </div>
+
+      <div class="final-msg" id="finalmsg" hidden>
+        <div class="ic">🎉🗝️</div>
+        <h2>Parabéns! Vocês escaparam da Sala de Matemática!</h2>
+        <p>Todas as senhas foram decifradas. Bom trabalho, turma!</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let score=0;
+function bumpScore(){ score++; document.getElementById('score').textContent=score; }
+function unlock(n){
+  const cur=document.getElementById('room'+n); cur.classList.remove('locked'); cur.classList.add('done');
+  const nx=document.getElementById('room'+(n+1)); if(!nx) return;
+  nx.classList.remove('locked');
+  const lb=nx.querySelector('.lockbar'); if(lb) lb.style.display='none';
+  const bd=nx.querySelector('.body'); if(bd) bd.hidden=false;
+  nx.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function norm(s){ return s.trim().toUpperCase(); }
+
+function setupRoom(n, answer){
+  const input=document.getElementById('in'+n), btn=document.getElementById('chk'+n),
+        fb=document.getElementById('fb'+n), tentEl=document.getElementById('tent'+n),
+        dica=document.getElementById('dica'+n);
+  let tentativas=0, solved=false, scored=false;
+  function tryAnswer(){
+    if(solved) return;
+    const v=norm(input.value);
+    if(v===''){ fb.textContent="Digite uma senha."; fb.className="fb info"; return; }
+    tentativas++;
+    if(v===answer){
+      solved=true; input.className='senha-in ok'; input.disabled=true; btn.disabled=true;
+      fb.textContent="✓ Correto! Sala destrancada."; fb.className="fb ok";
+      if(!scored){ bumpScore(); scored=true; }
+      unlock(n);
+    } else {
+      input.className='senha-in no'; fb.textContent="Senha incorreta. Reveja a conta e tente de novo.";
+      fb.className="fb no"; tentEl.textContent="Tentativas: "+tentativas;
+      if(tentativas>=2 && dica) dica.classList.add('show');
+    }
+  }
+  btn.addEventListener('click', tryAnswer);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') tryAnswer(); });
+}
+
+setupRoom(1,'125');
+setupRoom(2,'288');
+setupRoom(3,'28');
+setupRoom(4,'23');
+setupRoom(5,'J');
+
+document.getElementById('revbtn').addEventListener('click', function(){
+  document.getElementById('revbox').classList.add('show');
+  this.disabled=true; this.textContent='Porta aberta!';
+  document.getElementById('finalmsg').hidden=false;
+  document.getElementById('finalmsg').scrollIntoView({behavior:'smooth', block:'start'});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2º Trimestre - Vida e Evolução - 6º Ano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b0f19;
+    --card: #ffffff;
+    --ink: #1a1a2e;
+    --muted: #6b7280;
+    --t7-a: #10b981; --t7-b: #059669; --t7-glow: rgba(16,185,129,.35);
+    --t9-a: #f43f5e; --t9-b: #e11d48; --t9-glow: rgba(244,63,94,.35);
+    --t11-a: #3b82f6; --t11-b: #2563eb; --t11-glow: rgba(59,130,246,.35);
+    --neutral-a: #8b5cf6; --neutral-b: #7c3aed; --neutral-glow: rgba(139,92,246,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Outfit',sans-serif;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(139,92,246,.18), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(16,185,129,.15), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(244,63,94,.12), transparent 35%),
+      var(--bg);
+    display:flex; justify-content:center; align-items:center;
+    min-height:100vh; padding:24px; overflow:hidden;
+  }
+  .stage{
+    width:100%; max-width:1100px; aspect-ratio:16/9; position:relative;
+    border-radius:26px; overflow:hidden;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+    background:#0e1320;
+  }
+  .slide{
+    position:absolute; inset:0; padding:64px 84px;
+    display:flex; flex-direction:column; justify-content:center;
+    opacity:0; transform:scale(.97) translateY(14px);
+    transition:opacity .65s cubic-bezier(.22,.61,.36,1), transform .65s cubic-bezier(.22,.61,.36,1);
+    pointer-events:none;
+    background:var(--card);
+  }
+  .slide.active{ opacity:1; transform:scale(1) translateY(0); z-index:5; pointer-events:auto; }
+
+  /* ---------- Themed backgrounds ---------- */
+  .slide[data-theme="title"]{ background:linear-gradient(155deg,#111827 0%, #1e1b4b 55%, #0b0f19 100%); color:#fff; }
+  .slide[data-theme="ch7"]{ background:linear-gradient(160deg,#052e22 0%, #06301f 45%, #0e1320 100%); color:#fff; }
+  .slide[data-theme="ch9"]{ background:linear-gradient(160deg,#3f0b17 0%, #4a0e1c 45%, #0e1320 100%); color:#fff; }
+  .slide[data-theme="ch11"]{ background:linear-gradient(160deg,#0b1f3f 0%, #0c2247 45%, #0e1320 100%); color:#fff; }
+  .slide[data-theme="light7"]{ background:#f4fbf8; color:var(--ink); }
+  .slide[data-theme="light9"]{ background:#fff5f6; color:var(--ink); }
+  .slide[data-theme="light11"]{ background:#f2f7ff; color:var(--ink); }
+  .slide[data-theme="closing"]{ background:linear-gradient(155deg,#111827 0%, #1e1b4b 55%, #0b0f19 100%); color:#fff; }
+
+  /* accent variables per light theme */
+  .slide[data-theme="light7"]{ --acc-a:var(--t7-a); --acc-b:var(--t7-b); --acc-glow:var(--t7-glow); }
+  .slide[data-theme="light9"]{ --acc-a:var(--t9-a); --acc-b:var(--t9-b); --acc-glow:var(--t9-glow); }
+  .slide[data-theme="light11"]{ --acc-a:var(--t11-a); --acc-b:var(--t11-b); --acc-glow:var(--t11-glow); }
+
+  /* ---------- Chapter cover slides ---------- */
+  .cover-eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:.14em;
+    font-size:.85em; text-transform:uppercase; color:rgba(255,255,255,.65);
+    margin:0 auto 22px auto; padding:8px 18px; border:1px solid rgba(255,255,255,.18);
+    border-radius:30px; width:fit-content; backdrop-filter:blur(6px);
+  }
+  .cover-icon{
+    width:120px; height:120px; border-radius:32px; margin:0 auto 30px auto;
+    display:flex; align-items:center; justify-content:center; font-size:3.2em;
+    box-shadow:0 20px 50px -12px var(--glow, rgba(0,0,0,.5));
+  }
+  .slide[data-theme="ch7"] .cover-icon{ background:linear-gradient(135deg,var(--t7-a),var(--t7-b)); --glow:var(--t7-glow); }
+  .slide[data-theme="ch9"] .cover-icon{ background:linear-gradient(135deg,var(--t9-a),var(--t9-b)); --glow:var(--t9-glow); }
+  .slide[data-theme="ch11"] .cover-icon{ background:linear-gradient(135deg,var(--t11-a),var(--t11-b)); --glow:var(--t11-glow); }
+  .cover-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:3em;
+    text-align:center; line-height:1.15; margin-bottom:16px;
+  }
+  .cover-sub{ text-align:center; font-size:1.25em; color:rgba(255,255,255,.72); font-weight:400; }
+  .cover-pages{
+    margin:34px auto 0 auto; text-align:center; font-family:'Space Grotesk',sans-serif;
+    font-size:.95em; color:rgba(255,255,255,.55); letter-spacing:.04em;
+  }
+
+  /* ---------- Title/closing slide ---------- */
+  .hero-title{ font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:3.4em; text-align:center; line-height:1.1; }
+  .hero-title span{ background:linear-gradient(90deg,#8b5cf6,#ec4899,#f59e0b); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub{ text-align:center; font-size:1.3em; color:rgba(255,255,255,.7); margin-top:18px; }
+  .hero-chips{ display:flex; gap:16px; justify-content:center; margin-top:52px; flex-wrap:wrap; }
+  .chip{
+    display:flex; align-items:center; gap:10px; padding:14px 22px; border-radius:16px;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1em; color:#fff;
+  }
+  .chip .dot{ width:10px; height:10px; border-radius:50%; }
+  .chip.c7 .dot{ background:var(--t7-a); } .chip.c9 .dot{ background:var(--t9-a); } .chip.c11 .dot{ background:var(--t11-a); }
+
+  /* ---------- Concept slides ---------- */
+  .sec-head{ display:flex; align-items:center; gap:16px; margin-bottom:34px; }
+  .sec-badge{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.85em;
+    color:#fff; padding:8px 16px; border-radius:12px; letter-spacing:.05em;
+  }
+  .light7 .sec-badge, [data-theme="light7"] .sec-badge{ background:linear-gradient(135deg,var(--t7-a),var(--t7-b)); }
+  [data-theme="light9"] .sec-badge{ background:linear-gradient(135deg,var(--t9-a),var(--t9-b)); }
+  [data-theme="light11"] .sec-badge{ background:linear-gradient(135deg,var(--t11-a),var(--t11-b)); }
+  .sec-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.9em; color:var(--ink); }
+
+  .concept-grid{ display:flex; flex-direction:column; gap:16px; }
+  .concept-card{
+    display:flex; gap:18px; align-items:flex-start; padding:22px 26px; border-radius:18px;
+    background:#fff; border:1px solid rgba(0,0,0,.06);
+    box-shadow:0 10px 30px -18px rgba(0,0,0,.25);
+  }
+  .concept-num{
+    flex:none; width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff; font-size:1.05em;
+    background:linear-gradient(135deg,var(--acc-a),var(--acc-b));
+  }
+  .concept-term{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.12em; color:var(--ink); margin-bottom:4px; }
+  .concept-def{ font-size:1.02em; color:#44454f; line-height:1.55; }
+
+  /* ---------- Question slides ---------- */
+  .quest-list{ display:flex; flex-direction:column; gap:14px; }
+  .quest-item{
+    display:flex; gap:16px; align-items:flex-start; padding:18px 24px; border-radius:16px;
+    background:#fff; border:1px dashed rgba(0,0,0,.14);
+  }
+  .quest-num{
+    flex:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.95em; color:#fff;
+    background:linear-gradient(135deg,var(--acc-a),var(--acc-b));
+  }
+  .quest-text{ font-size:1.08em; color:var(--ink); line-height:1.5; padding-top:3px; }
+  .book-hint{
+    margin-top:24px; display:flex; align-items:center; justify-content:center; gap:10px;
+    font-size:.95em; color:var(--muted); font-style:italic;
+  }
+
+  /* ---------- Nav ---------- */
+  .controls{ position:absolute; bottom:22px; right:28px; display:flex; gap:10px; z-index:30; }
+  .controls button{
+    width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(0,0,0,.55); color:#fff; font-size:1.1em;
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(6px); transition:all .25s; opacity:.75;
+  }
+  .controls button:hover{ opacity:1; transform:scale(1.08); background:rgba(0,0,0,.75); }
+  .side-click{ position:absolute; top:0; width:14%; height:100%; cursor:pointer; z-index:10; background:transparent; }
+  .side-click.left{ left:0; } .side-click.right{ right:0; }
+
+  .progress-wrap{ position:absolute; bottom:26px; left:28px; display:flex; gap:6px; z-index:30; align-items:center; }
+  .progress-dot{ width:7px; height:7px; border-radius:50%; background:rgba(0,0,0,.18); transition:all .3s; }
+  .slide[data-theme="title"] ~ .progress-wrap .progress-dot,
+  .dark .progress-dot{ background:rgba(255,255,255,.25); }
+  .progress-dot.on{ width:22px; background:linear-gradient(90deg,#8b5cf6,#ec4899); }
+
+  .top-label{ position:absolute; top:26px; left:32px; z-index:30; font-family:'Space Grotesk',sans-serif; font-size:.82em; letter-spacing:.08em; text-transform:uppercase; color:rgba(0,0,0,.35); }
+  [data-theme="title"] .top-label, [data-theme="ch7"] .top-label, [data-theme="ch9"] .top-label, [data-theme="ch11"] .top-label, [data-theme="closing"] .top-label{ color:rgba(255,255,255,.45); }
+
+  @media (max-width:768px){
+    .slide{ padding:38px; }
+    .hero-title{ font-size:2.2em; }
+    .cover-title{ font-size:2em; }
+    .sec-title{ font-size:1.4em; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- 1. TITLE -->
+  <div class="slide active" data-theme="title">
+    <div class="cover-eyebrow" style="margin-left:auto;margin-right:auto;">📘 CIÊNCIAS DA NATUREZA · 6º ANO B</div>
+    <h1 class="hero-title">2º Trimestre<br><span>Vida e Evolução</span></h1>
+    <p class="hero-sub">Resumo do conteúdo para a avaliação e o simulado</p>
+    <div class="hero-chips">
+      <div class="chip c7"><span class="dot"></span> Cap. 7 · Seres Vivos</div>
+      <div class="chip c9"><span class="dot"></span> Cap. 9 · Corpo Humano</div>
+      <div class="chip c11"><span class="dot"></span> Cap. 11 · Movimento</div>
+    </div>
+  </div>
+
+  <!-- 2. CAP 7 COVER -->
+  <div class="slide" data-theme="ch7">
+    <div class="cover-eyebrow" style="margin-left:auto;margin-right:auto;">CAPÍTULO 7</div>
+    <div class="cover-icon">🧫</div>
+    <h2 class="cover-title">Características<br>dos Seres Vivos</h2>
+    <p class="cover-sub">A célula como unidade da vida</p>
+    <p class="cover-pages">LIVRO · PÁGINAS 162 A 181</p>
+  </div>
+
+  <!-- 3. CAP 7 CONCEITOS -->
+  <div class="slide" data-theme="light7">
+    <div class="sec-head"><span class="sec-badge">CAP. 7 · CONCEITOS</span></div>
+    <h2 class="sec-title" style="margin-bottom:26px;">O que você precisa saber</h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-num">1</div>
+        <div><div class="concept-term">Célula</div><div class="concept-def">Unidade estrutural e funcional dos seres vivos, formada basicamente por membrana celular, citoplasma e núcleo.</div></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-num">2</div>
+        <div><div class="concept-term">Metabolismo</div><div class="concept-def">Conjunto de reações químicas que ocorrem no organismo e permitem obter e usar energia para manter a vida.</div></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-num">3</div>
+        <div><div class="concept-term">Ciclo de vida</div><div class="concept-def">Capacidade dos seres vivos de se reproduzir, garantindo a continuidade da espécie ao longo do tempo.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. CAP 7 PERGUNTAS -->
+  <div class="slide" data-theme="light7">
+    <div class="sec-head"><span class="sec-badge">CAP. 7 · PESQUISA</span></div>
+    <h2 class="sec-title" style="margin-bottom:22px;">Pesquise no livro e responda</h2>
+    <div class="quest-list">
+      <div class="quest-item"><div class="quest-num">1</div><div class="quest-text">Quais são as três estruturas básicas de uma célula e qual é a função de cada uma?</div></div>
+      <div class="quest-item"><div class="quest-num">2</div><div class="quest-text">Qual é a diferença entre célula animal e célula vegetal?</div></div>
+      <div class="quest-item"><div class="quest-num">3</div><div class="quest-text">O que é metabolismo e por que ele é importante para os seres vivos?</div></div>
+      <div class="quest-item"><div class="quest-num">4</div><div class="quest-text">Por que a capacidade de reagir a estímulos é considerada uma característica dos seres vivos?</div></div>
+      <div class="quest-item"><div class="quest-num">5</div><div class="quest-text">O que são células-tronco e qual é a sua importância?</div></div>
+    </div>
+    <p class="book-hint">📖 Consulte as páginas 162 a 181 e escreva as respostas no caderno</p>
+  </div>
+
+  <!-- 5. CAP 9 COVER -->
+  <div class="slide" data-theme="ch9">
+    <div class="cover-eyebrow" style="margin-left:auto;margin-right:auto;">CAPÍTULO 9</div>
+    <div class="cover-icon">🫀</div>
+    <h2 class="cover-title">Organização e Coordenação<br>do Corpo Humano</h2>
+    <p class="cover-sub">Sistemas integrados e sistema nervoso</p>
+    <p class="cover-pages">LIVRO · PÁGINAS 226 A 253</p>
+  </div>
+
+  <!-- 6. CAP 9 CONCEITOS -->
+  <div class="slide" data-theme="light9">
+    <div class="sec-head"><span class="sec-badge">CAP. 9 · CONCEITOS</span></div>
+    <h2 class="sec-title" style="margin-bottom:26px;">O que você precisa saber</h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-num">1</div>
+        <div><div class="concept-term">Sistemas do corpo</div><div class="concept-def">Conjuntos de órgãos que atuam de forma integrada, cada um com uma função específica (cardiovascular, digestório, respiratório, entre outros).</div></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-num">2</div>
+        <div><div class="concept-term">Sistema nervoso</div><div class="concept-def">Responsável por coordenar as ações do corpo, formado por neurônios, encéfalo, medula espinhal e nervos.</div></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-num">3</div>
+        <div><div class="concept-term">Substâncias psicoativas</div><div class="concept-def">Substâncias que alteram o funcionamento do sistema nervoso, podendo ser estimulantes, depressoras ou perturbadoras.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. CAP 9 PERGUNTAS -->
+  <div class="slide" data-theme="light9">
+    <div class="sec-head"><span class="sec-badge">CAP. 9 · PESQUISA</span></div>
+    <h2 class="sec-title" style="margin-bottom:22px;">Pesquise no livro e responda</h2>
+    <div class="quest-list">
+      <div class="quest-item"><div class="quest-num">1</div><div class="quest-text">Cite três sistemas do corpo humano e explique a função de cada um.</div></div>
+      <div class="quest-item"><div class="quest-num">2</div><div class="quest-text">Qual é a diferença entre um ato reflexo e um ato voluntário?</div></div>
+      <div class="quest-item"><div class="quest-num">3</div><div class="quest-text">Quais são as partes do sistema nervoso central e do sistema nervoso periférico?</div></div>
+      <div class="quest-item"><div class="quest-num">4</div><div class="quest-text">Como as substâncias psicoativas podem afetar o funcionamento do sistema nervoso?</div></div>
+      <div class="quest-item"><div class="quest-num">5</div><div class="quest-text">Qual é a função do sistema linfático na defesa do corpo?</div></div>
+    </div>
+    <p class="book-hint">📖 Consulte as páginas 226 a 253 e escreva as respostas no caderno</p>
+  </div>
+
+  <!-- 8. CAP 11 COVER -->
+  <div class="slide" data-theme="ch11">
+    <div class="cover-eyebrow" style="margin-left:auto;margin-right:auto;">CAPÍTULO 11</div>
+    <div class="cover-icon">🦴</div>
+    <h2 class="cover-title">O Corpo Humano<br>em Movimento</h2>
+    <p class="cover-sub">Ossos, articulações e músculos</p>
+    <p class="cover-pages">LIVRO · PÁGINAS 278 A 305</p>
+  </div>
+
+  <!-- 9. CAP 11 CONCEITOS -->
+  <div class="slide" data-theme="light11">
+    <div class="sec-head"><span class="sec-badge">CAP. 11 · CONCEITOS</span></div>
+    <h2 class="sec-title" style="margin-bottom:26px;">O que você precisa saber</h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-num">1</div>
+        <div><div class="concept-term">Esqueleto</div><div class="concept-def">Conjunto de ossos que sustenta e protege o corpo, dividido em esqueleto axial (crânio, coluna, costelas) e apendicular (membros).</div></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-num">2</div>
+        <div><div class="concept-term">Articulações</div><div class="concept-def">Pontos de união entre os ossos que permitem os movimentos do corpo, com diferentes graus de mobilidade.</div></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-num">3</div>
+        <div><div class="concept-term">Músculos</div><div class="concept-def">Estruturas que, ao se contraírem, promovem o movimento do corpo, atuando junto com ossos e articulações.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. CAP 11 PERGUNTAS -->
+  <div class="slide" data-theme="light11">
+    <div class="sec-head"><span class="sec-badge">CAP. 11 · PESQUISA</span></div>
+    <h2 class="sec-title" style="margin-bottom:22px;">Pesquise no livro e responda</h2>
+    <div class="quest-list">
+      <div class="quest-item"><div class="quest-num">1</div><div class="quest-text">Qual é a diferença entre esqueleto axial e esqueleto apendicular?</div></div>
+      <div class="quest-item"><div class="quest-num">2</div><div class="quest-text">O que são as articulações e qual é a sua função no corpo?</div></div>
+      <div class="quest-item"><div class="quest-num">3</div><div class="quest-text">Como os músculos estriados esqueléticos promovem o movimento do corpo?</div></div>
+      <div class="quest-item"><div class="quest-num">4</div><div class="quest-text">Cite um exemplo de problema que pode afetar a coluna vertebral.</div></div>
+      <div class="quest-item"><div class="quest-num">5</div><div class="quest-text">Como o esqueleto de outros animais se compara ao esqueleto humano?</div></div>
+    </div>
+    <p class="book-hint">📖 Consulte as páginas 278 a 305 e escreva as respostas no caderno</p>
+  </div>
+
+  <!-- 11. CLOSING -->
+  <div class="slide" data-theme="closing">
+    <div class="cover-eyebrow" style="margin-left:auto;margin-right:auto;">RESUMO CONCLUÍDO</div>
+    <h1 class="hero-title">Bom estudo! <span>🔬🫀🦴</span></h1>
+    <p class="hero-sub">Revise os 3 capítulos antes da prova e do simulado</p>
+    <div class="hero-chips">
+      <div class="chip c7"><span class="dot"></span> p. 162-181</div>
+      <div class="chip c9"><span class="dot"></span> p. 226-253</div>
+      <div class="chip c11"><span class="dot"></span> p. 278-305</div>
+    </div>
+    <p style="text-align:center;margin-top:44px;color:rgba(255,255,255,.5);font-size:.95em;">Conteúdo baseado no livro Superação - Ciências 6º ano</p>
+  </div>
+
+  <div class="top-label"><span id="current">01</span> / <span id="total">11</span></div>
+  <div class="progress-wrap" id="dots"></div>
+  <div class="controls">
+    <button onclick="previousSlide()" aria-label="Anterior">←</button>
+    <button onclick="nextSlide()" aria-label="Próximo">→</button>
+  </div>
+  <div class="side-click left" onclick="previousSlide()"></div>
+  <div class="side-click right" onclick="nextSlide()"></div>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  document.getElementById('total').textContent = String(total).padStart(2,'0');
+
+  const dotsWrap = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'progress-dot' + (i===0 ? ' on':'');
+    dotsWrap.appendChild(d);
+  });
+  const dots = document.querySelectorAll('.progress-dot');
+
+  function show(n){
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('on');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    dots[current].classList.add('on');
+    document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+  }
+  function nextSlide(){ show(current+1); }
+  function previousSlide(){ show(current-1); }
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight') nextSlide();
+    if(e.key === 'ArrowLeft') previousSlide();
+  });
+</script>
+</body>
+</html>

@@ -271,6 +271,13 @@
     .grade-panel { display: none; }
     .grade-panel.active { display: block; animation: fadeIn .3s ease; }
 
+    /* Discipline sub-tabs (Matemática / Ciências) */
+    .disc-sub-tabs { display:flex; gap:.6rem; padding:.75rem 2rem 1rem; border-bottom:1px solid #f0f0f0; margin-bottom:.5rem; }
+    .disc-sub-btn { font-size:.9rem; font-weight:700; padding:.4rem 1.2rem; border-radius:999px; border:2px solid #388e3c; color:#388e3c; background:transparent; cursor:pointer; transition:all .2s; }
+    .disc-sub-btn.active { background:#388e3c; color:#fff; box-shadow:0 3px 10px rgba(56,142,60,.25); }
+    .disc-grid { display:none !important; }
+    .disc-grid.active { display:grid !important; }
+
     /* EJA sub-tabs */
     .eja-sub-tabs { display:flex; gap:.75rem; padding:1rem 2rem .5rem; flex-wrap:wrap; border-bottom:1px solid #f0f0f0; margin-bottom:.5rem; }
     .eja-disc-btn { font-size:.95rem; font-weight:700; padding:.45rem 1.2rem; border-radius:999px; border:2px solid #e65100; color:#e65100; background:transparent; cursor:pointer; transition:all .2s; }
@@ -764,7 +771,12 @@
       <div class="grade-panel-header">
         <h3><span class="dot" style="background:#1565c0"></span> 6.º Ano — Materiais</h3>
       </div>
-      <div class="materials-grid" id="grid-6ano"></div>
+      <div class="disc-sub-tabs" id="disc-tabs-6ano">
+        <button class="disc-sub-btn active" onclick="switchDisc('6ano','mat',this)">📐 Matemática</button>
+        <button class="disc-sub-btn" onclick="switchDisc('6ano','cie',this)">🔬 Ciências</button>
+      </div>
+      <div class="materials-grid disc-grid active" id="grid-6ano-mat"></div>
+      <div class="materials-grid disc-grid" id="grid-6ano-cie"></div>
     </div>
 
     <!-- ── 7.º ANO ── -->
@@ -780,7 +792,12 @@
       <div class="grade-panel-header">
         <h3><span class="dot" style="background:#6a1b9a"></span> 8.º Ano — Materiais</h3>
       </div>
-      <div class="materials-grid" id="grid-8ano"></div>
+      <div class="disc-sub-tabs" id="disc-tabs-8ano">
+        <button class="disc-sub-btn active" onclick="switchDisc('8ano','mat',this)">📐 Matemática</button>
+        <button class="disc-sub-btn" onclick="switchDisc('8ano','cie',this)">🔬 Ciências</button>
+      </div>
+      <div class="materials-grid disc-grid active" id="grid-8ano-mat"></div>
+      <div class="materials-grid disc-grid" id="grid-8ano-cie"></div>
     </div>
 
     <!-- ── 9.º ANO ── -->
@@ -1015,7 +1032,7 @@
   const MATERIAIS = [
     {
       id: 1,
-      grade: "6ano",
+      grade: "6ano-mat",
       trimestre: 2,
       tipo: "pdf",
       titulo: "Aula 01 – Múltiplos",
@@ -1024,27 +1041,27 @@
       data: "07/06/2026"
     },
     {
-      id: 3, grade: "6ano", trimestre: 2, tipo: "pdf",
+      id: 3, grade: "6ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 02 – Divisores",
       descricao: "Divisores de um número natural: definição, propriedades, exemplos, exercícios e situações-problema.",
       link: "materiais/6ano/aula02_divisores.pdf", data: "08/06/2026"
     },
     {
-      id: 16, grade: "6ano", trimestre: 2, tipo: "pdf",
+      id: 16, grade: "6ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 03 – Critérios de Divisibilidade",
       descricao: "Critérios de divisibilidade por 2, 3, 4, 5, 6, 8, 9 e 10 com exemplos e exercícios.",
       link: "materiais/6ano/aula03_criterios_divisibilidade.pdf", data: "19/06/2026"
     },
     {
-      id: 17, grade: "6ano", trimestre: 2, tipo: "pdf",
+      id: 17, grade: "6ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 04 – Números Primos e Compostos",
       descricao: "Definição e identificação de números primos e compostos, crivo de Eratóstenes e exercícios.",
       link: "materiais/6ano/aula04_numeros_primos_compostos.pdf", data: "19/06/2026"
     },
-    { id: 51, grade: "6ano", trimestre: 2, tipo: "pdf",
+    { id: 51, grade: "6ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 05 – Fatores Primos",
       link: "materiais/6ano/aula05_fatores_primos.pdf", data: "04/08/2026" },
-    { id: 55, grade: "6ano", trimestre: 2, tipo: "pdf",
+    { id: 55, grade: "6ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 05 – Fatores Primos (Slides Interativos)",
       link: "materiais/6ano/aula05_fatores_primos.html", data: "11/08/2026" },
     {
@@ -1079,33 +1096,36 @@
       titulo: "Aula 03b – Exercícios de Regularidades",
       link: "materiais/7ano/aula05b_exercicios_regularidades.pdf", data: "04/08/2026" },
     {
-      id: 6, grade: "8ano", trimestre: 2, tipo: "pdf",
+      id: 6, grade: "8ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 00 – Revisão do 1º Trimestre",
       descricao: "Aulão de revisão dos conteúdos do 1º trimestre para o 8º ano.",
       link: "materiais/8ano/aula00_revisao_1tri.pdf", data: "09/06/2026"
     },
     {
-      id: 7, grade: "8ano", trimestre: 2, tipo: "pdf",
+      id: 7, grade: "8ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 01 – Expressões Algébricas",
       descricao: "Introdução às expressões algébricas: valor numérico, operações e simplificações.",
       link: "materiais/8ano/aula01_expressoes_algebricas.pdf", data: "09/06/2026"
     },
     {
-      id: 23, grade: "8ano", trimestre: 2, tipo: "pdf",
+      id: 23, grade: "8ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 02 – Equação de 1º Grau com Duas Incógnitas",
       descricao: "Resolução e representação de equações de 1º grau com duas incógnitas.",
       link: "materiais/8ano/aula02_equacao_1grau_duas_incognitas.pdf", data: "23/06/2026"
     },
-    { id: 48, grade: "8ano", trimestre: 2, tipo: "pdf",
+    { id: 48, grade: "8ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Aula 03 – A Reta no Plano Cartesiano",
       link: "materiais/8ano/aula03_reta_plano_cartesiano.pdf", data: "04/08/2026" },
-    { id: 57, grade: "8ano", trimestre: 2, tipo: "html",
+    { id: 57, grade: "8ano-mat", trimestre: 2, tipo: "html",
       titulo: "Aula 03 – A Reta no Plano Cartesiano (Interativa)",
       descricao: "Versão interativa com teoria, exercícios e correção automática.",
       link: "materiais/8ano/aula03_reta_plano_cartesiano_interativa.html", data: "13/08/2026" },
-    { id: 50, grade: "8ano", trimestre: 2, tipo: "pdf",
+    { id: 50, grade: "8ano-mat", trimestre: 2, tipo: "pdf",
       titulo: "Tema de Casa – Reta e Plano Cartesiano",
       link: "materiais/8ano/tema_de_casa_reta_plano_cartesiano.pdf", data: "04/08/2026" },
+    { id: 63, grade: "8ano-cie", trimestre: 2, tipo: "html",
+      titulo: "Aula 01 – Apresentação 2º Trimestre (Interativa)",
+      link: "materiais/8ano/ciencias/aula01_apresentacao_2t.html", data: "18/08/2026" },
     { id: 54, grade: "9ano", trimestre: 3, tipo: "pdf",
       titulo: "Aula de Artes – Grafite e Arte Urbana (Slides Interativos)",
       descricao: "Slides interativos sobre grafite, pichação, artistas brasileiros e debate. Inclui vídeo.",
@@ -1274,7 +1294,7 @@
     return g.replace('ano', '.º Ano');
   }
   function renderMateriais() {
-    ['6ano','7ano','8ano','9ano',
+    ['6ano-mat','6ano-cie','7ano','8ano-mat','8ano-cie','9ano',
      'eja-mat-t7','eja-mat-t8','eja-mat-t9',
      'eja-fis-t7','eja-fis-t8','eja-fis-t9',
      'eja-exc-t7','eja-exc-t8','eja-exc-t9',
@@ -1323,6 +1343,14 @@
       });
       grid.innerHTML = html;
     });
+  }
+
+  /* ── Discipline sub-tab navigation (Matemática / Ciências) ── */
+  function switchDisc(grade, disc, btn) {
+    document.querySelectorAll('#disc-tabs-' + grade + ' .disc-sub-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('[id^="grid-' + grade + '-"]').forEach(g => g.classList.remove('active'));
+    document.getElementById('grid-' + grade + '-' + disc).classList.add('active');
   }
 
   /* ── EJA sub-tab navigation ── */

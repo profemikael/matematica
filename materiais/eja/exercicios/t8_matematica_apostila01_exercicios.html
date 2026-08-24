@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T8 MATEMÁTICA — Apostila 01 — Exercícios Interativos</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{background:#1F4E79;color:#fff;text-align:center;padding:8px 12px;flex-shrink:0}
+  header h1{font-size:18px;letter-spacing:.4px}
+  header p{font-size:12px;color:#D6E4F0;margin-top:3px}
+
+  .topo{height:44vh;overflow-y:auto;padding:10px 0;background:#fff;border-bottom:4px solid #1F4E79}
+  .baixo{flex:1;overflow-y:auto;padding:12px 0;background:#f4f6f9}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  h2{color:#1F4E79;font-size:15px;margin-bottom:6px;border-bottom:2px solid #1F4E79;padding-bottom:3px}
+  .formulas{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0}
+  .card{flex:1;min-width:150px;background:#DEEBF7;border:1px solid #9DC3E6;border-radius:5px;padding:6px 8px;text-align:center}
+  .card b{color:#1F4E79;display:block;font-size:12px;margin-bottom:3px}
+  .card span{font-size:14px;font-weight:bold}
+  .exemplo{background:#EFF6FC;border:1px solid #9DC3E6;border-radius:5px;padding:8px 10px;margin-top:7px;font-size:13px;line-height:1.5}
+  .exemplo b{color:#1F4E79}
+  p.txt{font-size:13px;line-height:1.5;margin-bottom:5px}
+
+  .barra{height:9px;background:#dde3ea;border-radius:5px;overflow:hidden;margin-bottom:12px}
+  .barra div{height:100%;background:#1F4E79;width:0;transition:width .4s}
+  .contador{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+
+  .questao{background:#fff;border:1px solid #cfd8e3;border-left:5px solid #1F4E79;border-radius:6px;padding:13px 15px}
+  .questao .num{color:#1F4E79;font-weight:bold;font-size:14px}
+  .questao .enun{font-size:15px;line-height:1.55;margin:5px 0 11px}
+  .campos{display:flex;gap:14px;flex-wrap:wrap}
+  .campo{flex:1;min-width:175px}
+  .campo label{display:block;font-size:13px;color:#1F4E79;font-weight:bold;margin-bottom:4px}
+  .campo input{width:100%;padding:9px 11px;font-size:16px;font-family:Georgia,serif;border:2px solid #9DC3E6;border-radius:5px;background:#fbfdff}
+  .campo input:focus{outline:none;border-color:#1F4E79;background:#fff}
+  .campo input.ok{border-color:#2e7d32;background:#eaf6ea}
+  .campo input.erro{border-color:#c62828;background:#fdeaea}
+
+  .acoes{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{font-family:Georgia,serif;font-size:14px;padding:9px 20px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}
+  .btn-principal{background:#1F4E79;color:#fff}
+  .btn-principal:hover{background:#2b6497}
+  .feedback{font-size:13.5px;padding:8px 11px;border-radius:5px;margin-top:11px;display:none;line-height:1.5}
+  .feedback.certo{display:block;background:#eaf6ea;border:1px solid #2e7d32;color:#1b5e20}
+  .feedback.errado{display:block;background:#fdeaea;border:1px solid #c62828;color:#8e1c1c}
+  .feedback.ajuda{display:block;background:#FFF2CC;border:1px solid #C00000;color:#7a3b00}
+
+  .final{background:#fff;border:2px solid #1F4E79;border-radius:8px;padding:26px;text-align:center}
+  .final h3{color:#1F4E79;font-size:20px;margin-bottom:8px}
+  .final p{font-size:15px;line-height:1.6;margin-bottom:14px}
+  .placar{font-size:15px;color:#1F4E79;font-weight:bold;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>T8 — MATEMÁTICA — APOSTILA 01</h1>
+  <p>Equação do 2º Grau e Fórmula de Bhaskara &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+</header>
+
+<!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
+<section class="topo"><div class="wrap">
+  <h2>Como resolver uma equação do 2º grau</h2>
+  <div class="formulas">
+    <div class="card"><b>FORMA GERAL</b><span>ax&sup2; + bx + c = 0</span></div>
+    <div class="card"><b>DISCRIMINANTE</b><span>&Delta; = b&sup2; &minus; 4&middot;a&middot;c</span></div>
+    <div class="card"><b>BHASKARA</b><span>x = (&minus;b &plusmn; &radic;&Delta;) &divide; 2a</span></div>
+    <div class="card"><b>O QUE &Delta; INDICA</b><span>&Delta;&gt;0: duas raízes<br>&Delta;=0: uma raiz<br>&Delta;&lt;0: nenhuma</span></div>
+  </div>
+
+  <p class="txt"><b>1º)</b> Identifique a, b e c — atenção aos sinais negativos. <b>2º)</b> Calcule o &Delta;. <b>3º)</b> Aplique Bhaskara: o símbolo &plusmn; significa fazer DUAS contas, uma somando e outra subtraindo a raiz de &Delta;. Em problemas de medidas (terrenos, salas), a raiz negativa é descartada: comprimento não pode ser negativo.</p>
+
+  <div class="exemplo">
+    <b>Exemplo 1 —</b> Resolva x&sup2; &minus; 5x + 6 = 0.<br>
+    a = 1, b = &minus;5, c = 6. &nbsp; &Delta; = (&minus;5)&sup2; &minus; 4&middot;1&middot;6 = 25 &minus; 24 = <b>1</b>.<br>
+    x = (5 &plusmn; &radic;1) &divide; 2 = (5 &plusmn; 1) &divide; 2 &nbsp;&#8594;&nbsp; x&#8321; = <b>3</b> &nbsp;e&nbsp; x&#8322; = <b>2</b>.<br><br>
+    <b>Exemplo 2 (incompleta) —</b> Resolva x&sup2; &minus; 49 = 0.<br>
+    Isole o x&sup2;: x&sup2; = 49 &#8594; x = &plusmn;7. As raízes são <b>7</b> e <b>&minus;7</b>.
+  </div>
+
+  <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais — os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
+  </div>
+</div></section>
+
+<!-- ============ PARTE INTERATIVA ============ -->
+<section class="baixo"><div class="wrap">
+  <div class="contador"><span id="rotulo">Exercício 1 de 5</span><span id="placar">Acertos: 0</span></div>
+  <div class="barra"><div id="progresso"></div></div>
+  <div id="area"></div>
+</div></section>
+
+<script>
+const questoes = [
+  {
+    enunciado: "Resolva a equação <b>x&sup2; &minus; 9x + 20 = 0</b>.",
+    campos: [
+      {label:"Valor do Δ (delta)", resp:1, tol:0.05},
+      {label:"Maior raiz", resp:5, tol:0.05},
+      {label:"Menor raiz", resp:4, tol:0.05}
+    ],
+    ajuda: "a=1, b=−9, c=20. Δ = 81 − 80 = 1. x = (9 ± 1) ÷ 2 → x₁ = 5 e x₂ = 4."
+  },
+  {
+    enunciado: "Resolva a equação <b>2x&sup2; &minus; 7x + 3 = 0</b>. (Cuidado: aqui o valor de <i>a</i> não é 1.)",
+    campos: [
+      {label:"Valor do Δ (delta)", resp:25, tol:0.05},
+      {label:"Maior raiz", resp:3, tol:0.05},
+      {label:"Menor raiz (use vírgula se for decimal)", resp:0.5, tol:0.02}
+    ],
+    ajuda: "a=2, b=−7, c=3. Δ = 49 − 24 = 25. x = (7 ± 5) ÷ 4 → x₁ = 12÷4 = 3 e x₂ = 2÷4 = 0,5."
+  },
+  {
+    enunciado: "<b>EQUAÇÕES INCOMPLETAS —</b> Resolva sem usar Bhaskara: <b>a)</b> 3x&sup2; &minus; 75 = 0 &nbsp;&nbsp; <b>b)</b> x&sup2; &minus; 8x = 0.",
+    campos: [
+      {label:"a) Raiz positiva de 3x² − 75 = 0", resp:5, tol:0.05},
+      {label:"b) Raiz diferente de zero de x² − 8x = 0", resp:8, tol:0.05}
+    ],
+    ajuda: "a) 3x² = 75 → x² = 25 → x = ±5, então a positiva é 5.  b) x·(x − 8) = 0 → x = 0 ou x = 8."
+  },
+  {
+    enunciado: "Um terreno retangular tem o <b>comprimento 4 metros maior que a largura</b> e área de <b>96 m&sup2;</b>. Chamando a largura de x, temos x&middot;(x+4) = 96, ou seja, x&sup2; + 4x &minus; 96 = 0.",
+    campos: [
+      {label:"Valor do Δ (delta)", resp:400, tol:0.5},
+      {label:"Largura do terreno (m)", resp:8, tol:0.05},
+      {label:"Comprimento do terreno (m)", resp:12, tol:0.05}
+    ],
+    ajuda: "Δ = 16 + 384 = 400. x = (−4 ± 20) ÷ 2 → x = 8 (a raiz −12 é descartada). Largura 8 m e comprimento 8 + 4 = 12 m."
+  },
+  {
+    enunciado: "<b>DESAFIO —</b> Uma bola é chutada para cima e sua altura, em metros, é dada por <b>h = &minus;5t&sup2; + 30t</b>, com t em segundos.",
+    campos: [
+      {label:"Altura após 2 segundos (m)", resp:40, tol:0.05},
+      {label:"Altura após 4 segundos (m)", resp:40, tol:0.05},
+      {label:"Instante em que volta ao chão (s)", resp:6, tol:0.05}
+    ],
+    ajuda: "Em t=2: −5·4 + 60 = 40 m. Em t=4: −5·16 + 120 = 40 m (mesma altura — a subida e a descida são simétricas!). No chão, h=0: 5t·(6 − t) = 0 → t = 0 ou t = 6 s."
+  }
+];
+
+let atual = 0, acertos = 0, tentativas = 0;
+
+function normaliza(txt){
+  return parseFloat(String(txt).trim().replace(/\s/g,'').replace(',','.'));
+}
+
+function render(){
+  const q = questoes[atual];
+  document.getElementById('rotulo').textContent = `Exercício ${atual+1} de ${questoes.length}`;
+  document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  document.getElementById('progresso').style.width = (atual/questoes.length*100) + '%';
+
+  let html = `<div class="questao">
+    <div class="num">Exercício ${atual+1}</div>
+    <div class="enun">${q.enunciado}</div>
+    <div class="campos">`;
+  q.campos.forEach((c,i)=>{
+    html += `<div class="campo">
+      <label>${c.label}</label>
+      <input type="text" id="in${i}" autocomplete="off" placeholder="digite o número">
+    </div>`;
+  });
+  html += `</div>
+    <div class="acoes">
+      <button class="btn-principal" onclick="verificar()">Verificar resposta</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  </div>`;
+  document.getElementById('area').innerHTML = html;
+  tentativas = 0;
+  document.getElementById('in0').focus();
+
+  q.campos.forEach((c,i)=>{
+    document.getElementById('in'+i).addEventListener('keydown', e=>{
+      if(e.key==='Enter') verificar();
+    });
+  });
+}
+
+function verificar(){
+  const q = questoes[atual];
+  const fb = document.getElementById('fb');
+  let todosCertos = true, algumVazio = false;
+
+  q.campos.forEach((c,i)=>{
+    const el = document.getElementById('in'+i);
+    const val = normaliza(el.value);
+    el.classList.remove('ok','erro');
+    if(isNaN(val)){ algumVazio = true; todosCertos = false; return; }
+    if(Math.abs(val - c.resp) <= c.tol){ el.classList.add('ok'); }
+    else { el.classList.add('erro'); todosCertos = false; }
+  });
+
+  if(algumVazio){
+    fb.className = 'feedback errado';
+    fb.innerHTML = 'Preencha <b>todos</b> os campos com números antes de verificar.';
+    return;
+  }
+
+  if(todosCertos){
+    acertos++;
+    fb.className = 'feedback certo';
+    fb.innerHTML = '<b>Correto!</b> ' + q.ajuda + '<br><br><button class="btn-principal" onclick="proxima()">Próximo exercício →</button>';
+    document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  } else {
+    tentativas++;
+    fb.className = 'feedback errado';
+    if(tentativas >= 3){
+      fb.innerHTML = '<b>Ainda não.</b> Confira os campos em vermelho e revise as fórmulas na parte de cima da tela.';
+    } else {
+      fb.innerHTML = '<b>Ainda não.</b> Os campos em <span style="color:#2e7d32">verde</span> estão certos; revise os que ficaram em <span style="color:#c62828">vermelho</span> e tente de novo.';
+    }
+  }
+}
+
+function proxima(){
+  atual++;
+  if(atual >= questoes.length){ final(); } else { render(); }
+}
+
+function final(){
+  document.getElementById('progresso').style.width = '100%';
+  document.getElementById('rotulo').textContent = 'Atividade concluída';
+  document.getElementById('placar').textContent = `Acertos: ${acertos} de ${questoes.length}`;
+  let msg = acertos === questoes.length
+    ? 'Você acertou todos os exercícios sem precisar recomeçar. Excelente domínio da velocidade média e das conversões!'
+    : 'Bom trabalho! Vale revisar os exercícios em que você precisou de ajuda antes da próxima aula.';
+  document.getElementById('area').innerHTML = `<div class="final">
+    <h3>Atividade concluída!</h3>
+    <div class="placar">Você acertou ${acertos} de ${questoes.length} exercícios.</div>
+    <p>${msg}</p>
+    <button class="btn-principal" onclick="reiniciar()">Refazer a atividade</button>
+  </div>`;
+}
+
+function reiniciar(){ atual = 0; acertos = 0; render(); }
+
+render();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>T7 FÍSICA — Apostila 01 — Exercícios Interativos</title>
+<title>T7 FÍSICA — Apostila 02 — Exercícios Interativos</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -57,32 +57,31 @@
 <body>
 
 <header>
-  <h1>T7 — FÍSICA — APOSTILA 01</h1>
-  <p>Grandezas, Unidades e Notação Científica &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+  <h1>T7 — FÍSICA — APOSTILA 02</h1>
+  <p>Movimento e Velocidade Média &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
 </header>
 
 <!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
 <section class="topo"><div class="wrap">
-  <h2>Conversões e notação científica</h2>
+  <h2>Fórmulas e conversões</h2>
   <div class="formulas">
-    <div class="card"><b>COMPRIMENTO</b><span>1 km = 1.000 m<br>1 m = 100 cm</span></div>
-    <div class="card"><b>MASSA</b><span>1 t = 1.000 kg<br>1 kg = 1.000 g</span></div>
-    <div class="card"><b>TEMPO</b><span>1 h = 60 min<br>1 min = 60 s</span></div>
-    <div class="card"><b>VOLUME</b><span>1 L = 1.000 mL<br>1 m&sup3; = 1.000 L</span></div>
+    <div class="card"><b>VELOCIDADE MÉDIA</b><span>v = Δs ÷ Δt</span></div>
+    <div class="card"><b>km/h → m/s</b><span>DIVIDA por 3,6</span></div>
+    <div class="card"><b>m/s → km/h</b><span>MULTIPLIQUE por 3,6</span></div>
+    <div class="card"><b>MILHAS (EUA)</b><span>1 milha = 1,6 km</span></div>
   </div>
 
-  <p class="txt"><b>Notação científica:</b> um número entre 1 e 10 multiplicado por uma potência de 10. Mova a vírgula até sobrar <b>um único algarismo antes dela</b> e conte quantas casas ela andou — esse é o expoente. Se o número é <b>grande</b>, o expoente é <b>positivo</b>; se é <b>pequeno</b> (começa com 0,), o expoente é <b>negativo</b>.</p>
+  <p class="txt"><b>Velocidade média</b> é a distância percorrida dividida pelo tempo gasto. Atenção ao tempo: se ele vier em minutos, converta para horas (divida por 60) antes de calcular em km/h. Ex.: 30 min = 0,5 h; 4 h 30 min = 4,5 h.</p>
 
   <div class="exemplo">
-    <b>Exemplo 1 (conversão em etapas) —</b> Um caminhão leva 2,5 toneladas de areia.<br>
-    Em kg: 2,5 &times; 1.000 = <b>2.500 kg</b>. &nbsp; Em gramas: 2.500 &times; 1.000 = <b>2.500.000 g</b>.<br><br>
-    <b>Exemplo 2 (notação científica) —</b><br>
-    150.000.000 km &#8594; a vírgula anda 8 casas &#8594; <b>1,5 &times; 10<sup>8</sup></b> km.<br>
-    0,00008 m &#8594; a vírgula anda 5 casas para a direita &#8594; <b>8 &times; 10<sup>&minus;5</sup></b> m.
+    <b>Exemplo resolvido —</b> Um carro percorre 195 km em 2 horas e 30 minutos. Qual sua velocidade média em km/h e em m/s?<br>
+    <b>1º)</b> Converter o tempo: 2 h 30 min = 2,5 h.<br>
+    <b>2º)</b> Velocidade: v = 195 ÷ 2,5 = <b>78 km/h</b>.<br>
+    <b>3º)</b> Em m/s: 78 ÷ 3,6 ≈ <b>21,7 m/s</b>.
   </div>
 
   <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
-    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais — os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos. Para expoente negativo, digite com o sinal de menos (exemplo: −5 escreve-se <b>-5</b>).
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais — os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
   </div>
 </div></section>
 
@@ -96,50 +95,47 @@
 <script>
 const questoes = [
   {
-    enunciado: "Um caminhão transporta <b>3,8 toneladas</b> de cimento e descarrega <b>1.250 kg</b> na primeira obra.",
+    enunciado: "Uma van escolar percorre <b>292,5 km</b> em <b>3 horas e 15 minutos</b>.",
     campos: [
-      {label:"Carga inicial em kg", resp:3800, tol:0.5},
-      {label:"Carga inicial em gramas", resp:3800000, tol:0.5},
-      {label:"Quanto sobrou no caminhão (kg)", resp:2550, tol:0.5}
+      {label:"Tempo da viagem em horas", resp:3.25, tol:0.02},
+      {label:"Velocidade média em km/h", resp:90, tol:0.05},
+      {label:"A mesma velocidade em m/s", resp:25, tol:0.05}
     ],
-    ajuda: "3,8 t × 1.000 = 3.800 kg. Em gramas: 3.800 × 1.000 = 3.800.000 g. Após descarregar: 3.800 − 1.250 = 2.550 kg."
+    ajuda: "15 min = 0,25 h, então o tempo é 3,25 h. v = 292,5 ÷ 3,25 = 90 km/h. Em m/s: 90 ÷ 3,6 = 25 m/s."
   },
   {
-    enunciado: "Um terreno retangular tem <b>1,2 km</b> de comprimento e <b>450 m</b> de largura. Ele será cercado com tela em todo o contorno.",
+    enunciado: "Faça as três conversões: <b>a)</b> 54 km/h para m/s &nbsp;&nbsp; <b>b)</b> 27,5 m/s para km/h &nbsp;&nbsp; <b>c)</b> 162 km/h para m/s.",
     campos: [
-      {label:"Comprimento em metros", resp:1200, tol:0.5},
-      {label:"Perímetro do terreno (m)", resp:3300, tol:0.5},
-      {label:"Esse perímetro em km", resp:3.3, tol:0.02}
+      {label:"a) 54 km/h em m/s", resp:15, tol:0.05},
+      {label:"b) 27,5 m/s em km/h", resp:99, tol:0.05},
+      {label:"c) 162 km/h em m/s", resp:45, tol:0.05}
     ],
-    ajuda: "1,2 km = 1.200 m. Perímetro = 2 × (1.200 + 450) = 2 × 1.650 = 3.300 m, que equivale a 3,3 km de tela."
+    ajuda: "a) 54 ÷ 3,6 = 15 m/s.  b) 27,5 × 3,6 = 99 km/h.  c) 162 ÷ 3,6 = 45 m/s."
   },
   {
-    enunciado: "Uma caixa d'água tem capacidade de <b>1,5 m&sup3;</b>. Ela será esvaziada com baldes de <b>12 litros</b>, e numa manhã já foram consumidos <b>480 litros</b>.",
+    enunciado: "Numa cidade dos Estados Unidos, a placa de trânsito marca <b>45 mph</b> (milhas por hora).",
     campos: [
-      {label:"Capacidade em litros", resp:1500, tol:0.5},
-      {label:"Quantos baldes de 12 L a caixa cheia enche", resp:125, tol:0.5},
-      {label:"Litros restantes após consumir 480 L", resp:1020, tol:0.5}
+      {label:"Limite em km/h", resp:72, tol:0.05},
+      {label:"Limite em m/s", resp:20, tol:0.05}
     ],
-    ajuda: "1,5 m³ × 1.000 = 1.500 litros. Baldes: 1.500 ÷ 12 = 125 baldes. Restante: 1.500 − 480 = 1.020 litros."
+    ajuda: "45 × 1,6 = 72 km/h. Em m/s: 72 ÷ 3,6 = 20 m/s."
   },
   {
-    enunciado: "Escreva em <b>notação científica</b>: <b>a)</b> 45.000.000 &nbsp;&nbsp; <b>b)</b> 0,00032. <br><i>Separe o número da potência: primeiro o algarismo com a vírgula, depois o expoente do 10.</i>",
+    enunciado: "Um caminhoneiro nos EUA precisa fazer uma viagem de <b>275 milhas</b>, mantendo uma velocidade média de <b>88 km/h</b>.",
     campos: [
-      {label:"a) número antes do ×10 (ex.: 1,5)", resp:4.5, tol:0.02},
-      {label:"a) expoente do 10", resp:7, tol:0.05},
-      {label:"b) número antes do ×10", resp:3.2, tol:0.02},
-      {label:"b) expoente do 10 (use o sinal −)", resp:-4, tol:0.05}
+      {label:"Distância da viagem em km", resp:440, tol:0.5},
+      {label:"Tempo da viagem em horas", resp:5, tol:0.05}
     ],
-    ajuda: "a) 45.000.000 → a vírgula anda 7 casas → 4,5 × 10⁷.  b) 0,00032 → a vírgula anda 4 casas para a direita → 3,2 × 10⁻⁴ (expoente negativo porque o número é pequeno)."
+    ajuda: "275 × 1,6 = 440 km. Tempo: 440 ÷ 88 = 5 horas."
   },
   {
-    enunciado: "<b>DESAFIO —</b> A luz percorre <b>3 × 10&#8309; km</b> a cada segundo. Quanto ela percorre em <b>8 minutos</b> (tempo aproximado que a luz do Sol leva para chegar à Terra)?",
+    enunciado: "<b>DESAFIO —</b> Um caminhão passa por um radar a <b>19,5 m/s</b> numa via cujo limite é <b>60 km/h</b>.",
     campos: [
-      {label:"Quantos segundos há em 8 minutos", resp:480, tol:0.5},
-      {label:"Distância: número antes do ×10", resp:1.44, tol:0.02},
-      {label:"Distância: expoente do 10", resp:8, tol:0.05}
+      {label:"Velocidade do caminhão em km/h", resp:70.2, tol:0.05},
+      {label:"Quantos km/h acima do limite", resp:10.2, tol:0.05},
+      {label:"Km percorridos em 45 min nessa velocidade", resp:52.65, tol:0.06}
     ],
-    ajuda: "8 min × 60 = 480 s. Distância: 3 × 10⁵ × 480 = 1.440 × 10⁵ km. Ajustando para a notação científica: 1,44 × 10⁸ km."
+    ajuda: "19,5 × 3,6 = 70,2 km/h — está 70,2 − 60 = 10,2 km/h acima do limite (será multado). Em 45 min (0,75 h): 70,2 × 0,75 = 52,65 km."
   }
 ];
 

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorteador Oscilante</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --line:#262b36; --txt:#e8eaf0;
+    --muted:#98a0b3; --accent:#4da3ff; --accent2:#31d0aa; --danger:#ff6b6b;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f4f6fa; --panel:#ffffff; --line:#e2e6ef; --txt:#171a21;
+           --muted:#5f6880; --accent:#0a6ed1; --accent2:#0b9e80; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
+       -webkit-user-select:none;user-select:none}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px}
+  h1{font-size:18px;font-weight:600;margin:0 0 16px;letter-spacing:.2px}
+  h1 span{color:var(--muted);font-weight:400}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .ctrls{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+  label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+  input[type=number]{width:100%;padding:10px 12px;font-size:16px;border-radius:9px;
+    border:1px solid var(--line);background:var(--bg);color:var(--txt);font-variant-numeric:tabular-nums}
+  input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .stage{text-align:center;padding:26px 16px 20px;cursor:pointer;position:relative;overflow:hidden}
+  .stage:active{transform:scale(.997)}
+  .num{font-size:clamp(72px,22vw,160px);font-weight:700;line-height:1;
+       font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+  .bar{height:8px;background:var(--line);border-radius:99px;margin:22px auto 0;max-width:560px;position:relative}
+  .dot{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
+       background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
+  .ends{display:flex;justify-content:space-between;max-width:560px;margin:8px auto 0;
+        font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .hint{margin-top:18px;font-size:13px;color:var(--muted)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  button{font:inherit;font-size:14px;font-weight:600;padding:11px 18px;border-radius:10px;
+         border:1px solid var(--line);background:var(--bg);color:var(--txt);cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  .primary{background:var(--accent);border-color:var(--accent);color:#fff;padding:14px 30px;font-size:16px}
+  .ghost{color:var(--muted)}
+  .flash{position:absolute;inset:0;background:var(--accent2);opacity:0;pointer-events:none}
+  .flash.on{animation:fl .45s ease-out}
+  .flash.bad{background:var(--danger)}
+  @keyframes fl{0%{opacity:.28}100%{opacity:0}}
+  .num.taken{color:var(--muted);opacity:.45}
+  .toast{min-height:20px;margin-top:12px;font-size:14px;font-weight:600;color:var(--muted)}
+  .toast.warn{color:var(--danger)}
+  .toast.ok{color:var(--accent2)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .head h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0;font-weight:600}
+  .list{display:flex;flex-wrap:wrap;gap:8px;max-height:280px;overflow:auto;-webkit-user-select:text;user-select:text}
+  .chip{display:flex;align-items:baseline;gap:7px;background:var(--bg);border:1px solid var(--line);
+        border-radius:9px;padding:7px 11px;font-variant-numeric:tabular-nums}
+  .chip b{font-size:17px}
+  .chip i{font-style:normal;font-size:11px;color:var(--muted)}
+  .empty{color:var(--muted);font-size:14px;padding:6px 2px}
+  .stats{display:flex;gap:18px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  kbd{background:var(--bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;
+      padding:1px 6px;font-size:12px;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sorteador Oscilante <span>— o número vai e volta dentro do intervalo</span></h1>
+
+  <div class="card">
+    <div class="ctrls">
+      <div><label for="min">Mínimo</label><input id="min" type="number" value="2" step="1"></div>
+      <div><label for="max">Máximo</label><input id="max" type="number" value="58" step="1"></div>
+      <div><label for="cycle">Ciclo (segundos)</label><input id="cycle" type="number" value="1" step="0.1" min="0.1"></div>
+    </div>
+    <div class="hint">Um ciclo = ir do mínimo até o máximo <b>e voltar</b> ao mínimo.</div>
+  </div>
+
+  <div class="card stage" id="stage">
+    <div class="flash" id="flash"></div>
+    <div class="num" id="num">2</div>
+    <div class="bar"><div class="dot" id="dot"></div></div>
+    <div class="ends"><span id="lo">2</span><span id="hi">58</span></div>
+    <div class="btns">
+      <button class="primary" id="save">Salvar número</button>
+      <button id="toggle">Pausar</button>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="hint">Clique no painel ou aperte <kbd>Espaço</kbd> para salvar. Números repetidos são recusados. <span id="left"></span></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <h2>Salvos (<span id="count">0</span>)</h2>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="list" id="list"><div class="empty">Nenhum número salvo ainda.</div></div>
+    <div class="btns" style="justify-content:flex-start">
+      <button class="ghost" id="copy">Copiar lista</button>
+      <button class="ghost" id="csv">Baixar CSV</button>
+      <button class="ghost" id="undo">Desfazer último</button>
+      <button class="ghost" id="clear">Limpar tudo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var minEl=$('min'), maxEl=$('max'), cycEl=$('cycle');
+  var numEl=$('num'), dotEl=$('dot'), loEl=$('lo'), hiEl=$('hi');
+  var listEl=$('list'), countEl=$('count'), statsEl=$('stats');
+  var toastEl=$('toast'), leftEl=$('left');
+  var used = Object.create(null);   // números já salvos
+  var toastTimer = null;
+
+  var saved = [];
+  var running = true;
+  var phase = 0;          // 0..1 dentro do ciclo
+  var last = performance.now();
+  var current = 0;
+
+  function cfg(){
+    var a = parseFloat(minEl.value), b = parseFloat(maxEl.value);
+    if(!isFinite(a)) a = 0;
+    if(!isFinite(b)) b = 0;
+    var lo = Math.min(a,b), hi = Math.max(a,b);
+    var t = parseFloat(cycEl.value);
+    if(!isFinite(t) || t < 0.05) t = 0.05;
+    return {lo:lo, hi:hi, t:t};
+  }
+
+  function frame(now){
+    var d = (now - last) / 1000; last = now;
+    var c = cfg();
+    if(running){
+      phase += d / c.t;
+      phase -= Math.floor(phase);
+    }
+    // onda triangular: 0 -> 1 -> 0
+    var tri = phase < 0.5 ? phase*2 : 2 - phase*2;
+    current = Math.round(c.lo + tri * (c.hi - c.lo));
+    numEl.textContent = current;
+    numEl.classList.toggle('taken', used[current] === true);
+    dotEl.style.left = (tri*100) + '%';
+    loEl.textContent = c.lo; hiEl.textContent = c.hi;
+    var total = Math.round(c.hi - c.lo) + 1, taken = 0;
+    for(var n = Math.round(c.lo); n <= Math.round(c.hi); n++){ if(used[n]) taken++; }
+    leftEl.textContent = 'Restam ' + (total - taken) + ' de ' + total + '.';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  function render(){
+    countEl.textContent = saved.length;
+    if(!saved.length){
+      listEl.innerHTML = '<div class="empty">Nenhum número salvo ainda.</div>';
+      statsEl.textContent = '';
+      return;
+    }
+    var html = '';
+    for(var i = saved.length-1; i >= 0; i--){
+      html += '<div class="chip"><i>#'+(i+1)+'</i><b>'+saved[i].v+'</b></div>';
+    }
+    listEl.innerHTML = html;
+    var vals = saved.map(function(s){ return s.v; });
+    var sum = vals.reduce(function(a,b){ return a+b; }, 0);
+    statsEl.textContent = 'mín ' + Math.min.apply(null,vals) +
+                          '  ·  máx ' + Math.max.apply(null,vals) +
+                          '  ·  média ' + (sum/vals.length).toFixed(1);
+  }
+
+  function toast(msg, kind){
+    toastEl.textContent = msg;
+    toastEl.className = 'toast ' + (kind || '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.textContent = ''; toastEl.className = 'toast'; }, 1800);
+  }
+
+  function flash(bad){
+    var f = $('flash');
+    f.className = 'flash' + (bad ? ' bad' : '');
+    void f.offsetWidth;
+    f.className = 'flash on' + (bad ? ' bad' : '');
+  }
+
+  function save(){
+    var v = current;
+    if(used[v]){
+      flash(true);
+      toast(v + ' já foi salvo — tente outro', 'warn');
+      return;
+    }
+    used[v] = true;
+    saved.push({ v: v, ts: new Date().toISOString() });
+    flash(false);
+    toast(v + ' salvo', 'ok');
+    render();
+  }
+
+  $('stage').addEventListener('click', function(e){
+    if(e.target.closest('#toggle')) return;
+    save();
+  });
+  $('toggle').addEventListener('click', function(){
+    running = !running;
+    this.textContent = running ? 'Pausar' : 'Continuar';
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.target.tagName === 'INPUT') return;
+    if(e.code === 'Space'){ e.preventDefault(); save(); }
+  });
+
+  $('undo').addEventListener('click', function(){
+    var last = saved.pop();
+    if(last) delete used[last.v];
+    render();
+  });
+  $('clear').addEventListener('click', function(){
+    saved = []; used = Object.create(null); render();
+  });
+  $('copy').addEventListener('click', function(){
+    var txt = saved.map(function(s,i){ return (i+1)+'\t'+s.v; }).join('\n');
+    navigator.clipboard.writeText(txt);
+    this.textContent = 'Copiado!';
+    var b = this; setTimeout(function(){ b.textContent = 'Copiar lista'; }, 1200);
+  });
+  $('csv').addEventListener('click', function(){
+    var rows = [['ordem','numero','horario']].concat(saved.map(function(s,i){
+      return [i+1, s.v, s.ts];
+    }));
+    var csv = rows.map(function(r){ return r.join(','); }).join('\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+    a.download = 'numeros-salvos.csv';
+    a.click();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

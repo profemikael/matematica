@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atividade Interativa — Plano Cartesiano 10x10 · 8º Ano</title>
+<style>
+* { box-sizing: border-box; }
+html { background: #EEF2F6; }
+body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+       color: #22303C; margin: 0; line-height: 1.55; }
+.wrap { max-width: 1500px; margin: 0 auto; background: #fff; min-height: 100vh;
+        box-shadow: 0 0 26px rgba(20,57,92,.10); }
+.topbar { position: sticky; top: 0; z-index: 50; background: #14395C; color: #fff;
+          padding: 12px 22px; display: flex; justify-content: space-between; align-items: center;
+          box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+.topbar .ttl { font-size: 15px; font-weight: 700; }
+.topbar .ttl small { display: block; font-size: 11px; font-weight: 400; color: #B9CBDD;
+                     letter-spacing: 1.4px; margin-top: 1px; }
+.placar { background: #1E5386; border: 1px solid #2E6BA3; border-radius: 999px;
+          padding: 7px 16px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.placar b { color: #7FE0A6; font-size: 16px; }
+.content { padding: 22px 30px 50px 30px; }
+h1 { font-size: 25px; color: #14395C; margin: 4px 0 2px; }
+.lead { color: #4A6076; font-size: 14.5px; margin: 0 0 6px; }
+.card { border: 1px solid #D9E3EC; border-radius: 12px; margin: 20px 0; overflow: hidden; }
+.card > .head { background: #F4F8FC; border-bottom: 1px solid #E1EAF2; padding: 12px 18px;
+                display: flex; align-items: center; gap: 12px; }
+.card > .head .n { background: #2E75B6; color: #fff; width: 30px; height: 30px; border-radius: 8px;
+                   display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
+.card.locked > .head .n { background: #9DB0C2; }
+.card.done > .head .n { background: #1E8449; }
+.card > .head .t { font-weight: 700; color: #14395C; font-size: 16px; flex: 1; }
+.card > .head .tag { font-size: 11px; letter-spacing: 1px; font-weight: 700; padding: 4px 9px;
+                     border-radius: 6px; background: #E6F4EA; color: #1E8449; border: 1px solid #BFE3CC; }
+.body { padding: 16px 18px; }
+.lockbar { padding: 18px; background: #F7F9FB; color: #7C8896; font-weight: 600; font-size: 14px; text-align: center; }
+.plane { width: 100%; height: auto; display: block; margin: 0 auto; touch-action: manipulation; }
+.planebox { display: flex; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
+.planebox .colplane { flex: 1 1 640px; min-width: 320px; max-width: 1000px; }
+.planebox .colinfo { flex: 0 1 300px; min-width: 240px; position: sticky; top: 78px; }
+.prompt { font-size: 15px; margin: 4px 0 8px; }
+.big { font-size: 19px; font-weight: 700; color: #14395C; }
+.fb { min-height: 20px; font-weight: 700; font-size: 14.5px; margin-top: 8px; }
+.fb.ok { color: #1E8449; } .fb.no { color: #C0392B; } .fb.info { color: #2E75B6; }
+.progress-dots { display: flex; gap: 5px; margin: 6px 0 10px; flex-wrap: wrap; max-width: 260px; }
+.progress-dots span { width: 10px; height: 10px; border-radius: 50%; background: #D9E3EC; flex: none; }
+.progress-dots span.done { background: #1E8449; }
+.progress-dots span.cur { background: #2E75B6; box-shadow: 0 0 0 2px #cfe3f5; }
+.progress-dots span.miss { background: #E8A33D; }
+.pintar-note { font-size: 12.5px; color: #B9651A; background: #FEF3E2; border: 1px solid #F0D6B0;
+               border-radius: 7px; padding: 6px 10px; margin-top: 8px; display: inline-block; }
+svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+.num { font-size: 15px; fill: #55636F; }
+.axl { font-size: 17px; fill: #14395C; font-weight: bold; }
+@media (max-width: 620px){ .content{padding:16px 14px 40px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="ttl">Encontre os Pontos no Plano Cartesiano
+      <small>MATEMÁTICA · 8º ANO · PLANO 10 × 10</small></div>
+    <div class="placar">Acertos: <b><span id="score">0</span></b> / <span>85</span></div>
+  </div>
+  <div class="content">
+    <h1>Encontre cada ponto antes de desenhar no papel</h1>
+    <p class="lead">Esta atividade tem 12 grupos de pontos, iguais aos da folha impressa. Clique no plano para encontrar cada ponto do grupo, na ordem. Depois de treinar aqui, você vai ligar os mesmos pontos no papel para revelar o desenho.</p>
+    
+    <div class="card" id="card1">
+      <div class="head"><span class="n">1</span><span class="t">Grupo 1 — encontre os 6 pontos</span><span class="tag">6 PTS</span></div>
+      
+      <div class="body">
+        <div class="planebox">
+          <div class="colplane"><div id="a1plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a1target">carregando...</p>
+            <div class="progress-dots" id="a1dots"></div>
+            <div class="fb" id="a1fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card2">
+      <div class="head"><span class="n">2</span><span class="t">Grupo 2 — encontre os 21 pontos</span><span class="tag">21 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 1 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a2plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a2target">carregando...</p>
+            <div class="progress-dots" id="a2dots"></div>
+            <div class="fb" id="a2fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card3">
+      <div class="head"><span class="n">3</span><span class="t">Grupo 3 — encontre os 5 pontos</span><span class="tag">5 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 2 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a3plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a3target">carregando...</p>
+            <div class="progress-dots" id="a3dots"></div>
+            <div class="fb" id="a3fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card4">
+      <div class="head"><span class="n">4</span><span class="t">Grupo 4 — encontre os 3 pontos</span><span class="tag">3 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 3 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a4plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a4target">carregando...</p>
+            <div class="progress-dots" id="a4dots"></div>
+            <div class="fb" id="a4fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card5">
+      <div class="head"><span class="n">5</span><span class="t">Grupo 5 — encontre os 14 pontos</span><span class="tag">14 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 4 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a5plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a5target">carregando...</p>
+            <div class="progress-dots" id="a5dots"></div>
+            <div class="fb" id="a5fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card6">
+      <div class="head"><span class="n">6</span><span class="t">Grupo 6 — encontre os 5 pontos</span><span class="tag">5 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 5 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a6plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a6target">carregando...</p>
+            <div class="progress-dots" id="a6dots"></div>
+            <div class="fb" id="a6fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card7">
+      <div class="head"><span class="n">7</span><span class="t">Grupo 7 — encontre os 5 pontos</span><span class="tag">5 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 6 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a7plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a7target">carregando...</p>
+            <div class="progress-dots" id="a7dots"></div>
+            <div class="fb" id="a7fb"></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card8">
+      <div class="head"><span class="n">8</span><span class="t">Grupo 8 — encontre os 3 pontos</span><span class="tag">3 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 7 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a8plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a8target">carregando...</p>
+            <div class="progress-dots" id="a8dots"></div>
+            <div class="fb" id="a8fb"></div>
+            <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card9">
+      <div class="head"><span class="n">9</span><span class="t">Grupo 9 — encontre os 8 pontos</span><span class="tag">8 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 8 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a9plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a9target">carregando...</p>
+            <div class="progress-dots" id="a9dots"></div>
+            <div class="fb" id="a9fb"></div>
+            <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card10">
+      <div class="head"><span class="n">10</span><span class="t">Grupo 10 — encontre os 6 pontos</span><span class="tag">6 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 9 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a10plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a10target">carregando...</p>
+            <div class="progress-dots" id="a10dots"></div>
+            <div class="fb" id="a10fb"></div>
+            <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card11">
+      <div class="head"><span class="n">11</span><span class="t">Grupo 11 — encontre os 3 pontos</span><span class="tag">3 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 10 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a11plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a11target">carregando...</p>
+            <div class="progress-dots" id="a11dots"></div>
+            <div class="fb" id="a11fb"></div>
+            <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card locked" id="card12">
+      <div class="head"><span class="n">12</span><span class="t">Grupo 12 — encontre os 6 pontos</span><span class="tag">6 PTS</span></div>
+      <div class="lockbar">🔒 Conclua o Grupo 11 para desbloquear</div>
+      <div class="body" hidden>
+        <div class="planebox">
+          <div class="colplane"><div id="a12plane"></div></div>
+          <div class="colinfo">
+            <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
+            <p class="big" id="a12target">carregando...</p>
+            <div class="progress-dots" id="a12dots"></div>
+            <div class="fb" id="a12fb"></div>
+            <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+
+const TOTAL=85; const scored=new Set(); let correct=0;
+function award(id){ if(!scored.has(id)){ scored.add(id); correct++; updateScore(); } }
+function updateScore(){
+  document.getElementById('score').textContent=correct;
+}
+
+function completeCard(n){
+  const c=document.getElementById('card'+n); if(c){ c.classList.remove('locked'); c.classList.add('done'); }
+  const nx=document.getElementById('card'+(n+1)); if(!nx) return;
+  nx.classList.remove('locked');
+  const lb=nx.querySelector('.lockbar'); if(lb) lb.style.display='none';
+  const bd=nx.querySelector('.body'); if(bd) bd.hidden=false;
+  nx.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function buildPlane(host,o){
+  host.innerHTML="";
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const w=o.w||420,h=o.h||420,pad=o.pad||30;
+  const sx=(w-2*pad)/(xmax-xmin), sy=(h-2*pad)/(ymax-ymin);
+  const X=v=>pad+(v-xmin)*sx, Y=v=>h-pad-(v-ymin)*sy;
+  const invX=px=>xmin+(px-pad)/sx, invY=py=>ymin+(h-pad-py)/sy;
+  const svg=el("svg",{viewBox:`0 0 ${w} ${h}`,class:"plane"},host);
+  for(let v=xmin; v<=xmax; v++) el("line",{x1:X(v),y1:Y(ymin),x2:X(v),y2:Y(ymax),stroke:"#D6E1EC","stroke-width":1},svg);
+  for(let v=ymin; v<=ymax; v++) el("line",{x1:X(xmin),y1:Y(v),x2:X(xmax),y2:Y(v),stroke:"#D6E1EC","stroke-width":1},svg);
+  const ax0=Math.max(xmin,Math.min(0,xmax)), ay0=Math.max(ymin,Math.min(0,ymax));
+  el("line",{x1:X(xmin),y1:Y(ay0),x2:X(xmax),y2:Y(ay0),stroke:"#1F4E78","stroke-width":2.4},svg);
+  el("line",{x1:X(ax0),y1:Y(ymin),x2:X(ax0),y2:Y(ymax),stroke:"#1F4E78","stroke-width":2.4},svg);
+  el("text",{x:X(xmax)-3,y:Y(ay0)-9,class:"axl"},svg).textContent="x";
+  el("text",{x:X(ax0)+9,y:Y(ymax)+16,class:"axl"},svg).textContent="y";
+  for(let v=xmin; v<=xmax; v++){ if(v!==0 && v%2===0){ const t=el("text",{x:X(v),y:Y(ay0)+20,class:"num","text-anchor":"middle"},svg); t.textContent=v; } }
+  for(let v=ymin; v<=ymax; v++){ if(v!==0 && v%2===0){ const t=el("text",{x:X(ax0)-9,y:Y(v)+5,class:"num","text-anchor":"end"},svg); t.textContent=v; } }
+  if(xmin<=0&&0<=xmax&&ymin<=0&&0<=ymax){ const t=el("text",{x:X(0)-9,y:Y(0)+20,class:"num","text-anchor":"end"},svg); t.textContent="0"; }
+  return { svg,X,Y,invX,invY,w,h,xmin,xmax,ymin,ymax,
+    dot(x,y,c){ return el("circle",{cx:X(x),cy:Y(y),r:7,fill:c||"#14395C"},svg); } };
+}
+
+function setupFase(n, targets, opts){
+  opts = opts||{};
+  const host=document.getElementById('a'+n+'plane');
+  const fb=document.getElementById('a'+n+'fb'), tg=document.getElementById('a'+n+'target'), dots=document.getElementById('a'+n+'dots');
+  let idx=0, lost=false;
+  const P=buildPlane(host,{xmin:-10,xmax:10,ymax:10,ymin:-10,w:720,h:720});
+  const hit=el("rect",{x:0,y:0,width:P.w,height:P.h,fill:"transparent",style:"cursor:crosshair"},P.svg);
+  targets.forEach(()=>dots.appendChild(document.createElement('span')));
+  function rd(){ [...dots.children].forEach((s,i)=>s.className=i<idx?'done':(i===idx?'cur':'')); }
+  function setT(){
+    if(idx>=targets.length){ tg.textContent="✔ Grupo concluído!"; fb.textContent="Você encontrou todos os pontos deste grupo!"; fb.className="fb ok"; hit.style.cursor="default"; completeCard(n); return; }
+    tg.textContent="("+targets[idx][0]+", "+targets[idx][1]+")"; lost=false; rd();
+  }
+  hit.addEventListener('click',function(e){
+    if(idx>=targets.length) return;
+    const r=P.svg.getBoundingClientRect();
+    const px=(e.clientX-r.left)*(P.w/r.width), py=(e.clientY-r.top)*(P.h/r.height);
+    let gx=Math.round(P.invX(px)), gy=Math.round(P.invY(py));
+    gx=Math.max(P.xmin,Math.min(P.xmax,gx)); gy=Math.max(P.ymin,Math.min(P.ymax,gy));
+    const [tx,ty]=targets[idx];
+    if(gx===tx&&gy===ty){ P.dot(gx,gy,"#1E8449"); if(!lost) award('f'+n+'-'+idx);
+      fb.textContent="Isso! ("+gx+", "+gy+") correto."; fb.className="fb ok"; idx++; setTimeout(setT,450); }
+    else { const m=P.dot(gx,gy,"#C0392B"); setTimeout(()=>m.remove(),500); lost=true; dots.children[idx].className='cur miss';
+      fb.textContent="Você clicou em ("+gx+", "+gy+"). Tente de novo."; fb.className="fb no"; }
+  });
+  setT();
+}
+
+setupFase(1, [[-5, -3], [-4, -5], [-3, -7], [-3, -6], [-2, -4], [-1, 0]]);
+setupFase(2, [[-7, 1], [-8, 4], [-9, 7], [-8, 10], [-7, 10], [-5, 9], [-3, 7], [-2, 6], [0, 7], [2, 6], [3, 7], [5, 9], [7, 10], [8, 10], [9, 7], [8, 4], [7, 1], [3, 4], [0, 1], [-3, 4], [-7, 1]]);
+setupFase(3, [[-5, 0], [-4, 0], [-2, -1], [-4, -1], [-5, 0]]);
+setupFase(4, [[5, -3], [4, -5], [3, -7]]);
+setupFase(5, [[7, 1], [8, -3], [9, -7], [8, -7], [7, -6], [4, -9], [1, -10], [-1, -10], [-4, -9], [-7, -6], [-8, -7], [-9, -6], [-8, -2], [-7, 1]]);
+setupFase(6, [[5, 0], [4, -1], [2, -1], [4, 0], [5, 0]]);
+setupFase(7, [[1, 0], [2, -4], [3, -6], [3, -7], [1, -8]]);
+setupFase(8, [[-4, -1], [-4, 0], [-3, -1]]);
+setupFase(9, [[-3, -7], [-1, -8], [1, -8], [2, -6], [1, -5], [-1, -5], [-2, -6], [-1, -8]]);
+setupFase(10, [[4, 6], [7, 9], [7, 5], [6, 4], [4, 5], [4, 6]]);
+setupFase(11, [[4, -1], [4, 0], [3, -1]]);
+setupFase(12, [[-7, 4], [-7, 9], [-4, 6], [-4, 5], [-6, 3], [-7, 4]]);
+</script>
+</body>
+</html>

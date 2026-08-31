@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercícios — Fatoração, MMC e MDC</title>
+<style>
+  :root{
+    --navy:#1A237E; --blue:#1565C0; --lblue:#E8F2FC;
+    --teal:#00695C; --lteal:#E4F3F1;
+    --ora:#E65100;  --lora:#FFF4E6;
+    --pur:#6A1B9A;  --lpur:#F6EBF9;
+    --grn:#2E7D32;  --lgrn:#EAF6EB;
+    --red:#C62828;  --lred:#FDECEC;
+    --yel:#F57F17;  --lyel:#FFFCE8;
+    --dark:#212121; --mid:#546E7A; --bord:#CFD8DC;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:28px 20px 60px;
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--dark); background:#F4F6F8; line-height:1.55;
+  }
+  .sheet{max-width:900px;margin:0 auto;background:#fff;padding:34px 38px 46px;
+         box-shadow:0 2px 18px rgba(0,0,0,.09);border-radius:10px;}
+
+  /* ── cabeçalho ── */
+  header{background:var(--navy);color:#fff;border-radius:10px;padding:20px 24px 18px;
+         text-align:center;border-bottom:5px solid var(--yel);}
+  header .esc{font-size:11px;letter-spacing:3px;color:#AFC4F0;font-weight:700;}
+  header h1{margin:8px 0 4px;font-size:26px;letter-spacing:.3px;}
+  header .sub{font-size:14px;color:#D6E4FA;}
+  header .prof{font-size:12px;color:#90CAF9;font-style:italic;margin-top:6px;}
+
+  .ficha{display:grid;grid-template-columns:2fr 1fr;gap:0;margin:16px 0 26px;
+         border:1.5px solid var(--blue);border-radius:8px;overflow:hidden;}
+  .ficha div{background:var(--lblue);padding:10px 14px;font-size:14px;
+             border-right:1px solid #A9CBEC;border-bottom:1px solid #A9CBEC;}
+  .ficha div:nth-child(2n){border-right:none;}
+  .ficha div:nth-last-child(-n+2){border-bottom:none;}
+
+  /* ── blocos de exercício ── */
+  .ex{margin:0 0 30px;break-inside:avoid;}
+  .ex > h2{
+    margin:0;color:#fff;font-size:15px;padding:11px 16px;border-radius:7px 7px 0 0;
+    display:flex;align-items:center;gap:10px;font-weight:700;
+  }
+  .ex > h2 .n{background:rgba(255,255,255,.22);border-radius:5px;padding:2px 9px;font-size:13px;}
+  .ex .cmd{font-size:13.5px;color:var(--mid);font-style:italic;
+           padding:11px 16px 4px;border-left:1.5px solid var(--bord);
+           border-right:1.5px solid var(--bord);background:#fff;}
+  .ex .wrap{border:1.5px solid var(--bord);border-top:none;border-radius:0 0 7px 7px;
+            padding:14px 16px 18px;background:#fff;}
+
+  .b-blue h2{background:var(--blue);}   .b-blue .wrap,.b-blue .cmd{border-color:var(--blue);}
+  .b-teal h2{background:var(--teal);}   .b-teal .wrap,.b-teal .cmd{border-color:var(--teal);}
+  .b-ora  h2{background:var(--ora);}    .b-ora .wrap,.b-ora .cmd{border-color:var(--ora);}
+  .b-pur  h2{background:var(--pur);}    .b-pur .wrap,.b-pur .cmd{border-color:var(--pur);}
+  .b-grn  h2{background:var(--grn);}    .b-grn .wrap,.b-grn .cmd{border-color:var(--grn);}
+  .b-red  h2{background:var(--red);}    .b-red .wrap,.b-red .cmd{border-color:var(--red);}
+  .b-navy h2{background:var(--navy);}   .b-navy .wrap,.b-navy .cmd{border-color:var(--navy);}
+
+  /* ── grade genérica de itens ── */
+  .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .item{border:1px solid var(--bord);border-radius:6px;padding:11px 13px;
+        font-size:14.5px;background:#FBFCFD;}
+  .item b{color:var(--navy);}
+
+  /* ── exercício de expoentes ── */
+  .expo{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+  .expo .card{border:1.4px solid var(--bord);border-radius:7px;overflow:hidden;background:#fff;}
+  .expo .card .top{background:var(--lblue);padding:8px 13px;font-size:15px;font-weight:700;
+                   color:var(--navy);border-bottom:1px solid var(--bord);}
+  .expo .card .eq{padding:15px 13px 16px;font-size:20px;text-align:center;
+                  letter-spacing:.5px;font-family:Georgia,"Times New Roman",serif;}
+  .expo .card .eq .base{font-weight:700;}
+  .expo .card .eq .op{color:var(--mid);margin:0 5px;}
+  .bx{display:inline-block;width:26px;height:26px;border:1.6px dashed var(--ora);
+      border-radius:5px;vertical-align:super;margin-left:1px;background:var(--lora);}
+
+  /* ── linhas de resposta ── */
+  .ln{display:inline-block;border-bottom:1.4px solid #90A4AE;min-width:52px;height:1.15em;
+      margin:0 3px;vertical-align:baseline;}
+  .ln.lg{min-width:110px;} .ln.xl{min-width:190px;} .ln.sm{min-width:34px;}
+
+  /* ── tabelas ── */
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th{background:var(--navy);color:#fff;padding:9px 11px;text-align:left;font-size:13.5px;}
+  td{padding:9px 11px;border:1px solid var(--bord);}
+  tbody tr:nth-child(odd) td{background:#F7FAFD;}
+  td.c{text-align:center;} th.c{text-align:center;}
+  .mono{font-family:"Courier New",monospace;font-weight:700;color:var(--navy);}
+
+  /* ── chave de divisão ── */
+  .chaves{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .chave{border:1.4px solid var(--pur);border-radius:7px;overflow:hidden;background:#fff;}
+  .chave .t{background:var(--pur);color:#fff;text-align:center;padding:7px;
+            font-weight:700;font-size:15px;}
+  .chave .g{padding:14px 0 8px;display:flex;justify-content:center;}
+  .chave table{width:auto;border:none;}
+  .chave td{border:none;padding:2px 0;font-size:14px;height:24px;}
+  .chave td.l{text-align:right;padding-right:9px;border-right:2px solid var(--dark);width:52px;}
+  .chave td.r{text-align:left;padding-left:9px;color:var(--ora);width:52px;}
+  .chave tr:first-child td.r{border-top:2px solid var(--dark);}
+  .chave .f{text-align:center;font-size:13.5px;padding:6px 8px 12px;
+            background:var(--lpur);border-top:1px solid #DCC6E6;}
+
+  /* ── caixas de problema ── */
+  .prob{border:1.4px solid var(--grn);border-radius:7px;margin-bottom:12px;overflow:hidden;}
+  .prob .h{background:var(--grn);color:#fff;padding:8px 14px;font-weight:700;font-size:13.5px;
+           letter-spacing:.6px;}
+  .prob .b{background:var(--lgrn);padding:12px 15px;font-size:14.5px;}
+  .prob .b .q{font-weight:700;display:block;margin:9px 0 2px;}
+  .prob .b .dica{font-size:13px;color:var(--mid);font-style:italic;}
+
+  .nota{background:var(--lyel);border:1.4px solid var(--yel);border-radius:7px;
+        padding:11px 15px;font-size:14px;margin:14px 0 0;}
+
+  /* ── gabarito ── */
+  .gab{margin-top:34px;border:1.6px solid var(--navy);border-radius:9px;overflow:hidden;}
+  .gab > summary{background:var(--navy);color:#fff;padding:13px 18px;font-weight:700;
+                 font-size:15px;cursor:pointer;list-style:none;}
+  .gab > summary::-webkit-details-marker{display:none;}
+  .gab > summary::before{content:"▸ ";}
+  .gab[open] > summary::before{content:"▾ ";}
+  .gab .in{padding:0;}
+  .gab table td:first-child{font-weight:700;color:var(--navy);width:150px;}
+
+  footer{margin-top:28px;background:var(--navy);color:#fff;text-align:center;
+         padding:13px;border-radius:8px;font-size:14px;}
+
+  /* ── impressão ── */
+  @media print{
+    body{background:#fff;padding:0;}
+    .sheet{box-shadow:none;max-width:none;padding:0;border-radius:0;}
+    .ex{break-inside:avoid;page-break-inside:avoid;}
+    .gab{break-before:page;}
+    .gab summary{cursor:default;}
+    details{open:true;}
+  }
+  @media(max-width:720px){
+    .g3,.g4,.expo,.chaves{grid-template-columns:repeat(2,1fr);}
+    .sheet{padding:20px 16px 30px;}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header>
+  <div class="esc">EMEF CEARÁ — CANOAS / RS</div>
+  <h1>Fatoração, MMC e MDC</h1>
+  <div class="sub">Lista de exercícios — Matemática</div>
+  <div class="prof">Prof. Mikael</div>
+</header>
+
+<div class="ficha">
+  <div><b>Nome:</b> ______________________________________________</div>
+  <div><b>Data:</b> ____ / ____ / ______</div>
+  <div><b>Turma:</b> _____________________________________________</div>
+  <div><b>Nota:</b> ______________</div>
+</div>
+
+<!-- ══ EX 1 — EXPOENTES ══════════════════════════════════════════════ -->
+<section class="ex b-blue">
+  <h2><span class="n">1</span> Complete os expoentes</h2>
+  <div class="cmd">O número já está decomposto e os fatores primos estão dados. Escreva o expoente correto de cada fator.</div>
+  <div class="wrap">
+    <div class="expo">
+      <div class="card"><div class="top">12</div>
+        <div class="eq">12 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">18</div>
+        <div class="eq">18 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">20</div>
+        <div class="eq">20 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">24</div>
+        <div class="eq">24 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">36</div>
+        <div class="eq">36 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">40</div>
+        <div class="eq">40 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">45</div>
+        <div class="eq">45 = <span class="base">3</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">50</div>
+        <div class="eq">50 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">72</div>
+        <div class="eq">72 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">100</div>
+        <div class="eq">100 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">60</div>
+        <div class="eq">60 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+
+      <div class="card"><div class="top">90</div>
+        <div class="eq">90 = <span class="base">2</span><span class="bx"></span><span class="op">×</span><span class="base">3</span><span class="bx"></span><span class="op">×</span><span class="base">5</span><span class="bx"></span></div></div>
+    </div>
+    <div class="nota"><b>Lembre:</b> quando o fator aparece uma única vez, o expoente é <b>1</b>. Ex.: 6 = 2<sup>1</sup> × 3<sup>1</sup>.</div>
+  </div>
+</section>
+
+<!-- ══ EX 2 — CAMINHO INVERSO ════════════════════════════════════════ -->
+<section class="ex b-teal">
+  <h2><span class="n">2</span> Caminho inverso — qual é o número?</h2>
+  <div class="cmd">A forma fatorada está pronta. Calcule e escreva o número composto correspondente.</div>
+  <div class="wrap">
+    <div class="g3">
+      <div class="item">a) 2<sup>2</sup> × 3 = <span class="ln"></span></div>
+      <div class="item">b) 2 × 5<sup>2</sup> = <span class="ln"></span></div>
+      <div class="item">c) 3<sup>2</sup> × 5 = <span class="ln"></span></div>
+      <div class="item">d) 2<sup>3</sup> × 3 = <span class="ln"></span></div>
+      <div class="item">e) 2<sup>2</sup> × 7 = <span class="ln"></span></div>
+      <div class="item">f) 3 × 5 × 7 = <span class="ln"></span></div>
+      <div class="item">g) 2<sup>4</sup> = <span class="ln"></span></div>
+      <div class="item">h) 2<sup>2</sup> × 3<sup>2</sup> = <span class="ln"></span></div>
+      <div class="item">i) 2 × 3 × 5<sup>2</sup> = <span class="ln"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EX 3 — CHAVE DE DIVISÃO ═══════════════════════════════════════ -->
+<section class="ex b-pur">
+  <h2><span class="n">3</span> Decomponha usando a chave de divisão</h2>
+  <div class="cmd">Divida sempre pelo menor primo possível até chegar ao 1. Depois escreva a forma de potência.</div>
+  <div class="wrap">
+    <div class="chaves">
+      <div class="chave"><div class="t">24</div>
+        <div class="g"><table>
+          <tr><td class="l">24</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">24 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">36</div>
+        <div class="g"><table>
+          <tr><td class="l">36</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">36 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">45</div>
+        <div class="g"><table>
+          <tr><td class="l">45</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">45 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">50</div>
+        <div class="g"><table>
+          <tr><td class="l">50</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">50 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">60</div>
+        <div class="g"><table>
+          <tr><td class="l">60</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">60 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">72</div>
+        <div class="g"><table>
+          <tr><td class="l">72</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">72 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">84</div>
+        <div class="g"><table>
+          <tr><td class="l">84</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">84 = <span class="ln lg"></span></div></div>
+
+      <div class="chave"><div class="t">100</div>
+        <div class="g"><table>
+          <tr><td class="l">100</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">&nbsp;</td><td class="r">&nbsp;</td></tr>
+          <tr><td class="l">1</td><td class="r">&nbsp;</td></tr>
+        </table></div>
+        <div class="f">100 = <span class="ln lg"></span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EX 4 — DIVISOR OU NÃO ═════════════════════════════════════════ -->
+<section class="ex b-red">
+  <h2><span class="n">4</span> É divisor ou não?</h2>
+  <div class="cmd">Use a fatoração dada para decidir. Se o fator não aparece na decomposição, ele não é divisor.</div>
+  <div class="wrap">
+    <table>
+      <thead><tr><th style="width:150px">Fatoração</th><th>Pergunta</th><th class="c" style="width:150px">Marque</th><th style="width:170px">Justifique</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">12 = 2² × 3</td><td>4 é divisor de 12?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">12 = 2² × 3</td><td>7 é divisor de 12?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">36 = 2² × 3²</td><td>9 é divisor de 36?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">36 = 2² × 3²</td><td>5 é divisor de 36?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">50 = 2 × 5²</td><td>25 é divisor de 50?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">50 = 2 × 5²</td><td>4 é divisor de 50?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">60 = 2² × 3 × 5</td><td>15 é divisor de 60?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+        <tr><td class="mono">60 = 2² × 3 × 5</td><td>8 é divisor de 60?</td><td class="c">( ) SIM &nbsp; ( ) NÃO</td><td><span class="ln lg"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ EX 5 — DIVISORES ══════════════════════════════════════════════ -->
+<section class="ex b-blue">
+  <h2><span class="n">5</span> Liste todos os divisores</h2>
+  <div class="cmd">Combine os fatores primos para obter todos os divisores de cada número.</div>
+  <div class="wrap">
+    <table>
+      <thead><tr><th class="c" style="width:90px">Número</th><th style="width:170px">Fatoração</th><th>Todos os divisores</th></tr></thead>
+      <tbody>
+        <tr><td class="c"><b>12</b></td><td class="mono">2² × 3</td><td>1, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span></td></tr>
+        <tr><td class="c"><b>18</b></td><td class="mono">2 × 3²</td><td>1, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span></td></tr>
+        <tr><td class="c"><b>20</b></td><td class="mono">2² × 5</td><td>1, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span></td></tr>
+        <tr><td class="c"><b>24</b></td><td class="mono">2³ × 3</td><td>1, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span></td></tr>
+        <tr><td class="c"><b>45</b></td><td class="mono">3² × 5</td><td>1, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span></td></tr>
+        <tr><td class="c"><b>50</b></td><td class="mono">2 × 5²</td><td>1, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span>, <span class="ln sm"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ EX 6 — MDC ════════════════════════════════════════════════════ -->
+<section class="ex b-teal">
+  <h2><span class="n">6</span> MDC — Máximo Divisor Comum</h2>
+  <div class="cmd">Fatore os dois números, escolha os fatores comuns com o <b>menor</b> expoente e multiplique.</div>
+  <div class="wrap">
+    <table>
+      <thead><tr><th style="width:130px">Par</th><th>Fatoração dos dois</th><th style="width:190px">Fatores comuns</th><th class="c" style="width:110px">MDC</th></tr></thead>
+      <tbody>
+        <tr><td><b>a) 12 e 18</b></td><td>12 = <span class="ln lg"></span> &nbsp; 18 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>b) 20 e 30</b></td><td>20 = <span class="ln lg"></span> &nbsp; 30 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>c) 24 e 36</b></td><td>24 = <span class="ln lg"></span> &nbsp; 36 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>d) 45 e 60</b></td><td>45 = <span class="ln lg"></span> &nbsp; 60 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>e) 50 e 100</b></td><td>50 = <span class="ln lg"></span> &nbsp; 100 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>f) 72 e 84</b></td><td>72 = <span class="ln lg"></span> &nbsp; 84 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+      </tbody>
+    </table>
+    <div class="nota"><b>Regra do MDC:</b> só entram os primos que aparecem nos <b>dois</b> números, sempre com o <b>menor</b> expoente.</div>
+  </div>
+</section>
+
+<!-- ══ EX 7 — MMC ════════════════════════════════════════════════════ -->
+<section class="ex b-ora">
+  <h2><span class="n">7</span> MMC — Mínimo Múltiplo Comum</h2>
+  <div class="cmd">Reúna <b>todos</b> os primos que aparecem, cada um com o <b>maior</b> expoente, e multiplique.</div>
+  <div class="wrap">
+    <table>
+      <thead><tr><th style="width:130px">Par</th><th>Fatoração dos dois</th><th style="width:190px">Todos os fatores</th><th class="c" style="width:110px">MMC</th></tr></thead>
+      <tbody>
+        <tr><td><b>a) 12 e 18</b></td><td>12 = <span class="ln lg"></span> &nbsp; 18 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>b) 20 e 30</b></td><td>20 = <span class="ln lg"></span> &nbsp; 30 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>c) 24 e 36</b></td><td>24 = <span class="ln lg"></span> &nbsp; 36 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>d) 15 e 20</b></td><td>15 = <span class="ln lg"></span> &nbsp; 20 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>e) 45 e 60</b></td><td>45 = <span class="ln lg"></span> &nbsp; 60 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+        <tr><td><b>f) 8 e 36</b></td><td>8 = <span class="ln lg"></span> &nbsp; 36 = <span class="ln lg"></span></td><td><span class="ln lg"></span></td><td class="c"><span class="ln sm"></span></td></tr>
+      </tbody>
+    </table>
+    <div class="nota"><b>Regra do MMC:</b> entram <b>todos</b> os primos dos dois números, cada um com o <b>maior</b> expoente.</div>
+  </div>
+</section>
+
+<!-- ══ EX 8 — MDC × MMC ══════════════════════════════════════════════ -->
+<section class="ex b-navy">
+  <h2><span class="n">8</span> Qual usar: MDC ou MMC?</h2>
+  <div class="cmd">Leia cada situação e marque qual conceito resolve o problema. Não precisa calcular ainda.</div>
+  <div class="wrap">
+    <table>
+      <thead><tr><th>Situação</th><th class="c" style="width:180px">Marque</th></tr></thead>
+      <tbody>
+        <tr><td>Dividir 24 doces e 36 salgados em sacolinhas iguais, sem sobrar.</td><td class="c">( ) MDC &nbsp; ( ) MMC</td></tr>
+        <tr><td>Dois ônibus saem a cada 12 e 18 minutos. Quando saem juntos de novo?</td><td class="c">( ) MDC &nbsp; ( ) MMC</td></tr>
+        <tr><td>Cortar dois barbantes de 20 cm e 30 cm em pedaços iguais e do maior tamanho possível.</td><td class="c">( ) MDC &nbsp; ( ) MMC</td></tr>
+        <tr><td>Duas luzes piscam a cada 8 e 36 segundos. Quando piscam juntas?</td><td class="c">( ) MDC &nbsp; ( ) MMC</td></tr>
+        <tr><td>Formar times iguais com 45 meninos e 60 meninas, usando todos.</td><td class="c">( ) MDC &nbsp; ( ) MMC</td></tr>
+        <tr><td>Dois remédios são tomados a cada 6 e 8 horas. Quando coincidem?</td><td class="c">( ) MDC &nbsp; ( ) MMC</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ EX 9 — PROBLEMAS ══════════════════════════════════════════════ -->
+<section class="ex b-grn">
+  <h2><span class="n">9</span> Problemas — resolva com fatoração</h2>
+  <div class="cmd">Fatore os números, decida entre MDC e MMC e mostre o cálculo.</div>
+  <div class="wrap">
+
+    <div class="prob"><div class="h">A) SACOLINHAS</div><div class="b">
+      Uma loja tem <b>24 chocolates</b> e <b>36 balas</b>. Quer montar sacolinhas iguais, usando tudo e sem sobrar.
+      <span class="q">Qual o maior número de sacolinhas possível? E quantos itens de cada tipo vão em cada uma?</span>
+      <span class="dica">Fatore os dois e compare.</span><br><br>
+      Cálculo: <span class="ln xl"></span><br><br>
+      Resposta: <span class="ln xl"></span>
+    </div></div>
+
+    <div class="prob"><div class="h">B) ÔNIBUS</div><div class="b">
+      Um ônibus passa a cada <b>12 minutos</b> e outro a cada <b>18 minutos</b>. Agora os dois partiram juntos.
+      <span class="q">Em quantos minutos partirão juntos novamente?</span>
+      <span class="dica">Fatore os dois e compare.</span><br><br>
+      Cálculo: <span class="ln xl"></span><br><br>
+      Resposta: <span class="ln xl"></span>
+    </div></div>
+
+    <div class="prob"><div class="h">C) LADRILHOS</div><div class="b">
+      Uma parede mede <b>60 cm</b> por <b>84 cm</b>. Quer-se cobri-la com ladrilhos quadrados iguais, sem cortar nenhum.
+      <span class="q">Qual o maior lado possível do ladrilho? Quantos ladrilhos serão usados?</span>
+      <span class="dica">Fatore os dois e compare.</span><br><br>
+      Cálculo: <span class="ln xl"></span><br><br>
+      Resposta: <span class="ln xl"></span>
+    </div></div>
+
+    <div class="prob"><div class="h">D) TREINOS</div><div class="b">
+      Ana treina a cada <b>8 dias</b> e Bruno a cada <b>36 dias</b>. Hoje os dois treinaram juntos.
+      <span class="q">Daqui a quantos dias voltarão a treinar no mesmo dia?</span>
+      <span class="dica">Fatore os dois e compare.</span><br><br>
+      Cálculo: <span class="ln xl"></span><br><br>
+      Resposta: <span class="ln xl"></span>
+    </div></div>
+
+  </div>
+</section>
+
+<!-- ══ GABARITO ══════════════════════════════════════════════════════ -->
+<details class="gab">
+  <summary>GABARITO</summary>
+  <div class="in">
+    <table>
+      <tbody>
+        <tr><td>Ex. 1 — Expoentes</td><td>12 = 2²×3 &nbsp;|&nbsp; 18 = 2×3² &nbsp;|&nbsp; 20 = 2²×5 &nbsp;|&nbsp; 24 = 2³×3 &nbsp;|&nbsp; 36 = 2²×3² &nbsp;|&nbsp; 40 = 2³×5 &nbsp;|&nbsp; 45 = 3²×5 &nbsp;|&nbsp; 50 = 2×5² &nbsp;|&nbsp; 72 = 2³×3² &nbsp;|&nbsp; 100 = 2²×5² &nbsp;|&nbsp; 60 = 2²×3×5 &nbsp;|&nbsp; 90 = 2×3²×5</td></tr>
+        <tr><td>Ex. 2 — Inverso</td><td>a) 12 &nbsp; b) 50 &nbsp; c) 45 &nbsp; d) 24 &nbsp; e) 28 &nbsp; f) 105 &nbsp; g) 16 &nbsp; h) 36 &nbsp; i) 150</td></tr>
+        <tr><td>Ex. 3 — Chave</td><td>24 = 2³×3 &nbsp;|&nbsp; 36 = 2²×3² &nbsp;|&nbsp; 45 = 3²×5 &nbsp;|&nbsp; 50 = 2×5² &nbsp;|&nbsp; 60 = 2²×3×5 &nbsp;|&nbsp; 72 = 2³×3² &nbsp;|&nbsp; 84 = 2²×3×7 &nbsp;|&nbsp; 100 = 2²×5²</td></tr>
+        <tr><td>Ex. 4 — Divisor?</td><td>4 de 12 = SIM (2²) &nbsp;|&nbsp; 7 de 12 = NÃO &nbsp;|&nbsp; 9 de 36 = SIM (3²) &nbsp;|&nbsp; 5 de 36 = NÃO &nbsp;|&nbsp; 25 de 50 = SIM (5²) &nbsp;|&nbsp; 4 de 50 = NÃO (só há um fator 2) &nbsp;|&nbsp; 15 de 60 = SIM (3×5) &nbsp;|&nbsp; 8 de 60 = NÃO (60 só tem 2²)</td></tr>
+        <tr><td>Ex. 5 — Divisores</td><td>12: 1,2,3,4,6,12 &nbsp;|&nbsp; 18: 1,2,3,6,9,18 &nbsp;|&nbsp; 20: 1,2,4,5,10,20 &nbsp;|&nbsp; 24: 1,2,3,4,6,8,12,24 &nbsp;|&nbsp; 45: 1,3,5,9,15,45 &nbsp;|&nbsp; 50: 1,2,5,10,25,50</td></tr>
+        <tr><td>Ex. 6 — MDC</td><td>a) MDC(12,18) = 2×3 = <b>6</b> &nbsp;|&nbsp; b) MDC(20,30) = 2×5 = <b>10</b> &nbsp;|&nbsp; c) MDC(24,36) = 2²×3 = <b>12</b> &nbsp;|&nbsp; d) MDC(45,60) = 3×5 = <b>15</b> &nbsp;|&nbsp; e) MDC(50,100) = 2×5² = <b>50</b> &nbsp;|&nbsp; f) MDC(72,84) = 2²×3 = <b>12</b></td></tr>
+        <tr><td>Ex. 7 — MMC</td><td>a) MMC(12,18) = 2²×3² = <b>36</b> &nbsp;|&nbsp; b) MMC(20,30) = 2²×3×5 = <b>60</b> &nbsp;|&nbsp; c) MMC(24,36) = 2³×3² = <b>72</b> &nbsp;|&nbsp; d) MMC(15,20) = 2²×3×5 = <b>60</b> &nbsp;|&nbsp; e) MMC(45,60) = 2²×3²×5 = <b>180</b> &nbsp;|&nbsp; f) MMC(8,36) = 2³×3² = <b>72</b></td></tr>
+        <tr><td>Ex. 8 — Qual usar</td><td>Sacolinhas = MDC &nbsp;|&nbsp; Ônibus = MMC &nbsp;|&nbsp; Barbantes = MDC &nbsp;|&nbsp; Luzes = MMC &nbsp;|&nbsp; Times = MDC &nbsp;|&nbsp; Remédios = MMC</td></tr>
+        <tr><td>Ex. 9 — Problemas</td><td>
+          A) MDC(24,36) = <b>12 sacolinhas</b>, com 2 chocolates e 3 balas cada.<br>
+          B) MMC(12,18) = <b>36 minutos</b>.<br>
+          C) MDC(60,84) = <b>12 cm</b> de lado; 5 × 7 = <b>35 ladrilhos</b>.<br>
+          D) MMC(8,36) = <b>72 dias</b>.
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<footer>Fatoração é a ferramenta — MDC agrupa, MMC sincroniza.</footer>
+
+</div>
+</body>
+</html>

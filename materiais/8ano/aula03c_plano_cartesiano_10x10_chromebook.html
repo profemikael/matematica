@@ -48,6 +48,9 @@ h1 { font-size: 25px; color: #14395C; margin: 4px 0 2px; }
 .progress-dots span.done { background: #1E8449; }
 .progress-dots span.cur { background: #2E75B6; box-shadow: 0 0 0 2px #cfe3f5; }
 .progress-dots span.miss { background: #E8A33D; }
+.btn-restart { background: #EDF3F9; color: #14395C; border: 1.5px solid #C6D3DF; border-radius: 8px;
+               padding: 8px 14px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+.btn-restart:hover { background: #dde8f3; border-color: #2E75B6; }
 .pintar-note { font-size: 12.5px; color: #B9651A; background: #FEF3E2; border: 1px solid #F0D6B0;
                border-radius: 7px; padding: 6px 10px; margin-top: 8px; display: inline-block; }
 svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
@@ -77,6 +80,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a1target">carregando...</p>
             <div class="progress-dots" id="a1dots"></div>
+            <button class="btn-restart" id="a1restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a1fb"></div>
             
           </div>
@@ -94,6 +98,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a2target">carregando...</p>
             <div class="progress-dots" id="a2dots"></div>
+            <button class="btn-restart" id="a2restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a2fb"></div>
             
           </div>
@@ -111,6 +116,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a3target">carregando...</p>
             <div class="progress-dots" id="a3dots"></div>
+            <button class="btn-restart" id="a3restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a3fb"></div>
             
           </div>
@@ -128,6 +134,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a4target">carregando...</p>
             <div class="progress-dots" id="a4dots"></div>
+            <button class="btn-restart" id="a4restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a4fb"></div>
             
           </div>
@@ -145,6 +152,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a5target">carregando...</p>
             <div class="progress-dots" id="a5dots"></div>
+            <button class="btn-restart" id="a5restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a5fb"></div>
             
           </div>
@@ -162,6 +170,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a6target">carregando...</p>
             <div class="progress-dots" id="a6dots"></div>
+            <button class="btn-restart" id="a6restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a6fb"></div>
             
           </div>
@@ -179,6 +188,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a7target">carregando...</p>
             <div class="progress-dots" id="a7dots"></div>
+            <button class="btn-restart" id="a7restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a7fb"></div>
             
           </div>
@@ -196,6 +206,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a8target">carregando...</p>
             <div class="progress-dots" id="a8dots"></div>
+            <button class="btn-restart" id="a8restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a8fb"></div>
             <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
           </div>
@@ -213,6 +224,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a9target">carregando...</p>
             <div class="progress-dots" id="a9dots"></div>
+            <button class="btn-restart" id="a9restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a9fb"></div>
             <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
           </div>
@@ -230,6 +242,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a10target">carregando...</p>
             <div class="progress-dots" id="a10dots"></div>
+            <button class="btn-restart" id="a10restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a10fb"></div>
             <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
           </div>
@@ -247,6 +260,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a11target">carregando...</p>
             <div class="progress-dots" id="a11dots"></div>
+            <button class="btn-restart" id="a11restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a11fb"></div>
             <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
           </div>
@@ -264,6 +278,7 @@ svg text { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-
             <p class="prompt">Clique no plano exatamente sobre o ponto:</p>
             <p class="big" id="a12target">carregando...</p>
             <div class="progress-dots" id="a12dots"></div>
+            <button class="btn-restart" id="a12restart">↺ Recomeçar este grupo</button>
             <div class="fb" id="a12fb"></div>
             <div class="pintar-note">🎨 No papel, esta parte será pintada.</div>
           </div>
@@ -312,14 +327,14 @@ function buildPlane(host,o){
   for(let v=ymin; v<=ymax; v++){ if(v!==0 && v%2===0){ const t=el("text",{x:X(ax0)-9,y:Y(v)+5,class:"num","text-anchor":"end"},svg); t.textContent=v; } }
   if(xmin<=0&&0<=xmax&&ymin<=0&&0<=ymax){ const t=el("text",{x:X(0)-9,y:Y(0)+20,class:"num","text-anchor":"end"},svg); t.textContent="0"; }
   return { svg,X,Y,invX,invY,w,h,xmin,xmax,ymin,ymax,
-    dot(x,y,c){ return el("circle",{cx:X(x),cy:Y(y),r:7,fill:c||"#14395C"},svg); } };
+    dot(x,y,c){ return el("circle",{cx:X(x),cy:Y(y),r:7,fill:c||"#14395C","pointer-events":"none"},svg); } };
 }
 
 function setupFase(n, targets, opts){
   opts = opts||{};
   const host=document.getElementById('a'+n+'plane');
   const fb=document.getElementById('a'+n+'fb'), tg=document.getElementById('a'+n+'target'), dots=document.getElementById('a'+n+'dots');
-  let idx=0, lost=false;
+  let idx=0, lost=false; const placed=[];
   const P=buildPlane(host,{xmin:-10,xmax:10,ymax:10,ymin:-10,w:720,h:720});
   const hit=el("rect",{x:0,y:0,width:P.w,height:P.h,fill:"transparent",style:"cursor:crosshair"},P.svg);
   targets.forEach(()=>dots.appendChild(document.createElement('span')));
@@ -335,10 +350,16 @@ function setupFase(n, targets, opts){
     let gx=Math.round(P.invX(px)), gy=Math.round(P.invY(py));
     gx=Math.max(P.xmin,Math.min(P.xmax,gx)); gy=Math.max(P.ymin,Math.min(P.ymax,gy));
     const [tx,ty]=targets[idx];
-    if(gx===tx&&gy===ty){ P.dot(gx,gy,"#1E8449"); if(!lost) award('f'+n+'-'+idx);
+    if(gx===tx&&gy===ty){ placed.push(P.dot(gx,gy,"#1E8449")); if(!lost) award('f'+n+'-'+idx);
       fb.textContent="Isso! ("+gx+", "+gy+") correto."; fb.className="fb ok"; idx++; setTimeout(setT,450); }
     else { const m=P.dot(gx,gy,"#C0392B"); setTimeout(()=>m.remove(),500); lost=true; dots.children[idx].className='cur miss';
       fb.textContent="Você clicou em ("+gx+", "+gy+"). Tente de novo."; fb.className="fb no"; }
+  });
+  document.getElementById('a'+n+'restart').addEventListener('click',function(){
+    placed.forEach(d=>d.remove()); placed.length=0;
+    idx=0; lost=false; hit.style.cursor="crosshair";
+    fb.textContent="Grupo reiniciado — comece de novo pelo primeiro ponto."; fb.className="fb info";
+    setT();
   });
   setT();
 }

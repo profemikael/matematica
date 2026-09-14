@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Lua — 8º Ano (Aula para impressão)</title>
+<style>
+  :root{
+    --navy:#1E3A8A;--blue:#1E40AF;--ink:#1F2A44;--mute:#5B6472;--lightblue:#E8F0FE;
+    --yellow:#FEF6E0;--yellowb:#F0C33C;--green:#E9F7EF;--greenb:#2FA968;--greent:#1B7F4B;
+    --amber:#E0982C;--ambert:#9C5B12;--purp:#EADFF7;--purpt:#6B3FA0;--card:#fff;--line:#E2E8F0;--rowalt:#F3F6FB;
+    --red:#FDECEC;--redb:#D6455B;--redt:#A32233;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#EEF2F8;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5;}
+  .page{max-width:820px;margin:0 auto;padding:20px;}
+  .noprint{background:#fff;border:1px dashed #9db4e6;border-radius:10px;padding:12px 16px;margin:12px 0;color:#33507f;font-size:14px;}
+  header.top{background:linear-gradient(135deg,#1E3A8A,#2B57D6);color:#fff;border-radius:14px;padding:20px 24px;margin:10px 0;}
+  header.top .eyebrow{display:flex;justify-content:space-between;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#C7D6F5;}
+  header.top h1{margin:8px 0 4px;font-size:26px;}
+  header.top .sub{color:#DCE6FB;font-size:15px;}
+  header.top .chip{display:inline-block;background:#BFD2F5;color:#0E2A6B;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;margin:10px 8px 0 0;}
+  .learn{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0;}
+  .learn .lh{background:var(--navy);color:#fff;font-weight:700;text-transform:uppercase;font-size:14px;letter-spacing:.4px;padding:9px 16px;}
+  .learn .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#fff;}
+  .learn .it{background:var(--lightblue);padding:11px 14px;font-size:15px;}
+  h2.sec{color:var(--navy);font-size:20px;border-bottom:3px solid var(--navy);padding-bottom:6px;margin:26px 0 12px;}
+  h2.sec .n{background:var(--navy);color:#fff;border-radius:7px;padding:1px 10px;margin-right:8px;font-size:17px;}
+  h2.sec .pen{float:right;background:var(--lightblue);color:var(--navy);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  h3.sub{color:var(--blue);font-size:16px;margin:18px 0 6px;}
+  p{margin:10px 0;}
+  .fig{text-align:center;margin:14px 0;}
+  .fig figcaption{color:var(--mute);font-style:italic;font-size:13px;margin-top:4px;}
+  .rulebox{background:var(--lightblue);border:2px solid var(--blue);border-radius:12px;text-align:center;padding:14px;margin:14px 0;font-size:20px;font-weight:700;color:var(--navy);}
+  .rulebox small{display:block;font-size:13px;font-weight:400;color:var(--mute);margin-top:6px;}
+  .vocab,.tip,.exemplo,.alerta{border-radius:12px;padding:14px 18px;margin:14px 0;}
+  .vocab{background:var(--lightblue);border-left:6px solid var(--blue);}
+  .vocab b{color:var(--navy);}
+  .tip{background:var(--yellow);border-left:6px solid var(--yellowb);}
+  .tip b{color:#8A5A00;}
+  .exemplo{background:var(--green);border-left:6px solid var(--greenb);}
+  .exemplo b{color:var(--greent);}
+  .alerta{background:var(--red);border-left:6px solid var(--redb);}
+  .alerta b{color:var(--redt);}
+  .calc{font-family:ui-monospace,"Cascadia Mono","Consolas",monospace;font-size:14px;line-height:1.9;}
+  table.res,table.dados{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px;}
+  table.res th,table.dados th{background:var(--navy);color:#fff;padding:8px 10px;text-align:left;}
+  table.res td,table.dados td{border:1px solid #D5DCE8;padding:8px 10px;}
+  table.res tr:nth-child(even) td,table.dados tr:nth-child(even) td{background:var(--rowalt);}
+  table.res td:first-child,table.dados td:first-child{font-weight:700;color:var(--navy);}
+  table.dados td.m{font-family:ui-monospace,"Cascadia Mono","Consolas",monospace;}
+  .classgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0;}
+  .classgrid .c{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;background:#fff;}
+  .classgrid .c b{display:block;color:var(--navy);font-size:14px;margin-top:4px;}
+  .classgrid .c span{display:block;color:var(--mute);font-size:12px;}
+  .duas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+  .duas .bx{border:1px solid var(--line);border-radius:12px;padding:12px 16px;background:#fff;}
+  .duas .bx h4{margin:0 0 6px;color:var(--navy);font-size:15px;}
+  .duas .bx p{margin:4px 0;font-size:14px;}
+  .exhead{background:linear-gradient(135deg,#1E3A8A,#2B57D6);color:#fff;border-radius:12px;padding:14px 20px;margin:22px 0 10px;}
+  .exhead h2{margin:0;font-size:22px;text-transform:uppercase;letter-spacing:.5px;}
+  .exhead p{margin:4px 0 0;color:#DCE6FB;font-size:14px;}
+  .ex{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;background:#fff;page-break-inside:avoid;}
+  .ex .t{font-weight:700;color:var(--navy);font-size:17px;}
+  .ex .bd{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+  .bas{background:var(--green);color:var(--greent);}
+  .med{background:#FBE7C2;color:var(--ambert);}
+  .dif{background:var(--purp);color:var(--purpt);}
+  .pg{display:inline-block;font-size:12px;font-weight:700;background:var(--lightblue);color:var(--navy);border-radius:20px;padding:2px 9px;margin-left:6px;}
+  .ex ul{margin:8px 0 0;padding-left:22px;}
+  .ex li{margin:5px 0;}
+  .conn{background:var(--green);border-left:6px solid var(--greenb);border-radius:12px;padding:14px 18px;margin:16px 0;}
+  .conn b{color:var(--greent);}
+  .foot{color:var(--mute);font-size:12px;text-align:center;margin-top:20px;border-top:1px solid var(--line);padding-top:10px;}
+  @media print{
+    body{background:#fff;} .page{max-width:none;padding:0;} .noprint{display:none;}
+    .ex,.exemplo,.tip,.vocab,.alerta,.classgrid .c,.duas .bx,header.top{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    header.top,.exhead,table.res th,table.dados th,.rulebox{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    h2.sec{page-break-after:avoid;} .fig{page-break-inside:avoid;}
+  }
+  @media (max-width:620px){ .learn .grid,.duas{grid-template-columns:1fr;} .classgrid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="noprint">📄 <b>Para gerar o PDF:</b> pressione <b>Ctrl + P</b> (ou ⌘ + P) e escolha <b>“Salvar como PDF”</b>. Ative “Gráficos de segundo plano” para manter as cores. Esta faixa não aparece na impressão.</div>
+
+  <header class="top">
+    <div class="eyebrow"><span>Ciências · 8º ano</span><span>3º Trimestre · Aula 1</span></div>
+    <h1>A Lua</h1>
+    <div class="sub">Movimentos, fases, eclipses e a influência da Lua sobre a Terra</div>
+    <div><span class="chip">RCC / BNCC · EF08CI12</span><span class="chip">Livro Superação · Cap. 1 (p. 18–32)</span><span class="chip">Prof. Mikael</span></div>
+  </header>
+
+  <div class="learn">
+    <div class="lh">O que vamos aprender</div>
+    <div class="grid">
+      <div class="it">▸ O que é um <b>satélite natural</b> e por que vemos sempre a mesma face da Lua</div>
+      <div class="it">▸ Por que a Lua tem <b>fases</b> e quanto dura o ciclo completo</div>
+      <div class="it">▸ A diferença entre <b>eclipse lunar</b> e <b>eclipse solar</b></div>
+      <div class="it">▸ Escrever os dados da Lua em <b>notação científica</b></div>
+      <div class="it">▸ Calcular <b>velocidade</b>, <b>peso</b> e <b>escala</b> com fórmulas simples</div>
+      <div class="it">▸ Como a Lua influencia as <b>marés</b> e a <b>vida na Terra</b></div>
+    </div>
+  </div>
+
+  <div class="tip"><b>Como usar este material:</b> o <b>texto branco das seções numeradas é o que vai para o caderno</b> — copie inteiro, com os títulos. As caixas coloridas (vocabulário, exemplo resolvido, atenção) e as figuras são <b>apoio</b>: leia, entenda e não precisa copiar. Os <b>exercícios do final são obrigatórios</b> e devem ser resolvidos no caderno.</div>
+
+  <h2 class="sec"><span class="n">1</span> O satélite natural da Terra <span class="pen">✏️ copiar</span></h2>
+  <p>Um <b>satélite natural</b> é um corpo celeste que não possui luz própria e que gira em <b>órbita</b> ao redor de um planeta, preso pela <b>força gravitacional</b> desse planeta. <b>Órbita</b> é o caminho fechado que um corpo percorre ao redor de outro. A Terra possui <b>um único</b> satélite natural: a <b>Lua</b>.</p>
+  <p>A Lua realiza dois movimentos ao mesmo tempo. A <b>rotação</b> é o giro em torno do próprio eixo e leva <b>27,3 dias</b>. A <b>translação</b> é a volta em torno da Terra e leva exatamente os <b>mesmos 27,3 dias</b>. Como os dois tempos são iguais, a Lua mostra sempre o <b>mesmo lado</b> para a Terra. Esse fenômeno chama-se <b>rotação sincronizada</b>.</p>
+  <p>O lado que nunca fica voltado para nós é chamado de <b>face oculta</b> — e não de "lado escuro", porque ele também recebe luz do Sol. Quando aqui na Terra vemos a <b>Lua nova</b>, é justamente a face oculta que está totalmente iluminada.</p>
+
+  <div class="fig">
+    <svg width="430" height="255" viewBox="0 0 430 255" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="215" cy="128" rx="155" ry="95" fill="none" stroke="#8A93A6" stroke-width="1.6" stroke-dasharray="6,5"/>
+      <circle cx="215" cy="128" r="32" fill="#1E3A8A"/>
+      <text x="215" y="133" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Terra</text>
+      <g>
+        <circle cx="370" cy="128" r="20" fill="#EAF1FB" stroke="#1E3A8A" stroke-width="2"/>
+        <path d="M370 108 a20 20 0 0 0 0 40 z" fill="#1E3A8A" opacity=".75"/>
+        <text x="370" y="174" font-size="12" fill="#5B6472" text-anchor="middle">1</text>
+      </g>
+      <g>
+        <circle cx="215" cy="33" r="20" fill="#EAF1FB" stroke="#1E3A8A" stroke-width="2"/>
+        <path d="M195 33 a20 20 0 0 1 40 0 z" fill="#1E3A8A" opacity=".75"/>
+        <text x="250" y="30" font-size="12" fill="#5B6472" text-anchor="middle">2</text>
+      </g>
+      <g>
+        <circle cx="60" cy="128" r="20" fill="#EAF1FB" stroke="#1E3A8A" stroke-width="2"/>
+        <path d="M60 108 a20 20 0 0 1 0 40 z" fill="#1E3A8A" opacity=".75"/>
+        <text x="60" y="174" font-size="12" fill="#5B6472" text-anchor="middle">3</text>
+      </g>
+      <g>
+        <circle cx="215" cy="223" r="20" fill="#EAF1FB" stroke="#1E3A8A" stroke-width="2"/>
+        <path d="M195 223 a20 20 0 0 0 40 0 z" fill="#1E3A8A" opacity=".75"/>
+        <text x="250" y="228" font-size="12" fill="#5B6472" text-anchor="middle">4</text>
+      </g>
+    </svg>
+    <figcaption>A metade escura é a face oculta. Em qualquer ponto da órbita, ela aponta para o lado contrário à Terra.</figcaption>
+  </div>
+
+  <div class="vocab">
+    <b>Vocabulário científico</b><br>
+    <b>Corpo celeste</b> — qualquer objeto natural do espaço (estrela, planeta, satélite, cometa). &nbsp; <b>Satélite artificial</b> — o que nós construímos e colocamos em órbita.<br>
+    <b>Rotação</b> — giro em torno do próprio eixo. &nbsp; <b>Translação</b> — giro em torno de outro corpo. &nbsp; <b>Gravidade</b> — força de atração entre corpos com massa.
+  </div>
+
+  <div class="tip"><b>Atenção ao usar a tabela da página 20:</b> o número de satélites dos planetas gigantes <b>muda com o tempo</b>. Telescópios melhores descobrem luas novas todo ano. Um dado científico pode ter <b>data de validade</b> — por isso a tabela do livro traz o ano da contagem.</div>
+
+  <h2 class="sec"><span class="n">2</span> As fases da Lua <span class="pen">✏️ copiar</span></h2>
+  <p>A Lua <b>não tem luz própria</b>: ela apenas reflete a luz do Sol. Metade dela está sempre iluminada, e essa metade nunca muda. O que muda é <b>quanto dessa parte iluminada fica voltado para a Terra</b> conforme a Lua percorre a órbita. A <b>fase da Lua</b> é, portanto, a porção da superfície iluminada que pode ser vista da Terra em cada momento.</p>
+  <p>As quatro fases principais são <b>nova</b> (0% visível), <b>crescente</b> (50%), <b>cheia</b> (100%) e <b>minguante</b> (50%). Cada uma dura cerca de <b>7,4 dias</b>.</p>
+  <p>A volta completa da Lua em torno da Terra leva <b>27,3 dias</b> e é chamada de <b>mês sideral</b>. Já o ciclo completo das fases, de uma Lua nova até a próxima, leva <b>29,5 dias</b> e é chamado de <b>mês sinódico</b>. A diferença de <b>2,2 dias</b> existe porque, enquanto a Lua dá sua volta, a <b>Terra também se move</b> em torno do Sol — a Lua precisa percorrer um pouco mais para voltar ao mesmo alinhamento.</p>
+
+  <div class="fig">
+    <svg width="620" height="175" viewBox="0 0 620 175" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="c2"><circle cx="235" cy="62" r="40"/></clipPath>
+        <clipPath id="c4"><circle cx="545" cy="62" r="40"/></clipPath>
+      </defs>
+      <circle cx="75" cy="62" r="40" fill="#1F2A44" stroke="#1E3A8A" stroke-width="2"/>
+      <text x="75" y="128" font-size="15" font-weight="bold" fill="#1E3A8A" text-anchor="middle">Nova</text>
+      <text x="75" y="148" font-size="12" fill="#5B6472" text-anchor="middle">0% visível</text>
+
+      <circle cx="235" cy="62" r="40" fill="#1F2A44"/>
+      <g clip-path="url(#c2)"><rect x="235" y="22" width="40" height="80" fill="#F5F1E4"/></g>
+      <circle cx="235" cy="62" r="40" fill="none" stroke="#1E3A8A" stroke-width="2"/>
+      <text x="235" y="128" font-size="15" font-weight="bold" fill="#1E3A8A" text-anchor="middle">Crescente</text>
+      <text x="235" y="148" font-size="12" fill="#5B6472" text-anchor="middle">50% visível</text>
+
+      <circle cx="390" cy="62" r="40" fill="#F5F1E4" stroke="#1E3A8A" stroke-width="2"/>
+      <circle cx="377" cy="49" r="7" fill="#E4DECB"/><circle cx="402" cy="70" r="9" fill="#E4DECB"/><circle cx="383" cy="79" r="5" fill="#E4DECB"/>
+      <text x="390" y="128" font-size="15" font-weight="bold" fill="#1E3A8A" text-anchor="middle">Cheia</text>
+      <text x="390" y="148" font-size="12" fill="#5B6472" text-anchor="middle">100% visível</text>
+
+      <circle cx="545" cy="62" r="40" fill="#1F2A44"/>
+      <g clip-path="url(#c4)"><rect x="505" y="22" width="40" height="80" fill="#F5F1E4"/></g>
+      <circle cx="545" cy="62" r="40" fill="none" stroke="#1E3A8A" stroke-width="2"/>
+      <text x="545" y="128" font-size="15" font-weight="bold" fill="#1E3A8A" text-anchor="middle">Minguante</text>
+      <text x="545" y="148" font-size="12" fill="#5B6472" text-anchor="middle">50% visível</text>
+
+      <g stroke="#8A93A6" stroke-width="1.6" fill="none">
+        <path d="M120 62 h70"/><path d="M182 56 l9 6 -9 6"/>
+        <path d="M275 62 h70"/><path d="M337 56 l9 6 -9 6"/>
+        <path d="M435 62 h65"/><path d="M492 56 l9 6 -9 6"/>
+      </g>
+      <g font-size="12" fill="#5B6472" text-anchor="middle">
+        <text x="155" y="52">≈7,4 d</text><text x="310" y="52">≈7,4 d</text><text x="467" y="52">≈7,4 d</text>
+      </g>
+    </svg>
+    <figcaption>No hemisfério sul, a crescente aparece iluminada do lado direito e a minguante do lado esquerdo.</figcaption>
+  </div>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido — quantos meses lunares cabem em um ano?</b><br>
+    <span class="calc">365,25 ÷ 29,5 = <b>12,38</b></span><br>
+    Cabem <b>12 meses lunares completos</b> em um ano, e ainda sobra quase meio mês. É daí que vem a palavra <b>mês</b>: os primeiros calendários da história foram feitos contando ciclos da Lua.
+  </div>
+
+  <h2 class="sec"><span class="n">3</span> Sombras e eclipses <span class="pen">✏️ copiar</span></h2>
+  <p>Toda sombra produzida por uma fonte de luz grande tem duas partes. A <b>umbra</b> é a região central e <b>totalmente escura</b>: quem está nela não enxerga nenhuma parte da fonte de luz. A <b>penumbra</b> é a região ao redor, <b>parcialmente escura</b>: quem está nela enxerga apenas parte da fonte.</p>
+  <p>O <b>eclipse lunar</b> ocorre quando a <b>Terra fica entre o Sol e a Lua</b> e projeta sua sombra sobre a Lua. Só pode acontecer na fase de <b>Lua cheia</b>. Ele dura até cerca de <b>1 hora e 40 minutos</b> e é visto de metade do planeta. Durante a totalidade a Lua fica <b>avermelhada</b>, porque a atmosfera da Terra desvia a luz vermelha do Sol para dentro da sombra.</p>
+  <p>O <b>eclipse solar</b> ocorre quando a <b>Lua fica entre o Sol e a Terra</b> e projeta sua sombra sobre a superfície do nosso planeta. Só pode acontecer na fase de <b>Lua nova</b>. Quem está na <b>umbra</b> vê o eclipse <b>total</b>; quem está na <b>penumbra</b> vê apenas um eclipse <b>parcial</b>. Como a umbra da Lua é uma faixa estreita, de 100 a 270 km, a totalidade dura poucos minutos em cada lugar.</p>
+  <p>Não há eclipse todo mês porque a órbita da Lua é <b>inclinada cerca de 5,1°</b> em relação à órbita da Terra em torno do Sol. Na maioria das vezes a Lua passa acima ou abaixo da sombra. Em média ocorrem de <b>4 a 7 eclipses por ano</b> no mundo todo.</p>
+
+  <div class="fig">
+    <svg width="470" height="165" viewBox="0 0 470 165" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="40" cy="80" r="26" fill="#F0C33C"/><text x="40" y="132" font-size="12" fill="#5B6472" text-anchor="middle">fonte de luz</text>
+      <circle cx="175" cy="80" r="24" fill="#1F2A44"/><text x="175" y="132" font-size="12" fill="#5B6472" text-anchor="middle">objeto</text>
+      <path d="M175 56 L455 16 L455 144 L175 104 Z" fill="#8A93A6" opacity=".3"/>
+      <path d="M175 56 L455 124 L455 36 L175 104 Z" fill="#1F2A44" opacity=".78"/>
+      <text x="360" y="84" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">umbra</text>
+      <text x="400" y="32" font-size="13" font-weight="bold" fill="#5B6472" text-anchor="middle">penumbra</text>
+      <text x="400" y="146" font-size="13" font-weight="bold" fill="#5B6472" text-anchor="middle">penumbra</text>
+    </svg>
+    <figcaption>A umbra é a sombra total; a penumbra, a sombra parcial. É essa diferença que separa o eclipse total do parcial.</figcaption>
+  </div>
+
+  <div class="duas">
+    <div class="bx">
+      <h4>Eclipse lunar</h4>
+      <div class="fig" style="margin:6px 0">
+        <svg width="330" height="110" viewBox="0 0 330 110" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="28" cy="55" r="20" fill="#F0C33C"/><text x="28" y="96" font-size="11" fill="#5B6472" text-anchor="middle">Sol</text>
+          <circle cx="165" cy="55" r="20" fill="#1E3A8A"/><text x="165" y="96" font-size="11" fill="#5B6472" text-anchor="middle">Terra</text>
+          <path d="M165 35 L322 68 L322 42 L165 75 Z" fill="#1F2A44" opacity=".72"/>
+          <circle cx="288" cy="55" r="10" fill="#A0503F" stroke="#7A3529" stroke-width="1.5"/>
+          <text x="288" y="90" font-size="11" fill="#5B6472" text-anchor="middle">Lua</text>
+        </svg>
+      </div>
+      <p><b>Sol → Terra → Lua.</b> Fase: <b>cheia</b>. A sombra da Terra cobre a Lua.</p>
+    </div>
+    <div class="bx">
+      <h4>Eclipse solar</h4>
+      <div class="fig" style="margin:6px 0">
+        <svg width="330" height="110" viewBox="0 0 330 110" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="28" cy="55" r="20" fill="#F0C33C"/><text x="28" y="96" font-size="11" fill="#5B6472" text-anchor="middle">Sol</text>
+          <circle cx="195" cy="55" r="9" fill="#8A93A6"/><text x="195" y="88" font-size="11" fill="#5B6472" text-anchor="middle">Lua</text>
+          <path d="M195 46 L283 53 L283 57 L195 64 Z" fill="#1F2A44" opacity=".8"/>
+          <path d="M195 46 L283 24 L283 86 L195 64 Z" fill="#8A93A6" opacity=".25"/>
+          <circle cx="300" cy="55" r="21" fill="#1E3A8A"/>
+          <circle cx="283" cy="55" r="3" fill="#0A1024"/>
+          <text x="300" y="96" font-size="11" fill="#5B6472" text-anchor="middle">Terra</text>
+        </svg>
+      </div>
+      <p><b>Sol → Lua → Terra.</b> Fase: <b>nova</b>. A sombra da Lua cobre parte da Terra.</p>
+    </div>
+  </div>
+
+  <div class="alerta"><b>Segurança:</b> nunca observe o Sol diretamente, nem durante um eclipse, nem com óculos escuros comuns, radiografias ou vidro esfumaçado. A radiação queima a retina de forma <b>permanente e sem dor</b> — a pessoa só percebe horas depois.</div>
+
+  <h2 class="sec"><span class="n">4</span> A Lua em números <span class="pen">✏️ copiar</span></h2>
+  <p>Em astronomia os números são grandes demais para escrever por extenso. Por isso usamos a <b>notação científica</b>, em que todo número é escrito na forma <b>a × 10<sup>n</sup></b>, sendo <b>a</b> um número maior ou igual a 1 e menor que 10, e <b>n</b> um número inteiro. Para escrever, basta deslocar a vírgula até sobrar <b>um único algarismo antes dela</b>: o número de casas deslocadas é o expoente.</p>
+
+  <div class="rulebox">N = a × 10<sup>n</sup><small>com 1 ≤ a &lt; 10 &nbsp;·&nbsp; vírgula para a esquerda → expoente positivo</small></div>
+
+  <table class="dados">
+    <tr><th>Grandeza</th><th>Valor</th><th>Notação científica</th></tr>
+    <tr><td>Raio da Lua</td><td class="m">1 737 km</td><td class="m">1,737 × 10³ km</td></tr>
+    <tr><td>Raio da Terra</td><td class="m">6 371 km</td><td class="m">6,371 × 10³ km</td></tr>
+    <tr><td>Distância média Terra–Lua</td><td class="m">384 400 km</td><td class="m">3,844 × 10⁵ km</td></tr>
+    <tr><td>Massa da Lua</td><td class="m">73,5 sextilhões de kg</td><td class="m">7,35 × 10²² kg</td></tr>
+    <tr><td>Massa da Terra</td><td class="m">5 970 sextilhões de kg</td><td class="m">5,97 × 10²⁴ kg</td></tr>
+    <tr><td>Gravidade na superfície</td><td class="m">1,6 m/s²</td><td class="m">≈ 1/6 da terrestre</td></tr>
+    <tr><td>Velocidade orbital</td><td class="m">3 684 km/h</td><td class="m">≈ 1,0 km/s</td></tr>
+    <tr><td>Rotação e translação</td><td class="m">27,3 dias</td><td class="m">iguais entre si</td></tr>
+    <tr><td>Ciclo das fases</td><td class="m">29,5 dias</td><td class="m">mês sinódico</td></tr>
+  </table>
+
+  <h3 class="sub">Fórmulas usadas nesta aula</h3>
+  <div class="rulebox" style="font-size:17px">P = m · g &nbsp;&nbsp;·&nbsp;&nbsp; v = d ÷ t &nbsp;&nbsp;·&nbsp;&nbsp; C = 2 · π · r<small>peso &nbsp;·&nbsp; velocidade &nbsp;·&nbsp; comprimento da circunferência</small></div>
+
+  <p><b>Tamanho.</b> O raio da Lua dividido pelo da Terra dá <b>0,27</b> — cerca de <b>um quarto</b>. Mas o <b>volume</b> depende do raio <b>elevado ao cubo</b>: 0,27³ ≈ 0,020. Por isso caberiam cerca de <b>49 Luas</b> dentro da Terra. Diferenças pequenas de raio viram diferenças enormes de volume.</p>
+  <p><b>Massa e peso.</b> <b>Massa</b> é a quantidade de matéria de um corpo, medida em <b>quilogramas (kg)</b>, e <b>não muda</b> de lugar para lugar. <b>Peso</b> é a <b>força</b> com que um astro atrai um corpo, medida em <b>newtons (N)</b>, e depende da gravidade local: <b>P = m · g</b>. Na Lua g = 1,6 m/s², cerca de <b>1/6</b> da gravidade da Terra.</p>
+  <p><b>O eclipse solar é uma coincidência.</b> O Sol é cerca de <b>400 vezes maior</b> que a Lua, mas está cerca de <b>390 vezes mais longe</b>. Os dois efeitos quase se anulam e os dois discos parecem do <b>mesmo tamanho</b> no céu — por isso a Lua consegue cobrir o Sol por inteiro.</p>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido 1 — velocidade orbital da Lua</b><br>
+    <span class="calc">
+      C = 2 · π · r = 2 × 3,14 × 384 400 = 2 414 032 km<br>
+      t = 27,3 dias × 24 = 655,2 h<br>
+      v = C ÷ t = 2 414 032 ÷ 655,2 = <b>3 684 km/h</b> &nbsp; (≈ 1,0 km/s)
+    </span><br>
+    Um avião de passageiros faz cerca de 900 km/h: a Lua viaja <b>quatro vezes mais rápido</b>.
+  </div>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido 2 — peso na Terra e na Lua</b><br>
+    Um aluno tem massa de 50 kg. Usando <b>P = m · g</b>:<br>
+    <span class="calc">
+      Terra: P = 50 × 10 = <b>500 N</b><br>
+      Lua: &nbsp; P = 50 × 1,6 = <b>80 N</b><br>
+      500 ÷ 80 = 6,25 → o peso cai cerca de <b>6 vezes</b>
+    </span><br>
+    A <b>massa continua 50 kg</b> nos dois lugares. O que muda é o peso.
+  </div>
+
+  <div class="tip"><b>Modelo de escala.</b> Se a Terra fosse uma bola de basquete de 24 cm, a Lua seria uma bola de tênis de 6,5 cm — colocada a <b>7,2 metros</b> de distância. Quase todo desenho de livro mostra a Lua muito mais perto do que ela realmente está, porque na escala real ela não caberia na página.</div>
+
+  <h2 class="sec"><span class="n">5</span> As marés <span class="pen">✏️ copiar</span></h2>
+  <p>A <b>maré</b> é a subida e a descida periódica do nível do mar, causada principalmente pela atração gravitacional da <b>Lua</b> e, em menor grau, do <b>Sol</b>. A água dos oceanos, por ser livre para se mover, acumula-se do lado voltado para a Lua e também do lado <b>oposto</b> do planeta, formando duas protuberâncias de água. Como a Terra gira sob elas, cada ponto do litoral passa por <b>duas marés altas e duas marés baixas</b> por dia.</p>
+  <p>O <b>dia lunar</b> dura <b>24 horas e 50 minutos</b>, e não 24 horas: enquanto a Terra dá uma volta, a Lua avança na órbita e a Terra precisa girar um pouco mais para ficar de frente para ela outra vez. Por isso a maré <b>atrasa cerca de 50 minutos</b> a cada dia, e as marés altas se repetem a cada <b>12 h 25 min</b>.</p>
+  <p>Nas fases de <b>Lua nova</b> e <b>Lua cheia</b>, o Sol e a Lua ficam alinhados com a Terra e suas atrações se <b>somam</b>: são as <b>marés de sizígia</b>, as maiores do mês. Nas fases <b>crescente</b> e <b>minguante</b>, o Sol e a Lua formam um ângulo de <b>90°</b> e suas atrações se enfraquecem: são as <b>marés de quadratura</b>, as menores. A altura da maré também depende do <b>formato da costa</b>: chega a <b>16 metros</b> na Baía de Fundy, no Canadá, e a cerca de <b>7 metros</b> em São Luís, no Maranhão.</p>
+
+  <div class="fig">
+    <svg width="470" height="215" viewBox="0 0 470 215" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="195" cy="108" rx="100" ry="68" fill="#BBD8EC"/>
+      <circle cx="195" cy="108" r="60" fill="#1E3A8A"/>
+      <text x="195" y="113" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">Terra</text>
+      <circle cx="425" cy="108" r="18" fill="#EAF1FB" stroke="#1E3A8A" stroke-width="2"/>
+      <text x="425" y="150" font-size="12" fill="#5B6472" text-anchor="middle">Lua</text>
+      <text x="82" y="113" font-size="12" font-weight="bold" fill="#1E3A8A" text-anchor="end">maré alta</text>
+      <text x="308" y="113" font-size="12" font-weight="bold" fill="#1E3A8A" text-anchor="start">maré alta</text>
+      <text x="195" y="30" font-size="12" font-weight="bold" fill="#1E3A8A" text-anchor="middle">maré baixa</text>
+      <text x="195" y="196" font-size="12" font-weight="bold" fill="#1E3A8A" text-anchor="middle">maré baixa</text>
+    </svg>
+    <figcaption>Duas protuberâncias de água, em lados opostos: por isso há duas marés altas por dia lunar.</figcaption>
+  </div>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido — de onde vêm os 50 minutos</b><br>
+    <span class="calc">
+      A Lua avança: 360° ÷ 29,5 dias ≈ 12,2° por dia<br>
+      A Terra gira 360° em 24 h<br>
+      Para alcançar: 12,2° ÷ 360° × 24 h = 0,81 h<br>
+      0,81 × 60 ≈ <b>49 minutos</b> → dia lunar de <b>24 h 50 min</b>
+    </span>
+  </div>
+
+  <div class="tip"><b>Repare na ligação:</b> a <b>fase</b> e a <b>maré</b> são dois efeitos da <b>mesma</b> posição da Lua na órbita. Olhando a fase da Lua no céu, você já sabe que tipo de maré está acontecendo hoje no litoral.</div>
+
+  <h2 class="sec"><span class="n">6</span> A influência da Lua na natureza <span class="pen">✏️ copiar</span></h2>
+  <p>A influência da Lua sobre a Terra é <b>real, mas não é mágica</b>: ela age por meio da <b>gravidade</b> e da <b>luz refletida</b>. O efeito mais importante são as <b>marés</b>, e delas dependem muitos seres vivos. O <b>caranguejo-uçá</b> faz a <b>andada</b> reprodutiva nos manguezais do Nordeste nas luas nova e cheia; os <b>corais</b> liberam seus gametas em noites específicas depois da Lua cheia; várias espécies de tartarugas e peixes desovam nas marés de sizígia. Nesses casos a Lua funciona como um <b>relógio natural</b> que sincroniza populações inteiras.</p>
+  <p>Já a influência da Lua sobre o <b>plantio</b> e sobre o <b>comportamento humano</b> é diferente. O calendário lunar agrícola é um <b>saber tradicional</b> antigo e culturalmente importante, mas os estudos científicos ainda <b>não comprovaram</b> efeito das fases da Lua sobre a germinação ou a produtividade das plantas. Do mesmo modo, pesquisas com milhões de registros <b>não encontraram</b> mais partos, acidentes ou crimes na Lua cheia. A força dessa crença é explicada pelo <b>viés de confirmação</b>: lembramos dos casos que confirmam a ideia e esquecemos os que não confirmam. Uma informação muito repetida <b>não é, por isso, verdadeira</b> — ela precisa ser testada.</p>
+
+  <div class="classgrid">
+    <div class="c"><svg width="70" height="52" viewBox="0 0 70 52"><path d="M8,40 h54" stroke="#1E3A8A" stroke-width="3" fill="none"/><path d="M8,40 q27,-26 54,0" stroke="#2FA968" stroke-width="3" fill="none"/></svg><b>Marés</b><span>comprovado</span></div>
+    <div class="c"><svg width="70" height="52" viewBox="0 0 70 52"><circle cx="35" cy="26" r="16" fill="#E9F7EF" stroke="#2FA968" stroke-width="2.4"/><path d="M28,26 l5,6 10,-13" stroke="#1B7F4B" stroke-width="3" fill="none"/></svg><b>Animais</b><span>comprovado</span></div>
+    <div class="c"><svg width="70" height="52" viewBox="0 0 70 52"><circle cx="35" cy="26" r="16" fill="#FEF6E0" stroke="#F0C33C" stroke-width="2.4"/><text x="35" y="33" font-size="18" font-weight="bold" fill="#9C5B12" text-anchor="middle">?</text></svg><b>Plantio</b><span>não comprovado</span></div>
+    <div class="c"><svg width="70" height="52" viewBox="0 0 70 52"><circle cx="35" cy="26" r="16" fill="#FDECEC" stroke="#D6455B" stroke-width="2.4"/><path d="M28,19 l14,14 M42,19 l-14,14" stroke="#A32233" stroke-width="3"/></svg><b>Comportamento</b><span>não comprovado</span></div>
+  </div>
+
+  <h2 class="sec">Resumo para consulta</h2>
+  <table class="res">
+    <tr><th>Conceito</th><th>Definição / Regra</th><th>Dado-chave</th></tr>
+    <tr><td>Satélite natural</td><td>corpo sem luz própria que orbita um planeta</td><td>a Terra tem 1</td></tr>
+    <tr><td>Rotação sincronizada</td><td>rotação e translação com a mesma duração</td><td>27,3 dias cada</td></tr>
+    <tr><td>Fase da Lua</td><td>parte iluminada que se vê da Terra</td><td>ciclo de 29,5 dias</td></tr>
+    <tr><td>Umbra / penumbra</td><td>sombra total / sombra parcial</td><td>total ✕ parcial</td></tr>
+    <tr><td>Eclipse lunar</td><td>Sol – <b>Terra</b> – Lua; sombra da Terra na Lua</td><td>Lua cheia</td></tr>
+    <tr><td>Eclipse solar</td><td>Sol – <b>Lua</b> – Terra; sombra da Lua na Terra</td><td>Lua nova</td></tr>
+    <tr><td>Notação científica</td><td>a × 10<sup>n</sup>, com 1 ≤ a &lt; 10</td><td>384 400 = 3,844 × 10⁵</td></tr>
+    <tr><td>Peso</td><td>P = m · g (massa não muda, peso sim)</td><td>g<sub>Lua</sub> = 1,6 m/s²</td></tr>
+    <tr><td>Maré de sizígia</td><td>Sol e Lua alinhados; atrações se somam</td><td>nova e cheia</td></tr>
+    <tr><td>Maré de quadratura</td><td>Sol e Lua a 90°; atrações se enfraquecem</td><td>crescente e minguante</td></tr>
+  </table>
+
+  <div class="exhead">
+    <h2>Exercícios</h2>
+    <p>Resolva no caderno. Na parte A, consulte o livro nas páginas indicadas. Na parte B, use a tabela de dados e as fórmulas, mostrando os cálculos.</p>
+  </div>
+
+  <h3 class="sub">Parte A — com consulta ao livro</h3>
+
+  <div class="ex"><div class="t">1. Planetas sem satélites <span class="bd bas">Básico</span><span class="pg">p. 20</span></div>
+    Consulte a tabela de satélites naturais. Quais planetas <b>não possuem nenhum</b> satélite? Escreva uma hipótese para explicar por que isso acontece justamente com eles.
+  </div>
+
+  <div class="ex"><div class="t">2. Sempre a mesma face <span class="bd bas">Básico</span><span class="pg">p. 21</span></div>
+    O texto afirma que os períodos de <b>rotação</b> e de <b>translação</b> da Lua são iguais. Explique, com suas palavras, qual é a consequência disso para quem observa a Lua da Terra.
+  </div>
+
+  <div class="ex"><div class="t">3. Os dois eclipses <span class="bd bas">Básico</span><span class="pg">p. 23 e 24</span></div>
+    Desenhe no caderno os dois esquemas do livro. Embaixo de cada um, escreva: se é eclipse <b>lunar</b> ou <b>solar</b>, qual corpo fica no meio e em que <b>fase</b> da Lua ele ocorre.
+  </div>
+
+  <div class="ex"><div class="t">4. Por que um dura mais que o outro <span class="bd med">Médio</span><span class="pg">p. 23 e 24</span></div>
+    Um eclipse solar total dura poucos minutos e é visto apenas numa faixa estreita da Terra; um eclipse lunar dura mais de uma hora e é visto de meio planeta. Explique essa diferença usando as palavras <b>umbra</b> e <b>penumbra</b>.
+  </div>
+
+  <div class="ex"><div class="t">5. Mito e explicação científica <span class="bd med">Médio</span><span class="pg">p. 25</span></div>
+    Escolha <b>uma</b> das explicações mitológicas apresentadas para os eclipses. Escreva o que aquele povo acreditava e, ao lado, <b>qual é a explicação científica</b> para o mesmo fenômeno.
+  </div>
+
+  <div class="ex"><div class="t">6. O céu do povo Tukano <span class="bd med">Médio</span><span class="pg">p. 26 e 27</span></div>
+    Leia a seção sobre a observação dos astros em diferentes culturas e <b>cite duas atividades</b> da vida do povo Tukano que são organizadas pela posição das constelações no céu.
+  </div>
+
+  <div class="ex"><div class="t">7. Ciência e crença <span class="bd dif">Difícil</span></div>
+    A Lua influencia as <b>marés</b>, mas não há comprovação científica de sua influência sobre o <b>plantio</b> e o <b>comportamento humano</b>. Explique <b>por que</b> a ciência aceita uma dessas influências e ainda não aceita as outras.
+  </div>
+
+  <div class="ex"><div class="t">8. Uma noite de Lua cheia <span class="bd dif">Difícil</span></div>
+    Você vê no céu, hoje à noite, uma <b>Lua cheia</b>. Responda e justifique:
+    <ul>
+      <li>a) que tipo de maré está ocorrendo no litoral hoje?</li>
+      <li>b) poderia haver um <b>eclipse solar</b> hoje? E um <b>eclipse lunar</b>?</li>
+    </ul>
+  </div>
+
+  <h3 class="sub">Parte B — cálculos</h3>
+
+  <div class="ex"><div class="t">9. Notação científica <span class="bd bas">Básico</span></div>
+    Escreva em notação científica:
+    <ul>
+      <li>a) 384 400 km &nbsp;&nbsp; b) 1 737 km &nbsp;&nbsp; c) 12 742 km</li>
+      <li>d) 3 684 km/h &nbsp;&nbsp; e) 0,000038 km (o afastamento anual da Lua)</li>
+    </ul>
+  </div>
+
+  <div class="ex"><div class="t">10. O atraso da luz <span class="bd bas">Básico</span></div>
+    A luz viaja a 300 000 km/s. Quanto tempo ela leva para ir da Lua até a Terra? Use <b>t = d ÷ v</b> e apresente a conta.
+  </div>
+
+  <div class="ex"><div class="t">11. Peso na Terra e na Lua <span class="bd bas">Básico</span></div>
+    Uma pessoa tem massa de <b>70 kg</b>. Calcule o peso dela na Terra (g = 10 m/s²) e na Lua (g = 1,6 m/s²) usando <b>P = m · g</b>. A <b>massa</b> mudou? Explique.
+  </div>
+
+  <div class="ex"><div class="t">12. Distância em raios terrestres <span class="bd med">Médio</span></div>
+    Quantos <b>raios da Terra</b> cabem na distância Terra–Lua? Divida 384 400 por 6 371 e arredonde para o inteiro mais próximo.
+  </div>
+
+  <div class="ex"><div class="t">13. Horário da maré <span class="bd med">Médio</span></div>
+    A maré alta de hoje ocorreu às <b>8 h 10 min</b>. A que horas deve ocorrer a <b>próxima</b> maré alta? E a primeira maré alta de <b>amanhã de manhã</b>? (Use 12 h 25 min e 24 h 50 min.)
+  </div>
+
+  <div class="ex"><div class="t">14. Quantas Luas cabem na Terra <span class="bd dif">Difícil</span></div>
+    O raio da Lua é 1 737 km e o da Terra, 6 371 km.
+    <ul>
+      <li>a) Calcule a razão entre os raios (divida e arredonde com duas casas).</li>
+      <li>b) Eleve esse resultado ao <b>cubo</b>.</li>
+      <li>c) Divida 1 pelo resultado de (b). Quantas Luas caberiam dentro da Terra?</li>
+    </ul>
+  </div>
+
+  <div class="ex"><div class="t">15. Desafio: a Lua está se afastando <span class="bd dif">Difícil</span></div>
+    A Lua se afasta da Terra <b>3,8 cm por ano</b>. Quantos <b>metros</b> ela terá se afastado em <b>10 000 anos</b>? Dê a resposta também em notação científica.
+  </div>
+
+  <div class="conn"><b>Conexão com a História e a Geografia:</b> antes de existir calendário impresso, a Lua era o relógio e a agenda da humanidade — as fases marcavam o mês, as marés organizavam a pesca e as constelações anunciavam a chuva e a colheita. Povos indígenas brasileiros, como os <b>Tukano</b>, construíram uma astronomia própria, com constelações e calendários que não são os europeus. Olhar para o céu sempre foi, em todas as culturas, uma forma de se orientar no tempo. Bom trabalho!</div>
+
+  <div class="foot">Ciências — 8º ano · A Lua: movimentos, fases, eclipses e influência sobre a Terra · EMEF Ceará — Canoas/RS · Prof. Mikael</div>
+</div>
+</body>
+</html>

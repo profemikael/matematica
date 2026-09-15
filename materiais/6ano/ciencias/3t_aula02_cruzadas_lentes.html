@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cruzadas das Lentes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  :root{
+    --bg:#F1F4F7; --panel:#FFFFFF; --ink:#16202B; --muted:#5C6B7A;
+    --line:#C9D4DE; --block:#DDE4EB;
+    --ray:#E39A0C; --ray-soft:#FBE9C2; --deep:#1D6F86; --deep-soft:#D7EBF1;
+    --ok:#1F7A4C; --bad:#C0392B;
+    --cell:30px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E151C; --panel:#18222C; --ink:#EAF1F6; --muted:#93A5B4;
+      --line:#31404E; --block:#121A22;
+      --ray:#F5B53C; --ray-soft:#4A3510; --deep:#5FC3DC; --deep-soft:#173A46;
+      --ok:#54C08A; --bad:#F1705F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E151C; --panel:#18222C; --ink:#EAF1F6; --muted:#93A5B4;
+    --line:#31404E; --block:#121A22;
+    --ray:#F5B53C; --ray-soft:#4A3510; --deep:#5FC3DC; --deep-soft:#173A46;
+    --ok:#54C08A; --bad:#F1705F;
+  }
+
+  body{background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.5;}
+  .wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:22px;}
+
+  header .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--deep);}
+  h1{font-family:"Bricolage Grotesque","Source Sans 3",sans-serif;font-weight:800;font-size:clamp(28px,5vw,42px);line-height:1.05;margin:.18em 0 .1em;text-wrap:balance;}
+  header p{margin:0;color:var(--muted);max-width:60ch;}
+  .ident{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .ident label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);}
+  .ident input{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:170px;max-width:46vw;}
+
+  .bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+  button{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;}
+  button:hover{border-color:var(--deep);}
+  button.primary{background:var(--ray);border-color:var(--ray);color:#22190A;}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--deep);outline-offset:1px;}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .score b{color:var(--ink);}
+
+  .board{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto;}
+  .grid{display:grid;gap:0;width:max-content;margin:0 auto;}
+  .cell{position:relative;width:var(--cell);height:var(--cell);}
+  .cell.block{background:transparent;}
+  .cell input{position:absolute;inset:0;width:100%;height:100%;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    font-family:"IBM Plex Mono",monospace;font-size:calc(var(--cell)*.52);font-weight:600;text-align:center;text-transform:uppercase;padding:0;margin:0;border-radius:0;caret-color:var(--deep);}
+  .cell input.hl{background:var(--deep-soft);}
+  .cell input.cur{background:var(--ray-soft);outline:2px solid var(--ray);outline-offset:-2px;z-index:2;}
+  .cell input.bad{color:var(--bad);text-decoration:line-through;}
+  .cell input.ok{color:var(--ok);}
+  .cell .num{position:absolute;top:1px;left:2px;font-family:"IBM Plex Mono",monospace;font-size:calc(var(--cell)*.3);line-height:1;color:var(--muted);pointer-events:none;z-index:3;}
+
+  .hint{font-size:13px;color:var(--muted);text-align:center;}
+  .clues{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media (max-width:640px){ .clues{grid-template-columns:1fr;} }
+  .clues h2{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--deep);margin:0 0 8px;}
+  ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+  li{display:flex;gap:9px;padding:6px 8px;border-radius:7px;font-size:14.5px;}
+      li.done span.n{color:var(--ok);}
+  li span.n{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--muted);min-width:1.6em;text-align:right;}
+  footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
+</style>
+</head>
+<body style="margin:0">
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Ciências · 6º ano · 3º trimestre</div>
+    <h1>A luz e a visão: as lentes</h1>
+    <p>Palavras cruzadas da aula sobre refração, lentes e problemas de visão. Clique numa casa e digite — sem acentos e sem cedilha. Clicar de novo na mesma casa troca entre horizontal e vertical. O botão Conferir diz quantas palavras estão certas, mas não entrega nenhuma letra.</p>
+    <div class="ident">
+      <label>Nome <input id="nome" type="text" placeholder="seu nome"></label>
+      <label>Turma <input id="turma" type="text" placeholder="6º __"></label>
+    </div>
+  </header>
+
+  <div class="bar">
+    <button id="check" class="primary" type="button">Conferir</button>
+    <button id="clear" type="button">Limpar</button>
+    <div class="score">Palavras completas: <b id="done">0</b> / 16</div>
+  </div>
+
+  <div class="board"><div class="grid" id="grid"></div></div>
+  <p class="hint" id="hint">—</p>
+
+  <div class="clues">
+    <div><h2>Horizontais</h2><ol id="acr"></ol></div>
+    <div><h2>Verticais</h2><ol id="dwn"></ol></div>
+  </div>
+
+  <footer>EMEF Ceará · Prof. Mikael Maronez · baseado no capítulo 10 do livro didático, aula “A luz e a visão — parte 2: as lentes”.</footer>
+</div>
+
+<script>
+const ROWS=19, COLS=23;
+const WORDS=[
+ {w:"CORNEA",r:0,c:10,d:"V",n:1,clue:"Ela precisa ser bem curva e regular; é por onde a luz entra primeiro."},
+ {w:"OCULOS",r:1,c:10,d:"H",n:2,clue:"Duas lentes numa armação — ideia que nasceu na Itália por volta de 1286."},
+ {w:"LUPA",r:1,c:13,d:"V",n:3,clue:"A mesma lente da hipermetropia, só que aproximada do objeto."},
+ {w:"REFRACAO",r:4,c:9,d:"H",n:4,clue:"Muda a velocidade da luz e, por isso, muda também a direção dela."},
+ {w:"AMPLIACAO",r:4,c:15,d:"V",n:5,clue:"O que a lupa faz com a imagem, sem mudar o tamanho do objeto."},
+ {w:"RETINA",r:5,c:5,d:"V",n:6,clue:"Se a imagem cair antes ou depois dela, a pessoa não enxerga nítido."},
+ {w:"DIVERGENTE",r:5,c:7,d:"V",n:7,clue:"Mais fina no meio do que nas bordas."},
+ {w:"ASTIGMATISMO",r:6,c:11,d:"V",n:8,clue:"Borra a imagem de perto e de longe ao mesmo tempo."},
+ {w:"FOCO",r:7,c:2,d:"V",n:9,clue:"Onde os raios se encontram depois de atravessar a lente."},
+ {w:"CONVERGENTE",r:7,c:13,d:"V",n:10,clue:"Mais grossa no meio do que nas bordas."},
+ {w:"HIPERMETROPIA",r:8,c:4,d:"H",n:11,clue:"O olho é curto demais e a imagem passa do lugar certo."},
+ {w:"MICROSCOPIO",r:8,c:9,d:"V",n:12,clue:"Várias lentes combinadas para enxergar o invisível de tão pequeno."},
+ {w:"LENTE",r:9,c:18,d:"V",n:13,clue:"Sem ela, não há refração controlada."},
+ {w:"MIOPIA",r:10,c:0,d:"H",n:14,clue:"O olho é alongado demais e a imagem para antes do lugar certo."},
+ {w:"CAMERA",r:10,c:15,d:"H",n:15,clue:"Aparelho que guarda a imagem formada pela lente."},
+ {w:"TELESCOPIO",r:16,c:13,d:"H",n:16,clue:"Várias lentes combinadas para enxergar o invisível de tão distante."}
+];
+
+const key=(r,c)=>r+","+c;
+const sol=new Map(), starts=new Map();
+for(const e of WORDS){
+  const dr=e.d==="H"?0:1, dc=e.d==="H"?1:0;
+  for(let i=0;i<e.w.length;i++) sol.set(key(e.r+dr*i,e.c+dc*i), e.w[i]);
+  starts.set(key(e.r,e.c), e.n);
+}
+const grid=document.getElementById("grid");
+grid.style.gridTemplateColumns=`repeat(${COLS}, var(--cell))`;
+const inputs=new Map();
+for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+  const div=document.createElement("div");
+  div.className="cell";
+  if(!sol.has(key(r,c))){ div.classList.add("block"); grid.appendChild(div); continue; }
+  const inp=document.createElement("input");
+  inp.type="text"; inp.maxLength=1; inp.autocomplete="off"; inp.inputMode="text";
+  inp.id="c"+r+"_"+c; inp.dataset.r=r; inp.dataset.c=c;
+  inp.setAttribute("aria-label","linha "+(r+1)+" coluna "+(c+1));
+  div.appendChild(inp);
+  if(starts.has(key(r,c))){ const s=document.createElement("span"); s.className="num"; s.textContent=starts.get(key(r,c)); div.appendChild(s); }
+  inputs.set(key(r,c), inp);
+  grid.appendChild(div);
+}
+
+let dir="H", cur=null, active=null;
+function wordsAt(r,c){ return WORDS.filter(e=>{
+  if(e.d==="H") return e.r===r && c>=e.c && c<e.c+e.w.length;
+  return e.c===c && r>=e.r && r<e.r+e.w.length;
+}); }
+function cellsOf(e){ const dr=e.d==="H"?0:1, dc=e.d==="H"?1:0, out=[];
+  for(let i=0;i<e.w.length;i++) out.push(inputs.get(key(e.r+dr*i,e.c+dc*i))); return out; }
+
+function highlight(){
+  inputs.forEach(i=>i.classList.remove("hl","cur"));
+  if(!cur) return;
+  const r=+cur.dataset.r, c=+cur.dataset.c;
+  const cands=wordsAt(r,c);
+  active = cands.find(e=>e.d===dir) || cands[0];
+  if(active){
+    dir=active.d;
+    cellsOf(active).forEach(i=>i.classList.add("hl"));
+    document.getElementById("hint").textContent = active.n+" "+(active.d==="H"?"horizontal":"vertical")+" · "+active.clue;
+  }
+  cur.classList.add("cur");
+}
+function focusCell(inp){ if(!inp) return; cur=inp; inp.focus(); highlight(); }
+function step(n){
+  if(!active||!cur) return;
+  const cells=cellsOf(active), i=cells.indexOf(cur);
+  const t=cells[i+n]; if(t){ cur=t; t.focus(); highlight(); }
+}
+inputs.forEach(inp=>{
+  inp.addEventListener("focus",()=>{ cur=inp; highlight(); });
+  inp.addEventListener("mousedown",e=>{ if(cur===inp){ dir = dir==="H"?"V":"H"; } });
+  inp.addEventListener("input",()=>{
+    let v=(inp.value||"").toUpperCase().replace(/[^A-Z]/g,"");
+    v=v.slice(-1); inp.value=v; inp.classList.remove("bad","ok");
+    if(v) step(1);
+    updateDone();
+  });
+  inp.addEventListener("keydown",e=>{
+    const r=+inp.dataset.r, c=+inp.dataset.c;
+    const go=(dr,dc)=>{ e.preventDefault(); for(let k=1;k<26;k++){ const t=inputs.get(key(r+dr*k,c+dc*k)); if(t){ dir = dr?"V":"H"; focusCell(t); return; } } };
+    if(e.key==="ArrowRight") go(0,1);
+    else if(e.key==="ArrowLeft") go(0,-1);
+    else if(e.key==="ArrowDown") go(1,0);
+    else if(e.key==="ArrowUp") go(-1,0);
+    else if(e.key==="Backspace"&&!inp.value){ e.preventDefault(); step(-1); if(cur){cur.value="";updateDone();} }
+    else if(e.key==="Enter"||e.key===" "){ e.preventDefault(); dir = dir==="H"?"V":"H"; highlight(); }
+  });
+});
+
+function isDone(e){ return cellsOf(e).every((i,k)=> (i.value||"").toUpperCase()===e.w[k]); }
+function updateDone(){
+  let n=0;
+  for(const e of WORDS){ const d=isDone(e); if(d) n++;
+    const li=document.getElementById("li"+e.n); if(li) li.classList.toggle("done", d); }
+  document.getElementById("done").textContent=n;
+}
+
+const acr=document.getElementById("acr"), dwn=document.getElementById("dwn");
+WORDS.slice().sort((a,b)=>a.n-b.n).forEach(e=>{
+  const li=document.createElement("li"); li.id="li"+e.n;
+  li.innerHTML='<span class="n">'+e.n+'</span><span>'+e.clue+'</span>';
+  (e.d==="H"?acr:dwn).appendChild(li);
+});
+
+document.getElementById("check").addEventListener("click",()=>{
+  inputs.forEach(i=>i.classList.remove("bad","ok"));
+  let certas=0, erradas=0, vazias=0;
+  for(const e of WORDS){
+    const cells=cellsOf(e);
+    const preenchida=cells.every(i=>(i.value||"").trim()!=="");
+    if(!preenchida){ vazias++; continue; }
+    if(isDone(e)){ certas++; cells.forEach(i=>i.classList.add("ok")); }
+    else { erradas++; cells.forEach(i=>{ if(!i.classList.contains("ok")) i.classList.add("bad"); }); }
+  }
+  document.getElementById("hint").textContent =
+    certas+" certa(s) · "+erradas+" com erro · "+vazias+" em branco. As erradas ficam marcadas, mas você descobre onde está o erro.";
+  updateDone();
+});
+document.getElementById("clear").addEventListener("click",()=>{
+  inputs.forEach(i=>{ i.value=""; i.classList.remove("bad","ok"); }); updateDone();
+});
+
+focusCell(cellsOf(WORDS[0])[0]);
+updateDone();
+</script>
+
+</body>
+</html>

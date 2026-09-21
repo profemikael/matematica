@@ -68,6 +68,7 @@
   li.done span.n{color:var(--ok);}
   li.done span.t{color:var(--muted);text-decoration:line-through;}
   li span.n{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--muted);min-width:1.7em;text-align:right;}
+  #envio{font-weight:600;color:var(--ok);}
   footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
 </style>
 </head>
@@ -90,11 +91,13 @@
   <div class="bar">
     <button id="check" class="primary" type="button">Conferir o que está errado</button>
     <button id="clear" type="button">Limpar</button>
+    <button id="send" type="button" hidden>Enviar ao professor</button>
     <div class="score">Palavras certas: <b id="done">0</b> / 20</div>
   </div>
 
   <div class="board"><div class="grid" id="grid"></div></div>
   <p class="hint" id="hint">—</p>
+  <p class="hint" id="envio"></p>
 
   <div class="clues">
     <div><h2>Horizontais</h2><ol id="acr"></ol></div>
@@ -188,7 +191,10 @@ function refresh(){
     const li=document.getElementById("li"+e.n+e.d); if(li) li.classList.toggle("done", d);
   }
   document.getElementById("done").textContent=n;
-  if(n===WORDS.length) document.getElementById("hint").textContent="Fechou as 20. Bom trabalho.";
+  if(n===WORDS.length){
+    document.getElementById("hint").textContent="Fechou as 20. Bom trabalho.";
+    if(typeof enviarResultado === "function") enviarResultado();
+  }
 }
 
 inputs.forEach(inp=>{
@@ -238,6 +244,80 @@ document.getElementById("clear").addEventListener("click",()=>{
   inputs.forEach(i=>{ i.value=""; i.classList.remove("bad","done"); });
   refresh(); document.getElementById("hint").textContent="—";
 });
+
+
+/* ---- envio automático ao professor (Google Forms) ---- */
+const FORM = {
+  url: "https://docs.google.com/forms/d/e/1FAIpQLSd0cya9DeEyUh4d1lMecTy3W5P5zJR-uEUeYryzR0U8wyIyTw/formResponse",
+  nome: "entry.92939802",
+  turma: "entry.1767871945",
+  atividade: "entry.495326704",
+  resultado: "entry.664553886"
+};
+const ATIVIDADE = "Palavras Cruzadas 02 - Frações, Primos e MMC";
+let enviado = false;
+
+function enviarResultado(){
+  const nome = (document.getElementById("nome").value || "").trim();
+  const turma = (document.getElementById("turma").value || "").trim();
+  const envio = document.getElementById("envio");
+  if(!nome || !turma){
+    envio.style.color = "var(--mark)";
+    envio.textContent = "Escreva seu nome e sua turma lá em cima para enviar ao professor.";
+    document.getElementById("send").hidden = false;
+    (!nome ? document.getElementById("nome") : document.getElementById("turma")).focus();
+    return;
+  }
+  if(enviado) return;
+  enviado = true;
+  const envioFrame = (function(){
+    let f = document.getElementById("gfIframe");
+    if(!f){
+      f = document.createElement("iframe");
+      f.id = "gfIframe"; f.name = "gfIframe";
+      f.style.display = "none";
+      document.body.appendChild(f);
+    }
+    return f;
+  })();
+
+  const f = document.createElement("form");
+  f.action = FORM.url; f.method = "POST"; f.target = "gfIframe";
+  f.style.display = "none";
+  const add = function(nomeCampo, valor){
+    const inp = document.createElement("input");
+    inp.type = "hidden"; inp.name = nomeCampo; inp.value = valor;
+    f.appendChild(inp);
+  };
+  add(FORM.nome, nome);
+  add(FORM.turma, turma);
+  add(FORM.atividade, ATIVIDADE);
+  add(FORM.resultado, "20 de 20 palavras");
+  document.body.appendChild(f);
+
+  envio.style.color = "var(--muted)";
+  envio.textContent = "Enviando...";
+
+  let respondeu = false;
+  envioFrame.onload = function(){
+    if(respondeu) return;
+    respondeu = true;
+    envio.style.color = "var(--ok)";
+    envio.textContent = "Resultado enviado ao professor \u2713  (" + nome + " \u2014 " + turma + ")";
+    document.getElementById("send").hidden = true;
+    f.remove();
+  };
+  setTimeout(function(){
+    if(respondeu) return;
+    respondeu = true; enviado = false;
+    envio.style.color = "var(--mark)";
+    envio.textContent = "N\u00e3o consegui enviar. Confira a internet e clique em \u201cEnviar ao professor\u201d.";
+    document.getElementById("send").hidden = false;
+  }, 12000);
+
+  f.submit();
+}
+document.getElementById("send").addEventListener("click", enviarResultado);
 
 focusCell(cellsOf(WORDS[0])[0]);
 refresh();

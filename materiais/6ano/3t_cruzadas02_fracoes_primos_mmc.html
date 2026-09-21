@@ -38,6 +38,8 @@
   .rule{display:inline-block;margin-top:10px;padding:5px 10px;border:1px dashed var(--mark);border-radius:7px;background:var(--mark-soft);color:var(--ink);font-size:14px;}
   .ident{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
   .ident label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);}
+  .ident select{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);}
+  .ident select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
   .ident input{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:170px;max-width:46vw;}
 
   .bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
@@ -83,7 +85,12 @@
     <div class="rule"><strong>Digite sem acento e sem cedilha</strong> — FRAÇÃO vira FRACAO, TERÇO vira TERCO. Quando a palavra inteira estiver certa, as casas ficam verdes sozinhas.</div>
     <div class="ident">
       <label>Nome <input id="nome" type="text" placeholder="seu nome"></label>
-      <label>Turma <input id="turma" type="text" placeholder="sua turma"></label>
+      <label>Turma <select id="turma">
+        <option value="">escolha…</option>
+        <option>6A</option><option>6B</option>
+        <option>7A</option>
+        <option>8A</option><option>8B</option>
+      </select></label>
       <label>Data <input id="data" type="text" placeholder="__/__/____" style="width:110px"></label>
     </div>
   </header>
@@ -263,7 +270,7 @@ function enviarResultado(){
   const envio = document.getElementById("envio");
   if(!nome || !turma){
     envio.style.color = "var(--mark)";
-    envio.textContent = "Escreva seu nome e sua turma lá em cima para enviar ao professor.";
+    envio.textContent = "Escreva seu nome e escolha sua turma lá em cima para enviar ao professor.";
     document.getElementById("send").hidden = false;
     (!nome ? document.getElementById("nome") : document.getElementById("turma")).focus();
     return;
@@ -310,10 +317,19 @@ function enviarResultado(){
   setTimeout(function(){
     if(respondeu) return;
     respondeu = true; enviado = false;
+    const prefill = FORM.url.replace("/formResponse", "/viewform")
+      + "?usp=pp_url"
+      + "&" + FORM.nome + "=" + encodeURIComponent(nome)
+      + "&" + FORM.turma + "=" + encodeURIComponent(turma)
+      + "&" + FORM.atividade + "=" + encodeURIComponent(ATIVIDADE)
+      + "&" + FORM.resultado + "=" + encodeURIComponent("20 de 20 palavras");
     envio.style.color = "var(--mark)";
-    envio.textContent = "N\u00e3o consegui enviar. Confira a internet e clique em \u201cEnviar ao professor\u201d.";
+    envio.innerHTML = "O envio autom\u00e1tico n\u00e3o funcionou aqui. "
+      + "<a href=\"" + prefill + "\" target=\"_blank\" rel=\"noopener\" "
+      + "style=\"color:var(--accent)\">Clique aqui para confirmar</a> "
+      + "(a p\u00e1gina abre j\u00e1 preenchida \u2014 s\u00f3 clicar em Enviar).";
     document.getElementById("send").hidden = false;
-  }, 12000);
+  }, 8000);
 
   f.submit();
 }

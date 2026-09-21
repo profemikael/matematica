@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Lua: satélite natural e fases — 8º Ano (Aula para impressão)</title>
+<style>
+  :root{
+    --navy:#1E3A8A;--blue:#1E40AF;--ink:#1F2A44;--mute:#5B6472;--lightblue:#E8F0FE;
+    --green:#E9F7EF;--greenb:#2FA968;--greent:#1B7F4B;--yellow:#FEF6E0;--yellowb:#F0C33C;
+    --card:#fff;--line:#E2E8F0;--rowalt:#F3F6FB;--purp:#EADFF7;--purpt:#6B3FA0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#EEF2F8;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.42;}
+  .page{max-width:820px;margin:0 auto;padding:20px;}
+  .noprint{background:#fff;border:1px dashed #9db4e6;border-radius:10px;padding:12px 16px;margin:12px 0;color:#33507f;font-size:14px;}
+  header.top{background:linear-gradient(135deg,#1E3A8A,#2B57D6);color:#fff;border-radius:14px;padding:11px 24px;margin:6px 0;}
+  header.top .eyebrow{display:flex;justify-content:space-between;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#C7D6F5;}
+  header.top h1{margin:6px 0 3px;font-size:22px;}
+  header.top .sub{color:#DCE6FB;font-size:13px;}
+  header.top .chip{display:inline-block;background:#BFD2F5;color:#0E2A6B;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin:8px 8px 0 0;}
+  h2.sec{color:var(--navy);font-size:17px;border-bottom:3px solid var(--navy);padding-bottom:3px;margin:10px 0 6px;}
+  h2.sec .n{background:var(--navy);color:#fff;border-radius:7px;padding:1px 10px;margin-right:8px;font-size:15px;}
+  h2.sec .pen{float:right;background:var(--lightblue);color:var(--navy);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;text-transform:uppercase;}
+  p{margin:5px 0;font-size:13.5px;}
+  .fig{text-align:center;margin:3px 0;}
+  .fig figcaption{color:var(--mute);font-style:italic;font-size:12px;margin-top:2px;}
+  .vocab,.curio,.exemplo{border-radius:10px;padding:7px 14px;margin:6px 0;font-size:13px;}
+  .vocab{background:var(--lightblue);border-left:5px solid var(--blue);}
+  .vocab b{color:var(--navy);}
+  .curio{background:var(--yellow);border-left:5px solid var(--yellowb);}
+  .curio b{color:#8A5A00;}
+  .exemplo{background:var(--green);border-left:5px solid var(--greenb);}
+  .exemplo b{color:var(--greent);}
+  .exemplo .conta{font-family:"Courier New",monospace;font-weight:700;color:var(--greent);margin:3px 0;}
+  .duas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;}
+  .duas .bx{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;}
+  .duas .bx h4{margin:0 0 6px;color:var(--navy);font-size:14px;}
+  .duas .bx p{margin:5px 0 0;font-size:13px;}
+  .exhead{background:linear-gradient(135deg,#1E3A8A,#2B57D6);color:#fff;border-radius:10px;padding:10px 18px;margin:16px 0 8px;}
+  .exhead h2{margin:0;font-size:18px;text-transform:uppercase;letter-spacing:.5px;}
+  .exhead p{margin:3px 0 0;color:#DCE6FB;font-size:12.5px;}
+  .exhead.extra{background:linear-gradient(135deg,#6B3FA0,#9163C9);}
+  .ex{border:1px solid var(--line);border-radius:10px;padding:9px 14px;margin:7px 0;background:#fff;page-break-inside:avoid;font-size:13.5px;}
+  .ex .t{font-weight:700;color:var(--navy);font-size:14.5px;}
+  .ex.bonus .t{color:var(--purpt);}
+  .foot{color:var(--mute);font-size:11px;text-align:center;margin-top:14px;border-top:1px solid var(--line);padding-top:8px;}
+  .quebra{page-break-before:always;}
+  .tagextra{display:inline-block;background:var(--purp);color:var(--purpt);font-size:11px;font-weight:700;text-transform:uppercase;padding:2px 10px;border-radius:20px;margin-bottom:10px;}
+  @media print{
+    body{background:#fff;} .page{max-width:none;padding:0;} .noprint{display:none;}
+    .ex,.vocab,.curio,.duas .bx,header.top{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    header.top,.exhead{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+  @media (max-width:620px){ .duas{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="noprint">📄 <b>Para gerar o PDF:</b> Ctrl + P (ou ⌘ + P) → "Salvar como PDF", com "Gráficos de segundo plano" ativado.</div>
+
+  <header class="top">
+    <div class="eyebrow"><span>Ciências · 8º ano</span><span>3º Trimestre · Aula 1</span></div>
+    <h1>A Lua: satélite natural e fases</h1>
+    <div class="sub">O único satélite da Terra e por que ele muda de formato no céu</div>
+    <div><span class="chip">RCC / BNCC · EF08CI12</span><span class="chip">Livro Superação · Cap. 1 (p. 18–32)</span><span class="chip">Prof. Mikael</span></div>
+  </header>
+
+  <h2 class="sec"><span class="n">1</span> O satélite natural da Terra <span class="pen">✏️ copiar</span></h2>
+  <div class="vocab">
+    <b>Satélite&nbsp;natural</b> — corpo celeste sem luz própria que gira em <b>órbita</b> ao redor de um planeta, preso pela <b>força&nbsp;gravitacional</b> dele. A Terra tem <b>um&nbsp;único</b>: a Lua.
+  </div>
+  <p>A Lua faz dois movimentos ao mesmo tempo: <b>rotação</b> (giro em torno do próprio eixo) e <b>translação</b> (volta em torno da Terra) — os dois levam exatamente <b>27,3 dias</b> (o <b>mês&nbsp;sideral</b>). Como os tempos são iguais, ela mostra sempre o <b>mesmo&nbsp;lado</b> para nós: é a <b>rotação&nbsp;sincronizada</b>. O outro lado se chama <b>face&nbsp;oculta</b> — e não "lado escuro", porque também recebe luz do Sol.</p>
+
+  <div class="fig">
+    <svg width="360" height="128" viewBox="0 0 380 150" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="190" cy="75" rx="150" ry="58" fill="none" stroke="#9db4e6" stroke-width="1.4" stroke-dasharray="4,4"/>
+      <circle cx="190" cy="75" r="26" fill="#1E3A8A"/><text x="190" y="80" font-size="11" font-weight="bold" fill="#fff" text-anchor="middle">Terra</text>
+      <g><circle cx="325" cy="75" r="15" fill="#E8F0FE" stroke="#1E3A8A" stroke-width="1.6"/><path d="M325 60 a15 15 0 0 0 0 30 z" fill="#1E3A8A" opacity=".7"/></g>
+      <g><circle cx="190" cy="20" r="15" fill="#E8F0FE" stroke="#1E3A8A" stroke-width="1.6"/><path d="M175 20 a15 15 0 0 1 30 0 z" fill="#1E3A8A" opacity=".7"/></g>
+      <g><circle cx="55" cy="75" r="15" fill="#E8F0FE" stroke="#1E3A8A" stroke-width="1.6"/><path d="M55 60 a15 15 0 0 1 0 30 z" fill="#1E3A8A" opacity=".7"/></g>
+      <g><circle cx="190" cy="130" r="15" fill="#E8F0FE" stroke="#1E3A8A" stroke-width="1.6"/><path d="M175 130 a15 15 0 0 0 30 0 z" fill="#1E3A8A" opacity=".7"/></g>
+    </svg>
+    <figcaption>A parte escura de cada Lua é a face oculta — em qualquer ponto da órbita, ela aponta para o lado contrário à Terra.</figcaption>
+  </div>
+
+  <div class="curio"><b>Atenção:</b> a tabela do livro mostra quantos satélites cada planeta tem — mas esse número <b>muda com o tempo</b>: telescópios melhores descobrem luas novas todo ano.</div>
+
+  <h2 class="sec"><span class="n">2</span> As fases da Lua <span class="pen">✏️ copiar</span></h2>
+  <div class="vocab">
+    <b>Fase&nbsp;da&nbsp;Lua</b> — porção da superfície iluminada da Lua que dá para ver da Terra. A Lua não tem luz própria: ela reflete a luz do Sol.
+  </div>
+  <p>Metade da Lua está sempre iluminada; o que muda é <b>quanto dessa metade fica voltado para a Terra</b>. As quatro fases principais: <b>nova</b> (0%), <b>crescente</b> (50%), <b>cheia</b> (100%) e <b>minguante</b> (50%), cada uma durando cerca de <b>7,4 dias</b>. O ciclo completo das fases dura <b>29,5 dias</b> — o <b>mês&nbsp;sinódico</b>. Ele é maior que o mês sideral (27,3 dias) porque, enquanto a Lua gira, a <b>Terra também se move</b> ao redor do Sol, e a Lua precisa percorrer um pouco mais para se realinhar.</p>
+
+  <div class="fig">
+    <svg width="400" height="95" viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg">
+      <defs><clipPath id="c2"><circle cx="165" cy="45" r="28"/></clipPath><clipPath id="c4"><circle cx="375" cy="45" r="28"/></clipPath></defs>
+      <circle cx="45" cy="45" r="28" fill="#1F2A44"/><text x="45" y="92" font-size="11" fill="#5B6472" text-anchor="middle">Nova</text>
+      <circle cx="165" cy="45" r="28" fill="#1F2A44"/><g clip-path="url(#c2)"><rect x="165" y="17" width="28" height="56" fill="#F5F1E4"/></g><circle cx="165" cy="45" r="28" fill="none" stroke="#1E3A8A" stroke-width="1.6"/><text x="165" y="92" font-size="11" fill="#5B6472" text-anchor="middle">Crescente</text>
+      <circle cx="285" cy="45" r="28" fill="#F5F1E4" stroke="#1E3A8A" stroke-width="1.6"/><text x="285" y="92" font-size="11" fill="#5B6472" text-anchor="middle">Cheia</text>
+      <circle cx="375" cy="45" r="28" fill="#1F2A44"/><g clip-path="url(#c4)"><rect x="347" y="17" width="28" height="56" fill="#F5F1E4"/></g><circle cx="375" cy="45" r="28" fill="none" stroke="#1E3A8A" stroke-width="1.6"/><text x="375" y="92" font-size="11" fill="#5B6472" text-anchor="middle">Minguante</text>
+    </svg>
+  </div>
+
+  <div class="exemplo"><b>Exemplo resolvido</b> — quantos meses lunares cabem em um ano? <span class="conta">365,25 ÷ 29,5 = 12,38</span><br>Cabem <b>12 meses lunares completos</b> no ano, e ainda sobra quase meio mês — é daí que vem a palavra "mês": os calendários mais antigos eram contados em ciclos da Lua.</div>
+
+  <div class="quebra"></div>
+
+  <div class="exhead">
+    <h2>Exercícios</h2>
+    <p>Resolva no caderno. Também servem para revisar antes do simulado.</p>
+  </div>
+
+  <div class="ex"><div class="t">1.</div> O que é um satélite natural? Quantos a Terra tem?</div>
+  <div class="ex"><div class="t">2.</div> Por que a Lua mostra sempre a mesma face para a Terra?</div>
+  <div class="ex"><div class="t">3.</div> Por que "lado escuro da Lua" é um nome errado? Qual é o nome correto?</div>
+  <div class="ex"><div class="t">4.</div> O que é uma fase da Lua? Cite as quatro fases principais.</div>
+  <div class="ex"><div class="t">5.</div> Quanto tempo dura o ciclo completo das fases?</div>
+  <div class="ex"><div class="t">6.</div> Consulte a tabela do livro: quais planetas não têm nenhum satélite natural? Dê uma hipótese para isso.</div>
+
+  <div class="quebra"></div>
+
+  <span class="tagextra">Conteúdo extra — opcional</span>
+  <div class="exhead extra">
+    <h2>Para quem terminar antes</h2>
+    <p>Não precisa copiar. É leitura livre — dá pra usar o livro também.</p>
+  </div>
+
+  <h2 class="sec" style="border-color:#6B3FA0;color:#6B3FA0">A face que ninguém via</h2>
+  <p>A face oculta da Lua só foi vista pela primeira vez em <b>1959</b>, pela sonda soviética <i>Luna 3</i> — e é bem diferente da face que conhecemos: tem muito mais crateras e quase nenhuma das manchas escuras que formam o "rosto" da Lua cheia.</p>
+
+  <div class="curio"><b>Você sabia?</b> A Lua está se afastando da Terra cerca de <b>3,8 cm por ano</b> — medido com espelhos deixados na superfície pelas missões Apollo. Em 100 anos, isso já dá quase 4 metros.</div>
+
+  <div class="duas">
+    <div class="bx"><h4>Mercúrio e Vênus</h4><p>Nenhum satélite natural — são os dois planetas mais próximos do Sol.</p></div>
+    <div class="bx"><h4>Júpiter e Saturno</h4><p>Dezenas de luas cada um — e o número cresce a cada nova descoberta.</p></div>
+  </div>
+
+  <div class="ex bonus"><div class="t">Desafio.</div> Se a Lua sempre mostra a mesma face para a Terra, um astronauta na face oculta consegue ver a Terra no céu? Explique.</div>
+
+  <div class="foot">Ciências — 8º ano · A Lua: satélite natural e fases · EMEF Ceará — Canoas/RS · Prof. Mikael</div>
+</div>
+</body>
+</html>

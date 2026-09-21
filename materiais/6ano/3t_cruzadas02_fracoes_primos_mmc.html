@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cruzadas das Frações</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  :root{
+    --bg:#F2F4F1; --panel:#FFFFFF; --ink:#1A2118; --muted:#5E6C5A;
+    --line:#CBD5C6; --accent:#2F6B4F; --accent-soft:#D9EADF;
+    --mark:#C2571E; --mark-soft:#FBE3D3;
+    --ok:#1E7A44; --ok-soft:#C9EBD4; --bad:#B3341F;
+    --cell:28px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#111610; --panel:#1B221A; --ink:#E8EFE5; --muted:#9BAB96;
+      --line:#35422F; --accent:#63C795; --accent-soft:#1E3A2B;
+      --mark:#F0955A; --mark-soft:#3D2414;
+      --ok:#5FD08D; --ok-soft:#1C4630; --bad:#F0705A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#111610; --panel:#1B221A; --ink:#E8EFE5; --muted:#9BAB96;
+    --line:#35422F; --accent:#63C795; --accent-soft:#1E3A2B;
+    --mark:#F0955A; --mark-soft:#3D2414;
+    --ok:#5FD08D; --ok-soft:#1C4630; --bad:#F0705A;
+  }
+
+  body{background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.5;}
+  .wrap{max-width:1060px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px;}
+
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:"Bricolage Grotesque","Source Sans 3",sans-serif;font-weight:800;font-size:clamp(28px,5vw,42px);line-height:1.05;margin:.18em 0 .12em;text-wrap:balance;}
+  header p{margin:0;color:var(--muted);max-width:66ch;}
+  .rule{display:inline-block;margin-top:10px;padding:5px 10px;border:1px dashed var(--mark);border-radius:7px;background:var(--mark-soft);color:var(--ink);font-size:14px;}
+  .ident{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .ident label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);}
+  .ident input{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:170px;max-width:46vw;}
+
+  .bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+  button{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;}
+  button:hover{border-color:var(--accent);}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#FFFFFF;}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .score b{color:var(--ink);}
+
+  .board{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto;}
+  .grid{display:grid;width:max-content;margin:0 auto;}
+  .cell{position:relative;width:var(--cell);height:var(--cell);}
+  .cell input{position:absolute;inset:0;width:100%;height:100%;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    font-family:"IBM Plex Mono",monospace;font-size:calc(var(--cell)*.52);font-weight:600;text-align:center;text-transform:uppercase;padding:0;margin:0;border-radius:0;caret-color:var(--accent);}
+  .cell input.hl{background:var(--accent-soft);}
+  .cell input.done{background:var(--ok-soft);color:var(--ok);border-color:var(--ok);}
+  .cell input.cur{outline:2px solid var(--mark);outline-offset:-2px;z-index:2;}
+  .cell input.bad{color:var(--bad);text-decoration:line-through;}
+  .cell .num{position:absolute;top:1px;left:2px;font-family:"IBM Plex Mono",monospace;font-size:calc(var(--cell)*.3);line-height:1;color:var(--muted);pointer-events:none;z-index:3;}
+
+  .hint{font-size:13.5px;color:var(--muted);text-align:center;min-height:1.4em;}
+  .clues{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media (max-width:640px){ .clues{grid-template-columns:1fr;} }
+  .clues h2{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 8px;}
+  ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+  li{display:flex;gap:9px;padding:5px 6px;border-radius:7px;font-size:14.5px;}
+  li.done span.n{color:var(--ok);}
+  li.done span.t{color:var(--muted);text-decoration:line-through;}
+  li span.n{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--muted);min-width:1.7em;text-align:right;}
+  footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
+</style>
+</head>
+<body style="margin:0">
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Matemática · frações, primos e MMC</div>
+    <h1>Frações, primos e MMC</h1>
+    <p>Vinte palavras da aula de frações e da aula de números primos e fatoração. Clique numa casa e digite; clicar de novo na mesma casa troca entre horizontal e vertical.</p>
+    <div class="rule"><strong>Digite sem acento e sem cedilha</strong> — FRAÇÃO vira FRACAO, TERÇO vira TERCO. Quando a palavra inteira estiver certa, as casas ficam verdes sozinhas.</div>
+    <div class="ident">
+      <label>Nome <input id="nome" type="text" placeholder="seu nome"></label>
+      <label>Turma <input id="turma" type="text" placeholder="sua turma"></label>
+      <label>Data <input id="data" type="text" placeholder="__/__/____" style="width:110px"></label>
+    </div>
+  </header>
+
+  <div class="bar">
+    <button id="check" class="primary" type="button">Conferir o que está errado</button>
+    <button id="clear" type="button">Limpar</button>
+    <div class="score">Palavras certas: <b id="done">0</b> / 20</div>
+  </div>
+
+  <div class="board"><div class="grid" id="grid"></div></div>
+  <p class="hint" id="hint">—</p>
+
+  <div class="clues">
+    <div><h2>Horizontais</h2><ol id="acr"></ol></div>
+    <div><h2>Verticais</h2><ol id="dwn"></ol></div>
+  </div>
+
+  <footer>EMEF Ceará · Prof. Mikael Maronez · baseado na aula de frações e na aula de números primos e fatoração.</footer>
+</div>
+
+<script>
+const ROWS=26, COLS=22;
+const WORDS=[
+ {w:"MINIMO",r:0,c:9,d:"H",n:1,clue:"O \u201cm\u201d do MMC: o menor m\u00faltiplo comum entre dois n\u00fameros."},
+ {w:"INTEIRO",r:0,c:10,d:"V",n:2,clue:"O todo, antes de ser repartido."},
+ {w:"UNITARIA",r:2,c:8,d:"V",n:3,clue:"Fra\u00e7\u00e3o de numerador 1 \u2014 a \u00fanica que os eg\u00edpcios usavam."},
+ {w:"TERCO",r:2,c:10,d:"H",n:4,clue:"Um peda\u00e7o de algo dividido em tr\u00eas partes iguais."},
+ {w:"DIVISOR",r:4,c:7,d:"H",n:5,clue:"N\u00famero que cabe certinho em outro, sem deixar resto."},
+ {w:"NUMERADOR",r:4,c:18,d:"V",n:6,clue:"N\u00famero de cima: quantas partes eu tenho."},
+ {w:"PRIMO",r:5,c:21,d:"V",n:7,clue:"N\u00famero que s\u00f3 tem dois divisores: ele mesmo e o 1."},
+ {w:"DECOMPOR",r:6,c:14,d:"H",n:8,clue:"Escrever um n\u00famero como multiplica\u00e7\u00e3o de fatores primos."},
+ {w:"FRACAO",r:7,c:0,d:"H",n:9,clue:"Um n\u00famero inteiro de partes \u2014 n\u00e3o um n\u00famero quebrado."},
+ {w:"CRESCENTE",r:7,c:3,d:"V",n:10,clue:"Ordem do menor para o maior."},
+ {w:"DENOMINADOR",r:8,c:10,d:"V",n:11,clue:"N\u00famero de baixo: em quantas partes o todo foi dividido."},
+ {w:"EQUIVALENTES",r:9,c:3,d:"H",n:12,clue:"Fra\u00e7\u00f5es de apar\u00eancia diferente e mesmo valor, como um meio e dois quartos."},
+ {w:"IRREDUTIVEL",r:9,c:6,d:"V",n:13,clue:"Fra\u00e7\u00e3o que n\u00e3o d\u00e1 mais para simplificar."},
+ {w:"QUARTO",r:9,c:16,d:"H",n:14,clue:"Cada parte de uma pizza cortada em quatro fatias iguais."},
+ {w:"SIMPLIFICAR",r:12,c:8,d:"H",n:15,clue:"Cortar os fatores iguais de cima e de baixo."},
+ {w:"COMPOSTO",r:14,c:12,d:"V",n:16,clue:"N\u00famero que tem mais de dois divisores."},
+ {w:"FATORACAO",r:15,c:9,d:"H",n:17,clue:"Decomposi\u00e7\u00e3o de um n\u00famero em fatores primos."},
+ {w:"DIVISAO",r:17,c:4,d:"H",n:18,clue:"A outra leitura da fra\u00e7\u00e3o: a conta que ainda n\u00e3o foi feita."},
+ {w:"MULTIPLO",r:20,c:9,d:"H",n:19,clue:"Resultado de multiplicar um n\u00famero por 1, por 2, por 3..."},
+ {w:"METADE",r:20,c:9,d:"V",n:19,clue:"Uma de duas partes iguais."}
+];
+const key=(r,c)=>r+","+c;
+const sol=new Map(), starts=new Map();
+for(const e of WORDS){
+  const dr=e.d==="H"?0:1, dc=e.d==="H"?1:0;
+  for(let i=0;i<e.w.length;i++) sol.set(key(e.r+dr*i,e.c+dc*i), e.w[i]);
+  if(!starts.has(key(e.r,e.c))) starts.set(key(e.r,e.c), e.n);
+}
+const grid=document.getElementById("grid");
+grid.style.gridTemplateColumns=`repeat(${COLS}, var(--cell))`;
+const inputs=new Map();
+for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+  const div=document.createElement("div");
+  div.className="cell";
+  if(!sol.has(key(r,c))){ grid.appendChild(div); continue; }
+  const inp=document.createElement("input");
+  inp.type="text"; inp.maxLength=1; inp.autocomplete="off";
+  inp.id="c"+r+"_"+c; inp.dataset.r=r; inp.dataset.c=c;
+  inp.setAttribute("aria-label","linha "+(r+1)+", coluna "+(c+1));
+  div.appendChild(inp);
+  if(starts.has(key(r,c))){ const s=document.createElement("span"); s.className="num"; s.textContent=starts.get(key(r,c)); div.appendChild(s); }
+  inputs.set(key(r,c), inp);
+  grid.appendChild(div);
+}
+
+let dir="H", cur=null, active=null;
+function wordsAt(r,c){ return WORDS.filter(e=> e.d==="H"
+  ? (e.r===r && c>=e.c && c<e.c+e.w.length)
+  : (e.c===c && r>=e.r && r<e.r+e.w.length)); }
+function cellsOf(e){ const dr=e.d==="H"?0:1, dc=e.d==="H"?1:0, out=[];
+  for(let i=0;i<e.w.length;i++) out.push(inputs.get(key(e.r+dr*i,e.c+dc*i))); return out; }
+function isDone(e){ return cellsOf(e).every((i,k)=> (i.value||"").toUpperCase()===e.w[k]); }
+
+function highlight(){
+  inputs.forEach(i=>i.classList.remove("hl","cur"));
+  if(!cur) return;
+  const r=+cur.dataset.r, c=+cur.dataset.c;
+  const cands=wordsAt(r,c);
+  active = cands.find(e=>e.d===dir) || cands[0];
+  if(active){
+    dir=active.d;
+    cellsOf(active).forEach(i=>i.classList.add("hl"));
+    document.getElementById("hint").textContent = active.n+" "+(active.d==="H"?"horizontal":"vertical")+" · "+active.clue;
+  }
+  cur.classList.add("cur");
+}
+function focusCell(inp){ if(!inp) return; cur=inp; inp.focus(); highlight(); }
+function step(n){
+  if(!active||!cur) return;
+  const cells=cellsOf(active), i=cells.indexOf(cur);
+  const t=cells[i+n]; if(t){ cur=t; t.focus(); highlight(); }
+}
+function refresh(){
+  inputs.forEach(i=>i.classList.remove("done"));
+  let n=0;
+  for(const e of WORDS){
+    const d=isDone(e);
+    if(d){ n++; cellsOf(e).forEach(i=>{ i.classList.add("done"); i.classList.remove("bad"); }); }
+    const li=document.getElementById("li"+e.n+e.d); if(li) li.classList.toggle("done", d);
+  }
+  document.getElementById("done").textContent=n;
+  if(n===WORDS.length) document.getElementById("hint").textContent="Fechou as 20. Bom trabalho.";
+}
+
+inputs.forEach(inp=>{
+  inp.addEventListener("focus",()=>{ cur=inp; highlight(); });
+  inp.addEventListener("mousedown",()=>{ if(cur===inp){ dir = dir==="H"?"V":"H"; } });
+  inp.addEventListener("input",()=>{
+    const v=((inp.value||"").toUpperCase().replace(/[^A-Z]/g,"")).slice(-1);
+    inp.value=v; inp.classList.remove("bad");
+    if(v) step(1);
+    refresh();
+  });
+  inp.addEventListener("keydown",e=>{
+    const r=+inp.dataset.r, c=+inp.dataset.c;
+    const go=(dr,dc)=>{ e.preventDefault(); for(let k=1;k<30;k++){ const t=inputs.get(key(r+dr*k,c+dc*k)); if(t){ dir = dr?"V":"H"; focusCell(t); return; } } };
+    if(e.key==="ArrowRight") go(0,1);
+    else if(e.key==="ArrowLeft") go(0,-1);
+    else if(e.key==="ArrowDown") go(1,0);
+    else if(e.key==="ArrowUp") go(-1,0);
+    else if(e.key==="Backspace"&&!inp.value){ e.preventDefault(); step(-1); if(cur){ cur.value=""; refresh(); } }
+    else if(e.key==="Enter"||e.key===" "){ e.preventDefault(); dir = dir==="H"?"V":"H"; highlight(); }
+  });
+});
+
+const acr=document.getElementById("acr"), dwn=document.getElementById("dwn");
+WORDS.slice().sort((a,b)=>a.n-b.n).forEach(e=>{
+  const li=document.createElement("li"); li.id="li"+e.n+e.d;
+  const n=document.createElement("span"); n.className="n"; n.textContent=e.n;
+  const t=document.createElement("span"); t.className="t"; t.textContent=e.clue;
+  li.appendChild(n); li.appendChild(t);
+  (e.d==="H"?acr:dwn).appendChild(li);
+});
+
+document.getElementById("check").addEventListener("click",()=>{
+  let certas=0, erradas=0, vazias=0;
+  inputs.forEach(i=>i.classList.remove("bad"));
+  for(const e of WORDS){
+    const cells=cellsOf(e);
+    if(!cells.every(i=>(i.value||"").trim()!=="")){ vazias++; continue; }
+    if(isDone(e)) certas++;
+    else { erradas++; cells.forEach(i=>{ if(!i.classList.contains("done")) i.classList.add("bad"); }); }
+  }
+  document.getElementById("hint").textContent =
+    certas+" certa(s) · "+erradas+" com erro · "+vazias+" em branco. As erradas ficaram marcadas — ache o erro.";
+  refresh();
+});
+document.getElementById("clear").addEventListener("click",()=>{
+  inputs.forEach(i=>{ i.value=""; i.classList.remove("bad","done"); });
+  refresh(); document.getElementById("hint").textContent="—";
+});
+
+focusCell(cellsOf(WORDS[0])[0]);
+refresh();
+</script>
+
+</body>
+</html>

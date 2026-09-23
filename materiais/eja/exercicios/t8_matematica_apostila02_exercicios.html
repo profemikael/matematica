@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T8 MATEMÁTICA — Apostila 02 — Exercícios Interativos</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{background:#1F4E79;color:#fff;text-align:center;padding:8px 12px;flex-shrink:0}
+  header h1{font-size:18px;letter-spacing:.4px}
+  header p{font-size:12px;color:#D6E4F0;margin-top:3px}
+
+  .topo{height:44vh;overflow-y:auto;padding:10px 0;background:#fff;border-bottom:4px solid #1F4E79}
+  .baixo{flex:1;overflow-y:auto;padding:12px 0;background:#f4f6f9}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  h2{color:#1F4E79;font-size:15px;margin-bottom:6px;border-bottom:2px solid #1F4E79;padding-bottom:3px}
+  .formulas{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0}
+  .card{flex:1;min-width:150px;background:#DEEBF7;border:1px solid #9DC3E6;border-radius:5px;padding:6px 8px;text-align:center}
+  .card b{color:#1F4E79;display:block;font-size:12px;margin-bottom:3px}
+  .card span{font-size:14px;font-weight:bold}
+  .exemplo{background:#EFF6FC;border:1px solid #9DC3E6;border-radius:5px;padding:8px 10px;margin-top:7px;font-size:13px;line-height:1.5}
+  .exemplo b{color:#1F4E79}
+  p.txt{font-size:13px;line-height:1.5;margin-bottom:5px}
+
+  .barra{height:9px;background:#dde3ea;border-radius:5px;overflow:hidden;margin-bottom:12px}
+  .barra div{height:100%;background:#1F4E79;width:0;transition:width .4s}
+  .contador{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+
+  .questao{background:#fff;border:1px solid #cfd8e3;border-left:5px solid #1F4E79;border-radius:6px;padding:13px 15px}
+  .questao .num{color:#1F4E79;font-weight:bold;font-size:14px}
+  .questao .enun{font-size:15px;line-height:1.55;margin:5px 0 11px}
+  .campos{display:flex;gap:14px;flex-wrap:wrap}
+  .campo{flex:1;min-width:175px}
+  .campo label{display:block;font-size:13px;color:#1F4E79;font-weight:bold;margin-bottom:4px}
+  .campo input{width:100%;padding:9px 11px;font-size:16px;font-family:Georgia,serif;border:2px solid #9DC3E6;border-radius:5px;background:#fbfdff}
+  .campo input:focus{outline:none;border-color:#1F4E79;background:#fff}
+  .campo input.ok{border-color:#2e7d32;background:#eaf6ea}
+  .campo input.erro{border-color:#c62828;background:#fdeaea}
+
+  .acoes{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{font-family:Georgia,serif;font-size:14px;padding:9px 20px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}
+  .btn-principal{background:#1F4E79;color:#fff}
+  .btn-principal:hover{background:#2b6497}
+  .feedback{font-size:13.5px;padding:8px 11px;border-radius:5px;margin-top:11px;display:none;line-height:1.5}
+  .feedback.certo{display:block;background:#eaf6ea;border:1px solid #2e7d32;color:#1b5e20}
+  .feedback.errado{display:block;background:#fdeaea;border:1px solid #c62828;color:#8e1c1c}
+  .feedback.ajuda{display:block;background:#FFF2CC;border:1px solid #C00000;color:#7a3b00}
+
+  .final{background:#fff;border:2px solid #1F4E79;border-radius:8px;padding:26px;text-align:center}
+  .final h3{color:#1F4E79;font-size:20px;margin-bottom:8px}
+  .final p{font-size:15px;line-height:1.6;margin-bottom:14px}
+  .placar{font-size:15px;color:#1F4E79;font-weight:bold;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>T8 — MATEMÁTICA — APOSTILA 02</h1>
+  <p>Função Quadrática &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+</header>
+
+<!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
+<section class="topo"><div class="wrap">
+  <h2>A parábola: zeros e vértice</h2>
+  <div class="formulas">
+    <div class="card"><b>FUNÇÃO</b><span>y = ax&sup2; + bx + c</span></div>
+    <div class="card"><b>DISCRIMINANTE</b><span>&Delta; = b&sup2; &minus; 4ac</span></div>
+    <div class="card"><b>VÉRTICE (x)</b><span>x<sub>v</sub> = &minus;b &divide; 2a</span></div>
+    <div class="card"><b>VÉRTICE (y)</b><span>y<sub>v</sub> = &minus;&Delta; &divide; 4a</span></div>
+  </div>
+
+  <p class="txt">O gráfico da função quadrática é uma <b>parábola</b>. Se <b>a &gt; 0</b> ela abre para cima e o vértice é o ponto de <b>mínimo</b>; se <b>a &lt; 0</b> abre para baixo e o vértice é o ponto de <b>máximo</b>. Os <b>zeros</b> da função são os pontos em que a parábola cruza o eixo x, encontrados por Bhaskara. Em problemas de maior lucro, maior área ou altura máxima, a resposta está sempre no vértice.</p>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido &mdash;</b> Encontre o vértice de y = x&sup2; &minus; 4x + 3.<br>
+    a = 1, b = &minus;4, c = 3. &nbsp; x<sub>v</sub> = 4 &divide; 2 = <b>2</b>.<br>
+    &Delta; = 16 &minus; 12 = 4 &nbsp;&#8594;&nbsp; y<sub>v</sub> = &minus;4 &divide; 4 = <b>&minus;1</b>. &nbsp; Vértice: (2, &minus;1), ponto de mínimo.
+  </div>
+
+  <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais — os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
+  </div>
+</div></section>
+
+<!-- ============ PARTE INTERATIVA ============ -->
+<section class="baixo"><div class="wrap">
+  <div class="contador"><span id="rotulo">Exercício 1 de 5</span><span id="placar">Acertos: 0</span></div>
+  <div class="barra"><div id="progresso"></div></div>
+  <div id="area"></div>
+</div></section>
+
+<script>
+const questoes = [
+  {
+    enunciado: "Determine os zeros da função <b>y = x&sup2; &minus; 8x + 15</b>.",
+    campos: [
+      {label:"Valor do Δ (delta)", resp:4, tol:0.05},
+      {label:"Maior zero da função", resp:5, tol:0.05},
+      {label:"Menor zero da função", resp:3, tol:0.05}
+    ],
+    ajuda: "a=1, b=−8, c=15. Δ = 64 − 60 = 4. x = (8 ± 2) ÷ 2 → x₁ = 5 e x₂ = 3."
+  },
+  {
+    enunciado: "Encontre o vértice da função <b>y = x&sup2; &minus; 6x + 5</b>.",
+    campos: [
+      {label:"Coordenada x do vértice", resp:3, tol:0.05},
+      {label:"Coordenada y do vértice", resp:-4, tol:0.05}
+    ],
+    ajuda: "xv = 6 ÷ 2 = 3. Δ = 36 − 20 = 16 → yv = −16 ÷ 4 = −4. Vértice (3, −4). Como a > 0, é ponto de mínimo."
+  },
+  {
+    enunciado: "Encontre o vértice de <b>y = &minus;x&sup2; + 10x &minus; 21</b>. <i>(Atenção ao sinal de a.)</i>",
+    campos: [
+      {label:"Coordenada x do vértice", resp:5, tol:0.05},
+      {label:"Coordenada y do vértice", resp:4, tol:0.05}
+    ],
+    ajuda: "a=−1, b=10, c=−21. xv = −10 ÷ (2·(−1)) = 5. Δ = 100 − 84 = 16 → yv = −16 ÷ (4·(−1)) = 4. Vértice (5, 4). Como a < 0, é ponto de MÁXIMO."
+  },
+  {
+    enunciado: "O lucro diário de uma loja é dado por <b>L = &minus;2x&sup2; + 240x &minus; 4000</b>, onde x é a quantidade vendida.",
+    campos: [
+      {label:"Quantidade que dá o lucro máximo", resp:60, tol:0.05},
+      {label:"Valor do lucro máximo (R$)", resp:3200, tol:0.5}
+    ],
+    ajuda: "xv = −240 ÷ (2·(−2)) = 60 unidades. Substituindo: L = −2(3.600) + 240(60) − 4.000 = −7.200 + 14.400 − 4.000 = R$ 3.200,00."
+  },
+  {
+    enunciado: "<b>DESAFIO &mdash;</b> Uma bola é chutada para cima e sua altura em metros é <b>h = &minus;5t&sup2; + 40t</b>, com t em segundos.",
+    campos: [
+      {label:"Instante da altura máxima (s)", resp:4, tol:0.05},
+      {label:"Altura máxima atingida (m)", resp:80, tol:0.05},
+      {label:"Instante em que volta ao chão (s)", resp:8, tol:0.05}
+    ],
+    ajuda: "tv = −40 ÷ (2·(−5)) = 4 s. Altura: h(4) = −5(16) + 160 = 80 m. No chão h = 0: 5t(8 − t) = 0 → t = 8 s. Note que o tempo de subida é exatamente metade do tempo total."
+  }
+];
+
+let atual = 0, acertos = 0, tentativas = 0;
+
+function normaliza(txt){
+  return parseFloat(String(txt).trim().replace(/\s/g,'').replace(',','.'));
+}
+
+function render(){
+  const q = questoes[atual];
+  document.getElementById('rotulo').textContent = `Exercício ${atual+1} de ${questoes.length}`;
+  document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  document.getElementById('progresso').style.width = (atual/questoes.length*100) + '%';
+
+  let html = `<div class="questao">
+    <div class="num">Exercício ${atual+1}</div>
+    <div class="enun">${q.enunciado}</div>
+    <div class="campos">`;
+  q.campos.forEach((c,i)=>{
+    html += `<div class="campo">
+      <label>${c.label}</label>
+      <input type="text" id="in${i}" autocomplete="off" placeholder="digite o número">
+    </div>`;
+  });
+  html += `</div>
+    <div class="acoes">
+      <button class="btn-principal" onclick="verificar()">Verificar resposta</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  </div>`;
+  document.getElementById('area').innerHTML = html;
+  tentativas = 0;
+  document.getElementById('in0').focus();
+
+  q.campos.forEach((c,i)=>{
+    document.getElementById('in'+i).addEventListener('keydown', e=>{
+      if(e.key==='Enter') verificar();
+    });
+  });
+}
+
+function verificar(){
+  const q = questoes[atual];
+  const fb = document.getElementById('fb');
+  let todosCertos = true, algumVazio = false;
+
+  q.campos.forEach((c,i)=>{
+    const el = document.getElementById('in'+i);
+    const val = normaliza(el.value);
+    el.classList.remove('ok','erro');
+    if(isNaN(val)){ algumVazio = true; todosCertos = false; return; }
+    if(Math.abs(val - c.resp) <= c.tol){ el.classList.add('ok'); }
+    else { el.classList.add('erro'); todosCertos = false; }
+  });
+
+  if(algumVazio){
+    fb.className = 'feedback errado';
+    fb.innerHTML = 'Preencha <b>todos</b> os campos com números antes de verificar.';
+    return;
+  }
+
+  if(todosCertos){
+    acertos++;
+    fb.className = 'feedback certo';
+    fb.innerHTML = '<b>Correto!</b> ' + q.ajuda + '<br><br><button class="btn-principal" onclick="proxima()">Próximo exercício →</button>';
+    document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  } else {
+    tentativas++;
+    fb.className = 'feedback errado';
+    if(tentativas >= 3){
+      fb.innerHTML = '<b>Ainda não.</b> Confira os campos em vermelho e revise as fórmulas na parte de cima da tela.';
+    } else {
+      fb.innerHTML = '<b>Ainda não.</b> Os campos em <span style="color:#2e7d32">verde</span> estão certos; revise os que ficaram em <span style="color:#c62828">vermelho</span> e tente de novo.';
+    }
+  }
+}
+
+function proxima(){
+  atual++;
+  if(atual >= questoes.length){ final(); } else { render(); }
+}
+
+function final(){
+  document.getElementById('progresso').style.width = '100%';
+  document.getElementById('rotulo').textContent = 'Atividade concluída';
+  document.getElementById('placar').textContent = `Acertos: ${acertos} de ${questoes.length}`;
+  let msg = acertos === questoes.length
+    ? 'Você acertou todos os exercícios sem precisar recomeçar. Excelente domínio da velocidade média e das conversões!'
+    : 'Bom trabalho! Vale revisar os exercícios em que você precisou de ajuda antes da próxima aula.';
+  document.getElementById('area').innerHTML = `<div class="final">
+    <h3>Atividade concluída!</h3>
+    <div class="placar">Você acertou ${acertos} de ${questoes.length} exercícios.</div>
+    <p>${msg}</p>
+    <button class="btn-principal" onclick="reiniciar()">Refazer a atividade</button>
+  </div>`;
+}
+
+function reiniciar(){ atual = 0; acertos = 0; render(); }
+
+render();
+</script>
+</body>
+</html>

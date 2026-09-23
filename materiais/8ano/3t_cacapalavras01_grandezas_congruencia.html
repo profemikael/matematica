@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caça-Palavras do Simulado</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+  :root{
+    --bg:#F3F2F7; --panel:#FFFFFF; --ink:#1B1A24; --muted:#63607A;
+    --line:#D3D0E0; --accent:#4B3F9E; --accent-soft:#E2DEF7;
+    --mark:#C2571E; --ok:#1E7A44; --ok-soft:#C9EBD4; --bad:#B3341F;
+    --cell:32px;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#131220; --panel:#1D1B2C; --ink:#EDEBF5; --muted:#A09CBA;
+    --line:#38344E; --accent:#9B8CF0; --accent-soft:#2A2545;
+    --mark:#F0955A; --ok:#5FD08D; --ok-soft:#1C4630; --bad:#F0705A; } }
+  :root[data-theme="dark"]{
+    --bg:#131220; --panel:#1D1B2C; --ink:#EDEBF5; --muted:#A09CBA;
+    --line:#38344E; --accent:#9B8CF0; --accent-soft:#2A2545;
+    --mark:#F0955A; --ok:#5FD08D; --ok-soft:#1C4630; --bad:#F0705A; }
+
+  body{background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:"Bricolage Grotesque","Source Sans 3",sans-serif;font-weight:800;font-size:clamp(28px,5vw,42px);line-height:1.05;margin:.18em 0 .12em;text-wrap:balance;}
+  header p{margin:0;color:var(--muted);max-width:66ch;}
+  .rule{display:inline-block;margin-top:10px;padding:5px 10px;border:1px dashed var(--mark);border-radius:7px;font-size:14px;}
+  .ident{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .ident label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);}
+  .ident input,.ident select{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);}
+  .ident input{width:180px;max-width:46vw;}
+  .bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+  button{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;}
+  button:hover{border-color:var(--accent);}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .score b{color:var(--ink);}
+  .board{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto;}
+  .grid{display:grid;width:max-content;margin:0 auto;user-select:none;}
+  .cel{width:var(--cell);height:var(--cell);display:flex;align-items:center;justify-content:center;
+    font-family:"IBM Plex Mono",monospace;font-size:calc(var(--cell)*.5);font-weight:600;cursor:pointer;border-radius:4px;}
+  .cel:hover{background:var(--accent-soft);}
+  .cel.sel{background:var(--accent);color:#fff;}
+  .cel.found{background:var(--ok-soft);color:var(--ok);}
+  .hint{font-size:13.5px;color:var(--muted);text-align:center;min-height:1.4em;}
+  #envio{font-weight:600;text-align:center;}
+  .listas{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media (max-width:640px){ .listas{grid-template-columns:1fr;} :root{--cell:clamp(17px,4.6vw,32px);} }
+  .listas h2{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 8px;}
+  ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;}
+  li{padding:4px 10px;border:1px solid var(--line);border-radius:999px;font-size:14px;}
+  li.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);text-decoration:line-through;}
+  footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
+</style>
+</head>
+<body style="margin:0">
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Matemática · 3º trimestre · revisão do Simulado 2</div>
+    <h1>Grandezas proporcionais e congruência</h1>
+    <p>Vinte palavras escondidas na grade, em todas as direções — inclusive de trás para frente e na diagonal. Clique na <strong>primeira</strong> e depois na <strong>última</strong> letra da palavra.</p>
+    <div class="rule">As palavras estão <strong>sem acento</strong>: PROPORCAO, GRAFICO, TRIANGULO, QUADRILATERO.</div>
+    <div class="ident">
+      <label>Nome <input id="nome" type="text" placeholder="seu nome"></label>
+      <label>Turma <select id="turma">
+        <option value="">escolha…</option>
+        <optgroup label="Matemática">
+          <option>6A MAT</option><option>6B MAT</option><option>7A MAT</option>
+          <option>8A MAT</option><option>8B MAT</option>
+        </optgroup>
+        <optgroup label="Ciências">
+          <option>6B CIE</option><option>8B CEARA</option>
+        </optgroup>
+      </select></label>
+      <label>Data <input id="data" type="text" placeholder="__/__/____" style="width:110px"></label>
+    </div>
+  </header>
+
+  <div class="bar">
+    <button id="reset" type="button">Recomeçar</button>
+    <div class="score">Palavras achadas: <b id="conta">0</b> / 20</div>
+  </div>
+
+  <div class="board"><div class="grid" id="grid"></div></div>
+  <p class="hint" id="hint">Clique na primeira letra, depois na última.</p>
+  <p id="envio"></p>
+
+  <div class="listas">
+    <div><h2>Grandezas proporcionais</h2><ul id="l1"></ul></div>
+    <div><h2>Congruência de triângulos</h2><ul id="l2"></ul></div>
+  </div>
+
+  <footer>Prof. Mikael Maronez · Matemática 8º ano · revisão para o simulado de 24/09/2026 — BNCC EF08MA12, EF08MA13 e EF08MA14.</footer>
+</div>
+
+<script>
+const GRID = ["JDXCVORETALIRDAUQK", "OPRDLNKTUGRPOQIBZR", "AMCETNEICOUQXMWZVU", "ATAPVKODHXKWCGSHHZ", "EZRROEDLICAZEDNARG", "CZPAGKRIUAQPDJRJWD", "ROERVOKTRGGRGZTRSE", "JTODORLCIENOTOZMKT", "SUMAIPUEHCTANJFAGN", "FDEBLGOCLTEAIAVIIE", "POGCCEIRVAIYMRLCEM", "ERIBCWBRCSRRVETNMA", "WPRQIQZAEAHAGVNESS", "NSOIOPVTTUOWPZLTCR", "AICNEURGNOCKTDPSEE", "SUETNATSNOCKGHAIXV", "IDWHCLZFKNBDZEWXHN", "BSOCIFARGURTVCAEDI"];
+const SOL = [{"w": "PARALELOGRAMO", "r": 13, "c": 12, "dx": -1, "dy": -1}, {"w": "INVERSAMENTE", "r": 17, "c": 17, "dx": 0, "dy": -1}, {"w": "QUADRILATERO", "r": 0, "c": 16, "dx": -1, "dy": 0}, {"w": "DIRETAMENTE", "r": 4, "c": 6, "dx": 1, "dy": 1}, {"w": "CONGRUENCIA", "r": 14, "c": 10, "dx": -1, "dy": 0}, {"w": "CARTESIANO", "r": 16, "c": 4, "dx": 1, "dy": -1}, {"w": "EXISTENCIA", "r": 17, "c": 15, "dx": 0, "dy": -1}, {"w": "PROPORCAO", "r": 5, "c": 2, "dx": 1, "dy": 1}, {"w": "QUOCIENTE", "r": 2, "c": 11, "dx": -1, "dy": 0}, {"w": "CONSTANTE", "r": 15, "c": 10, "dx": -1, "dy": 0}, {"w": "TRIANGULO", "r": 11, "c": 14, "dx": -1, "dy": -1}, {"w": "GRANDEZA", "r": 4, "c": 17, "dx": -1, "dy": 0}, {"w": "DIAGONAL", "r": 3, "c": 7, "dx": 1, "dy": 1}, {"w": "PRODUTO", "r": 12, "c": 1, "dx": 0, "dy": -1}, {"w": "GRAFICO", "r": 17, "c": 8, "dx": -1, "dy": 0}, {"w": "VERTICE", "r": 3, "c": 4, "dx": 1, "dy": 1}, {"w": "RIGIDEZ", "r": 11, "c": 7, "dx": -1, "dy": -1}, {"w": "TABELA", "r": 13, "c": 8, "dx": -1, "dy": -1}, {"w": "ORIGEM", "r": 13, "c": 2, "dx": 0, "dy": -1}, {"w": "CURVA", "r": 9, "c": 7, "dx": -1, "dy": -1}];
+const LISTA = [["GRANDEZA", "grandeza", 1], ["DIRETAMENTE", "diretamente", 1], ["INVERSAMENTE", "inversamente", 1], ["PROPORCAO", "proporção", 1], ["QUOCIENTE", "quociente", 1], ["PRODUTO", "produto", 1], ["CONSTANTE", "constante", 1], ["TABELA", "tabela", 1], ["GRAFICO", "gráfico", 1], ["CARTESIANO", "cartesiano", 1], ["ORIGEM", "origem", 1], ["CURVA", "curva", 1], ["TRIANGULO", "triângulo", 2], ["CONGRUENCIA", "congruência", 2], ["EXISTENCIA", "existência", 2], ["VERTICE", "vértice", 2], ["DIAGONAL", "diagonal", 2], ["RIGIDEZ", "rigidez", 2], ["PARALELOGRAMO", "paralelogramo", 2], ["QUADRILATERO", "quadrilátero", 2]];
+const ROWS = GRID.length, COLS = GRID[0].length;
+
+const grid = document.getElementById("grid");
+grid.style.gridTemplateColumns = "repeat(" + COLS + ", var(--cell))";
+const cels = [];
+for(let r=0;r<ROWS;r++){
+  cels[r]=[];
+  for(let c=0;c<COLS;c++){
+    const d=document.createElement("div");
+    d.className="cel"; d.textContent=GRID[r][c];
+    d.dataset.r=r; d.dataset.c=c;
+    d.addEventListener("click", ()=>clicou(r,c));
+    grid.appendChild(d); cels[r][c]=d;
+  }
+}
+
+const achadas = new Set();
+let ini = null;
+
+function limparSel(){ document.querySelectorAll(".cel.sel").forEach(e=>e.classList.remove("sel")); }
+
+function clicou(r,c){
+  if(!ini){ ini={r:r,c:c}; limparSel(); cels[r][c].classList.add("sel"); return; }
+  const dr=r-ini.r, dc=c-ini.c;
+  const passos=Math.max(Math.abs(dr),Math.abs(dc));
+  const reto = (dr===0 || dc===0 || Math.abs(dr)===Math.abs(dc)) && passos>0;
+  if(!reto){ document.getElementById("hint").textContent="A palavra precisa estar em linha reta: horizontal, vertical ou diagonal."; ini=null; limparSel(); return; }
+  const sr=Math.sign(dr), sc=Math.sign(dc);
+  const celulas=[]; let texto="";
+  for(let i=0;i<=passos;i++){
+    const rr=ini.r+sr*i, cc=ini.c+sc*i;
+    celulas.push(cels[rr][cc]); texto+=GRID[rr][cc];
+  }
+  const invertido = texto.split("").reverse().join("");
+  const alvo = SOL.find(s=>!achadas.has(s.w) && (s.w===texto || s.w===invertido));
+  limparSel(); ini=null;
+  if(alvo){
+    achadas.add(alvo.w);
+    celulas.forEach(e=>e.classList.add("found"));
+    const li=document.getElementById("w"+alvo.w); if(li) li.classList.add("ok");
+    document.getElementById("conta").textContent=achadas.size;
+    document.getElementById("hint").textContent="Achou: "+alvo.w+".";
+    if(achadas.size===SOL.length){
+      document.getElementById("hint").textContent="Achou as 20. Bom trabalho.";
+      enviarResultado();
+    }
+  } else {
+    document.getElementById("hint").textContent="Não é uma das palavras da lista. Tente de novo.";
+  }
+}
+
+const l1=document.getElementById("l1"), l2=document.getElementById("l2");
+LISTA.forEach(function(p){
+  const li=document.createElement("li"); li.id="w"+p[0]; li.textContent=p[1].toUpperCase();
+  (p[2]===1?l1:l2).appendChild(li);
+});
+
+document.getElementById("reset").addEventListener("click",()=>{
+  achadas.clear(); ini=null;
+  document.querySelectorAll(".cel").forEach(e=>e.classList.remove("found","sel"));
+  document.querySelectorAll("li").forEach(e=>e.classList.remove("ok"));
+  document.getElementById("conta").textContent="0";
+  document.getElementById("hint").textContent="Clique na primeira letra, depois na última.";
+  document.getElementById("envio").textContent="";
+  enviado=false;
+});
+
+/* ---- envio ao professor (Google Forms) ---- */
+const FORM = {
+  url: "https://docs.google.com/forms/d/e/1FAIpQLSd0cya9DeEyUh4d1lMecTy3W5P5zJR-uEUeYryzR0U8wyIyTw/formResponse",
+  nome: "entry.92939802",
+  turma: "entry.1767871945",
+  atividade: "entry.495326704",
+  resultado: "entry.664553886"
+};
+const ATIVIDADE = "Caca-palavras 03 - Grandezas Proporcionais e Congruencia";
+let enviado = false;
+
+function enviarResultado(){
+  const nome=(document.getElementById("nome").value||"").trim();
+  const turma=(document.getElementById("turma").value||"").trim();
+  const envio=document.getElementById("envio");
+  if(!nome || !turma){
+    envio.style.color="var(--mark)";
+    envio.textContent="Escreva seu nome e escolha sua turma lá em cima para enviar ao professor.";
+    (!nome?document.getElementById("nome"):document.getElementById("turma")).focus();
+    return;
+  }
+  if(enviado) return;
+  enviado=true;
+
+  let frame=document.getElementById("gfIframe");
+  if(!frame){
+    frame=document.createElement("iframe");
+    frame.id="gfIframe"; frame.name="gfIframe"; frame.style.display="none";
+    document.body.appendChild(frame);
+  }
+  const f=document.createElement("form");
+  f.action=FORM.url; f.method="POST"; f.target="gfIframe"; f.style.display="none";
+  const add=function(k,v){ const i=document.createElement("input"); i.type="hidden"; i.name=k; i.value=v; f.appendChild(i); };
+  add(FORM.nome,nome); add(FORM.turma,turma);
+  add(FORM.atividade,ATIVIDADE); add(FORM.resultado,"20 de 20 palavras");
+  document.body.appendChild(f);
+
+  envio.style.color="var(--muted)"; envio.textContent="Enviando...";
+  let respondeu=false;
+  frame.onload=function(){
+    if(respondeu) return; respondeu=true;
+    envio.style.color="var(--ok)";
+    envio.textContent="Resultado enviado ao professor \u2713  ("+nome+" \u2014 "+turma+")";
+    f.remove();
+  };
+  setTimeout(function(){
+    if(respondeu) return; respondeu=true; enviado=false;
+    const prefill=FORM.url.replace("/formResponse","/viewform")+"?usp=pp_url"
+      +"&"+FORM.nome+"="+encodeURIComponent(nome)
+      +"&"+FORM.turma+"="+encodeURIComponent(turma)
+      +"&"+FORM.atividade+"="+encodeURIComponent(ATIVIDADE)
+      +"&"+FORM.resultado+"="+encodeURIComponent("20 de 20 palavras");
+    envio.style.color="var(--mark)";
+    envio.innerHTML="O envio autom\u00e1tico n\u00e3o funcionou aqui. <a href=\""+prefill
+      +"\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--accent)\">Clique aqui para confirmar</a> "
+      +"(a p\u00e1gina abre j\u00e1 preenchida \u2014 s\u00f3 clicar em Enviar).";
+  },8000);
+
+  f.submit();
+}
+</script>
+
+</body>
+</html>

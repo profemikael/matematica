@@ -58,30 +58,29 @@
 
 <header>
   <h1>T8 — FÍSICA — APOSTILA 01</h1>
-  <p>Calorimetria e Dilatação Térmica &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+  <p>Temperatura, Calor e suas Escalas &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
 </header>
 
 <!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
 <section class="topo"><div class="wrap">
-  <h2>Fórmulas e dados</h2>
+  <h2>As três escalas de temperatura</h2>
   <div class="formulas">
-    <div class="card"><b>QUANTIDADE DE CALOR</b><span>Q = m · c · ΔT</span></div>
-    <div class="card"><b>VARIAÇÃO DE TEMPERATURA</b><span>ΔT = T final − T inicial</span></div>
-    <div class="card"><b>DILATAÇÃO</b><span>ΔL = L₀ · α · ΔT</span></div>
-    <div class="card"><b>ÁGUA</b><span>c = 1 cal/g·°C<br>1 L ≈ 1000 g</span></div>
+    <div class="card"><b>CELSIUS &#8594; KELVIN</b><span>K = &deg;C + 273</span></div>
+    <div class="card"><b>KELVIN &#8594; CELSIUS</b><span>&deg;C = K &minus; 273</span></div>
+    <div class="card"><b>CELSIUS &#8594; FAHRENHEIT</b><span>&deg;F = 1,8 &times; &deg;C + 32</span></div>
+    <div class="card"><b>FAHRENHEIT &#8594; CELSIUS</b><span>&deg;C = (&deg;F &minus; 32) &divide; 1,8</span></div>
   </div>
 
-  <p class="txt">O <b>calor específico (c)</b> diz quanta energia cada material precisa para esquentar. A água tem c alto (1 cal/g·°C): demora para ferver e para esfriar. Outros valores: alumínio 0,22 &nbsp;|&nbsp; cobre 0,093 &nbsp;|&nbsp; ferro 0,11 cal/g·°C. Atenção: a massa entra em <b>gramas</b> na fórmula.</p>
+  <p class="txt"><b>Temperatura</b> mede o grau de agitação das partículas; <b>calor</b> é a energia que passa do corpo mais quente para o mais frio. Atenção a um detalhe importante: quando se trata de <b>variação</b> de temperatura, o valor em graus Celsius e em kelvin é o <b>mesmo número</b>, porque as duas escalas têm divisões de mesmo tamanho. Só o ponto de partida é diferente.</p>
 
   <div class="exemplo">
-    <b>Exemplo resolvido —</b> Quanto calor é preciso para aquecer 1,8 litro de água de 22 °C até 87 °C?<br>
-    <b>1º)</b> Massa: 1,8 L × 1000 = <b>1800 g</b>.<br>
-    <b>2º)</b> Variação: ΔT = 87 − 22 = <b>65 °C</b>.<br>
-    <b>3º)</b> Calor: Q = 1800 × 1 × 65 = <b>117.000 cal</b>.
+    <b>Exemplo resolvido &mdash;</b> Uma pessoa está com 39 &deg;C de febre. Quanto marcariam os outros termômetros?<br>
+    <b>Em kelvin:</b> 39 + 273 = <b>312 K</b>.<br>
+    <b>Em Fahrenheit:</b> 1,8 &times; 39 = 70,2 &nbsp;&#8594;&nbsp; 70,2 + 32 = <b>102,2 &deg;F</b>.
   </div>
 
   <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
-    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais — os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais — os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos. Para valores negativos, digite com o sinal de menos (exemplo: <b>-40</b>).
   </div>
 </div></section>
 
@@ -95,47 +94,46 @@
 <script>
 const questoes = [
   {
-    enunciado: "Uma chaleira contém <b>1,6 litro</b> de água a <b>23 °C</b> e será aquecida até <b>88 °C</b>. (c da água = 1 cal/g·°C)",
+    enunciado: "Uma criança está com <b>38,5 &deg;C</b> de febre. Converta essa temperatura para as outras duas escalas.",
     campos: [
-      {label:"Massa da água em gramas", resp:1600, tol:0.5},
-      {label:"Variação de temperatura ΔT (°C)", resp:65, tol:0.05},
-      {label:"Calor necessário (cal)", resp:104000, tol:0.5}
+      {label:"Temperatura em kelvin (K)", resp:311.5, tol:0.05},
+      {label:"Temperatura em Fahrenheit (°F)", resp:101.3, tol:0.05}
     ],
-    ajuda: "m = 1,6 × 1000 = 1600 g.  ΔT = 88 − 23 = 65 °C.  Q = 1600 × 1 × 65 = 104.000 cal."
+    ajuda: "Em kelvin: 38,5 + 273 = 311,5 K. Em Fahrenheit: 1,8 × 38,5 = 69,3; depois 69,3 + 32 = 101,3 °F."
   },
   {
-    enunciado: "Uma barra de <b>cobre de 620 g</b> é aquecida de <b>25 °C</b> até <b>145 °C</b>. (c do cobre = 0,093 cal/g·°C)",
+    enunciado: "Um laboratório registra a temperatura de <b>295 K</b>.",
     campos: [
-      {label:"Variação de temperatura ΔT (°C)", resp:120, tol:0.05},
-      {label:"Calor absorvido (cal)", resp:6919.2, tol:0.6}
+      {label:"Temperatura em graus Celsius (°C)", resp:22, tol:0.05},
+      {label:"Temperatura em Fahrenheit (°F)", resp:71.6, tol:0.05}
     ],
-    ajuda: "ΔT = 145 − 25 = 120 °C.  Q = 620 × 0,093 × 120 = 6.919,2 cal."
+    ajuda: "Em Celsius: 295 − 273 = 22 °C. Em Fahrenheit: 1,8 × 22 = 39,6; depois 39,6 + 32 = 71,6 °F."
   },
   {
-    enunciado: "Uma peça de <b>alumínio de 750 g</b> é aquecida de <b>24 °C</b> até <b>156 °C</b>. (c do alumínio = 0,22 cal/g·°C)",
+    enunciado: "Num noticiário dos Estados Unidos, a previsão do tempo marca <b>86 &deg;F</b>.",
     campos: [
-      {label:"Variação de temperatura ΔT (°C)", resp:132, tol:0.05},
-      {label:"Calor absorvido (cal)", resp:21780, tol:0.5}
+      {label:"Temperatura em graus Celsius (°C)", resp:30, tol:0.05},
+      {label:"Temperatura em kelvin (K)", resp:303, tol:0.05}
     ],
-    ajuda: "ΔT = 156 − 24 = 132 °C.  Q = 750 × 0,22 × 132 = 21.780 cal."
+    ajuda: "Em Celsius: (86 − 32) ÷ 1,8 = 54 ÷ 1,8 = 30 °C. Em kelvin: 30 + 273 = 303 K."
   },
   {
-    enunciado: "<b>DILATAÇÃO —</b> Um cabo de aço de <b>32,5 m</b> aquece de <b>14 °C</b> para <b>46 °C</b>. (α do aço = 0,000011 /°C)",
+    enunciado: "Um forno é ligado a <b>22 &deg;C</b> e aquece até <b>180 &deg;C</b>.",
     campos: [
-      {label:"Variação de temperatura ΔT (°C)", resp:32, tol:0.05},
-      {label:"Dilatação ΔL em metros", resp:0.01144, tol:0.00006},
-      {label:"A mesma dilatação em centímetros", resp:1.144, tol:0.006}
+      {label:"Variação de temperatura em °C", resp:158, tol:0.05},
+      {label:"A mesma variação em kelvin", resp:158, tol:0.05},
+      {label:"Temperatura final em kelvin", resp:453, tol:0.05}
     ],
-    ajuda: "ΔT = 46 − 14 = 32 °C.  ΔL = 32,5 × 0,000011 × 32 = 0,01144 m, que equivale a 1,144 cm (multiplique por 100)."
+    ajuda: "Variação: 180 − 22 = 158 °C. Em kelvin a VARIAÇÃO é o mesmo número, 158 K, pois as divisões das duas escalas têm o mesmo tamanho. Já a temperatura final em kelvin é 180 + 273 = 453 K."
   },
   {
-    enunciado: "<b>DESAFIO —</b> Um chuveiro elétrico aquece <b>2,8 litros</b> de água por minuto, elevando a temperatura de <b>19 °C</b> para <b>41 °C</b>. Um banho dura <b>7 minutos</b>.",
+    enunciado: "<b>DESAFIO &mdash;</b> Existe uma única temperatura em que o termômetro Celsius e o Fahrenheit marcam <b>exatamente o mesmo número</b>. Descubra qual é. <i>(Dica: monte a equação 1,8x + 32 = x.)</i>",
     campos: [
-      {label:"Massa aquecida por minuto (g)", resp:2800, tol:0.5},
-      {label:"Calor por minuto (cal)", resp:61600, tol:0.5},
-      {label:"Calor no banho inteiro (cal)", resp:431200, tol:0.5}
+      {label:"Esse valor em graus Celsius", resp:-40, tol:0.05},
+      {label:"O mesmo valor em Fahrenheit", resp:-40, tol:0.05},
+      {label:"Esse valor em kelvin", resp:233, tol:0.05}
     ],
-    ajuda: "m = 2,8 × 1000 = 2800 g.  ΔT = 41 − 19 = 22 °C.  Por minuto: Q = 2800 × 1 × 22 = 61.600 cal.  Em 7 min: 61.600 × 7 = 431.200 cal."
+    ajuda: "Resolvendo 1,8x + 32 = x: 1,8x − x = −32 → 0,8x = −32 → x = −40. Conferindo: 1,8 × (−40) + 32 = −72 + 32 = −40 °F. Em kelvin: −40 + 273 = 233 K."
   }
 ];
 

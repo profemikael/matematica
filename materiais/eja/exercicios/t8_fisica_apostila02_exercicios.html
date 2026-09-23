@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>T9 FÍSICA — Apostila 01 — Exercícios Interativos</title>
+<title>T8 FÍSICA — Apostila 02 — Exercícios Interativos</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -57,26 +57,27 @@
 <body>
 
 <header>
-  <h1>T9 — FÍSICA — APOSTILA 01</h1>
-  <p>Eletricidade: Carga, Corrente e Tensão &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+  <h1>T8 — FÍSICA — APOSTILA 02</h1>
+  <p>Calorimetria e Dilatação Térmica &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
 </header>
 
 <!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
 <section class="topo"><div class="wrap">
-  <h2>Fórmulas da eletricidade</h2>
+  <h2>Fórmulas e dados</h2>
   <div class="formulas">
-    <div class="card"><b>CORRENTE</b><span>i = Q &divide; t</span></div>
-    <div class="card"><b>LEI DE OHM</b><span>U = R &middot; i</span></div>
-    <div class="card"><b>ACHAR A CORRENTE</b><span>i = U &divide; R</span></div>
-    <div class="card"><b>ACHAR A RESISTÊNCIA</b><span>R = U &divide; i</span></div>
+    <div class="card"><b>QUANTIDADE DE CALOR</b><span>Q = m · c · ΔT</span></div>
+    <div class="card"><b>VARIAÇÃO DE TEMPERATURA</b><span>ΔT = T final − T inicial</span></div>
+    <div class="card"><b>DILATAÇÃO</b><span>ΔL = L₀ · α · ΔT</span></div>
+    <div class="card"><b>ÁGUA</b><span>c = 1 cal/g·°C<br>1 L ≈ 1000 g</span></div>
   </div>
 
-  <p class="txt">A <b>corrente (i)</b> é o fluxo de elétrons pelo fio, medida em ampères (A), e depende da carga Q em coulombs que passa num certo tempo t em segundos. A <b>tensão (U)</b>, medida em volts, é a força que empurra esses elétrons: é o 127 V ou 220 V da tomada. Já a <b>resistência (R)</b>, em ohms, é a dificuldade que o aparelho oferece à passagem da corrente. Atenção: o tempo sempre entra em <b>segundos</b> na fórmula da corrente.</p>
+  <p class="txt">O <b>calor específico (c)</b> diz quanta energia cada material precisa para esquentar. A água tem c alto (1 cal/g·°C): demora para ferver e para esfriar. Outros valores: alumínio 0,22 &nbsp;|&nbsp; cobre 0,093 &nbsp;|&nbsp; ferro 0,11 cal/g·°C. Atenção: a massa entra em <b>gramas</b> na fórmula.</p>
 
   <div class="exemplo">
-    <b>Exemplo resolvido &mdash;</b> Um chuveiro ligado em 220 V tem resistência de 22 &#8486;. Qual a corrente que ele puxa?<br>
-    U = R &middot; i &nbsp;&#8594;&nbsp; 220 = 22 &middot; i &nbsp;&#8594;&nbsp; i = 220 &divide; 22 = <b>10 A</b>.<br>
-    Se o disjuntor desse circuito fosse de 8 A, ele desarmaria, pois 10 A ultrapassa o limite.
+    <b>Exemplo resolvido —</b> Quanto calor é preciso para aquecer 1,8 litro de água de 22 °C até 87 °C?<br>
+    <b>1º)</b> Massa: 1,8 L × 1000 = <b>1800 g</b>.<br>
+    <b>2º)</b> Variação: ΔT = 87 − 22 = <b>65 °C</b>.<br>
+    <b>3º)</b> Calor: Q = 1800 × 1 × 65 = <b>117.000 cal</b>.
   </div>
 
   <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
@@ -94,46 +95,47 @@
 <script>
 const questoes = [
   {
-    enunciado: "Por um fio passam <b>450 coulombs</b> de carga durante <b>5 minutos</b>.",
+    enunciado: "Uma chaleira contém <b>1,6 litro</b> de água a <b>23 °C</b> e será aquecida até <b>88 °C</b>. (c da água = 1 cal/g·°C)",
     campos: [
-      {label:"Tempo em segundos", resp:300, tol:0.5},
-      {label:"Corrente elétrica em ampères", resp:1.5, tol:0.05}
+      {label:"Massa da água em gramas", resp:1600, tol:0.5},
+      {label:"Variação de temperatura ΔT (°C)", resp:65, tol:0.05},
+      {label:"Calor necessário (cal)", resp:104000, tol:0.5}
     ],
-    ajuda: "5 min × 60 = 300 s. Depois: i = Q ÷ t = 450 ÷ 300 = 1,5 A."
+    ajuda: "m = 1,6 × 1000 = 1600 g.  ΔT = 88 − 23 = 65 °C.  Q = 1600 × 1 × 65 = 104.000 cal."
   },
   {
-    enunciado: "Um chuveiro ligado em <b>220 V</b> tem resistência de <b>16 &#8486;</b>. O disjuntor desse circuito é de <b>15 A</b>.",
+    enunciado: "Uma barra de <b>cobre de 620 g</b> é aquecida de <b>25 °C</b> até <b>145 °C</b>. (c do cobre = 0,093 cal/g·°C)",
     campos: [
-      {label:"Corrente do chuveiro (A)", resp:13.75, tol:0.05},
-      {label:"Quantos ampères faltam para atingir os 15 A do disjuntor", resp:1.25, tol:0.05}
+      {label:"Variação de temperatura ΔT (°C)", resp:120, tol:0.05},
+      {label:"Calor absorvido (cal)", resp:6919.2, tol:0.6}
     ],
-    ajuda: "i = 220 ÷ 16 = 13,75 A. Para o limite do disjuntor: 15 − 13,75 = 1,25 A de folga. O circuito está no limite, e qualquer aparelho ligado junto o derrubaria."
+    ajuda: "ΔT = 145 − 25 = 120 °C.  Q = 620 × 0,093 × 120 = 6.919,2 cal."
   },
   {
-    enunciado: "Um ferro de passar ligado em <b>127 V</b> é atravessado por uma corrente de <b>6,35 A</b>.",
+    enunciado: "Uma peça de <b>alumínio de 750 g</b> é aquecida de <b>24 °C</b> até <b>156 °C</b>. (c do alumínio = 0,22 cal/g·°C)",
     campos: [
-      {label:"Resistência do ferro (Ω)", resp:20, tol:0.05},
-      {label:"Corrente se o mesmo ferro fosse ligado em 220 V (A)", resp:11, tol:0.05}
+      {label:"Variação de temperatura ΔT (°C)", resp:132, tol:0.05},
+      {label:"Calor absorvido (cal)", resp:21780, tol:0.5}
     ],
-    ajuda: "R = U ÷ i = 127 ÷ 6,35 = 20 Ω. Em 220 V, com a mesma resistência: i = 220 ÷ 20 = 11 A. Na tensão maior, a corrente aumenta e o aparelho pode queimar."
+    ajuda: "ΔT = 156 − 24 = 132 °C.  Q = 750 × 0,22 × 132 = 21.780 cal."
   },
   {
-    enunciado: "Duas lâmpadas são ligadas em <b>127 V</b>. A primeira tem resistência de <b>254 &#8486;</b> e a segunda, de <b>127 &#8486;</b>.",
+    enunciado: "<b>DILATAÇÃO —</b> Um cabo de aço de <b>32,5 m</b> aquece de <b>14 °C</b> para <b>46 °C</b>. (α do aço = 0,000011 /°C)",
     campos: [
-      {label:"Corrente da primeira lâmpada (A)", resp:0.5, tol:0.03},
-      {label:"Corrente da segunda lâmpada (A)", resp:1, tol:0.03},
-      {label:"Quantas vezes a corrente da segunda é maior", resp:2, tol:0.05}
+      {label:"Variação de temperatura ΔT (°C)", resp:32, tol:0.05},
+      {label:"Dilatação ΔL em metros", resp:0.01144, tol:0.00006},
+      {label:"A mesma dilatação em centímetros", resp:1.144, tol:0.006}
     ],
-    ajuda: "Primeira: i = 127 ÷ 254 = 0,5 A. Segunda: i = 127 ÷ 127 = 1 A. A segunda puxa o dobro: 1 ÷ 0,5 = 2 vezes. Quanto MENOR a resistência, MAIOR a corrente."
+    ajuda: "ΔT = 46 − 14 = 32 °C.  ΔL = 32,5 × 0,000011 × 32 = 0,01144 m, que equivale a 1,144 cm (multiplique por 100)."
   },
   {
-    enunciado: "<b>DESAFIO &mdash;</b> Uma torneira elétrica ligada em <b>127 V</b> puxa uma corrente de <b>25 A</b> e fica ligada por <b>2 minutos</b>.",
+    enunciado: "<b>DESAFIO —</b> Um chuveiro elétrico aquece <b>2,8 litros</b> de água por minuto, elevando a temperatura de <b>19 °C</b> para <b>41 °C</b>. Um banho dura <b>7 minutos</b>.",
     campos: [
-      {label:"Resistência da torneira (Ω)", resp:5.08, tol:0.05},
-      {label:"Tempo de uso em segundos", resp:120, tol:0.5},
-      {label:"Carga total que passou, em coulombs", resp:3000, tol:1}
+      {label:"Massa aquecida por minuto (g)", resp:2800, tol:0.5},
+      {label:"Calor por minuto (cal)", resp:61600, tol:0.5},
+      {label:"Calor no banho inteiro (cal)", resp:431200, tol:0.5}
     ],
-    ajuda: "R = 127 ÷ 25 = 5,08 Ω. Tempo: 2 × 60 = 120 s. Carga: da fórmula i = Q ÷ t, temos Q = i × t = 25 × 120 = 3.000 C."
+    ajuda: "m = 2,8 × 1000 = 2800 g.  ΔT = 41 − 19 = 22 °C.  Por minuto: Q = 2800 × 1 × 22 = 61.600 cal.  Em 7 min: 61.600 × 7 = 431.200 cal."
   }
 ];
 

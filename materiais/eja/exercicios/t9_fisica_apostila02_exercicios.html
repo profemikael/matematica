@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>T9 FÍSICA — Apostila 01 — Exercícios Interativos</title>
+<title>T9 FÍSICA — Apostila 02 — Exercícios Interativos</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -57,26 +57,28 @@
 <body>
 
 <header>
-  <h1>T9 — FÍSICA — APOSTILA 01</h1>
-  <p>Eletricidade: Carga, Corrente e Tensão &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+  <h1>T9 — FÍSICA — APOSTILA 02</h1>
+  <p>Potência Elétrica e Consumo de Energia &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
 </header>
 
 <!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
 <section class="topo"><div class="wrap">
-  <h2>Fórmulas da eletricidade</h2>
+  <h2>Fórmulas e dados</h2>
   <div class="formulas">
-    <div class="card"><b>CORRENTE</b><span>i = Q &divide; t</span></div>
-    <div class="card"><b>LEI DE OHM</b><span>U = R &middot; i</span></div>
-    <div class="card"><b>ACHAR A CORRENTE</b><span>i = U &divide; R</span></div>
-    <div class="card"><b>ACHAR A RESISTÊNCIA</b><span>R = U &divide; i</span></div>
+    <div class="card"><b>POTÊNCIA</b><span>P = U · i</span></div>
+    <div class="card"><b>WATTS → QUILOWATTS</b><span>kW = W ÷ 1.000</span></div>
+    <div class="card"><b>CONSUMO</b><span>kWh = kW × horas</span></div>
+    <div class="card"><b>CUSTO</b><span>R$ = kWh × tarifa</span></div>
   </div>
 
-  <p class="txt">A <b>corrente (i)</b> é o fluxo de elétrons pelo fio, medida em ampères (A), e depende da carga Q em coulombs que passa num certo tempo t em segundos. A <b>tensão (U)</b>, medida em volts, é a força que empurra esses elétrons: é o 127 V ou 220 V da tomada. Já a <b>resistência (R)</b>, em ohms, é a dificuldade que o aparelho oferece à passagem da corrente. Atenção: o tempo sempre entra em <b>segundos</b> na fórmula da corrente.</p>
+  <p class="txt">A <b>potência (W)</b> vem escrita na etiqueta do aparelho e indica quanta energia ele gasta a cada segundo. Mas a conta de luz cobra por <b>kWh</b>: a energia de um aparelho de 1.000 W ligado por 1 hora. Atenção: sempre converta os watts em quilowatts <b>antes</b> de multiplicar pelas horas, e os minutos em horas (divida por 60).</p>
 
   <div class="exemplo">
-    <b>Exemplo resolvido &mdash;</b> Um chuveiro ligado em 220 V tem resistência de 22 &#8486;. Qual a corrente que ele puxa?<br>
-    U = R &middot; i &nbsp;&#8594;&nbsp; 220 = 22 &middot; i &nbsp;&#8594;&nbsp; i = 220 &divide; 22 = <b>10 A</b>.<br>
-    Se o disjuntor desse circuito fosse de 8 A, ele desarmaria, pois 10 A ultrapassa o limite.
+    <b>Exemplo resolvido —</b> Um chuveiro de 5.500 W é usado 25 minutos por dia. Com a tarifa a R$ 0,89/kWh, quanto custa em 30 dias?<br>
+    <b>1º)</b> Potência: 5.500 ÷ 1.000 = <b>5,5 kW</b>.<br>
+    <b>2º)</b> Tempo: 25 min × 30 dias = 750 min ÷ 60 = <b>12,5 h</b>.<br>
+    <b>3º)</b> Consumo: 5,5 × 12,5 = <b>68,75 kWh</b>.<br>
+    <b>4º)</b> Custo: 68,75 × 0,89 = <b>R$ 61,19</b>.
   </div>
 
   <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
@@ -94,46 +96,47 @@
 <script>
 const questoes = [
   {
-    enunciado: "Por um fio passam <b>450 coulombs</b> de carga durante <b>5 minutos</b>.",
+    enunciado: "Um <b>ferro de passar de 1.350 W</b> pode ser ligado em <b>127 V</b> ou, em outra casa, em <b>220 V</b>.",
     campos: [
-      {label:"Tempo em segundos", resp:300, tol:0.5},
-      {label:"Corrente elétrica em ampères", resp:1.5, tol:0.05}
+      {label:"Corrente em 127 V (ampères)", resp:10.63, tol:0.09},
+      {label:"Corrente em 220 V (ampères)", resp:6.14, tol:0.07}
     ],
-    ajuda: "5 min × 60 = 300 s. Depois: i = Q ÷ t = 450 ÷ 300 = 1,5 A."
+    ajuda: "Em 127 V: i = 1.350 ÷ 127 ≈ 10,6 A.  Em 220 V: i = 1.350 ÷ 220 ≈ 6,1 A. Na tensão maior, a corrente é menor para a mesma potência."
   },
   {
-    enunciado: "Um chuveiro ligado em <b>220 V</b> tem resistência de <b>16 &#8486;</b>. O disjuntor desse circuito é de <b>15 A</b>.",
+    enunciado: "Uma <b>TV de 120 W</b> fica ligada <b>6,5 horas por dia</b>. Considere um mês de <b>30 dias</b>.",
     campos: [
-      {label:"Corrente do chuveiro (A)", resp:13.75, tol:0.05},
-      {label:"Quantos ampères faltam para atingir os 15 A do disjuntor", resp:1.25, tol:0.05}
+      {label:"Potência em kW", resp:0.12, tol:0.005},
+      {label:"Horas de uso no mês", resp:195, tol:0.5},
+      {label:"Consumo mensal em kWh", resp:23.4, tol:0.06}
     ],
-    ajuda: "i = 220 ÷ 16 = 13,75 A. Para o limite do disjuntor: 15 − 13,75 = 1,25 A de folga. O circuito está no limite, e qualquer aparelho ligado junto o derrubaria."
+    ajuda: "0,12 kW × 6,5 h × 30 dias = 23,4 kWh no mês."
   },
   {
-    enunciado: "Um ferro de passar ligado em <b>127 V</b> é atravessado por uma corrente de <b>6,35 A</b>.",
+    enunciado: "Uma <b>geladeira de 350 W</b> tem o motor ligado cerca de <b>8 horas por dia</b>. Tarifa: <b>R$ 0,92 por kWh</b>.",
     campos: [
-      {label:"Resistência do ferro (Ω)", resp:20, tol:0.05},
-      {label:"Corrente se o mesmo ferro fosse ligado em 220 V (A)", resp:11, tol:0.05}
+      {label:"Consumo mensal em kWh (30 dias)", resp:84, tol:0.06},
+      {label:"Custo mensal em reais", resp:77.28, tol:0.06}
     ],
-    ajuda: "R = U ÷ i = 127 ÷ 6,35 = 20 Ω. Em 220 V, com a mesma resistência: i = 220 ÷ 20 = 11 A. Na tensão maior, a corrente aumenta e o aparelho pode queimar."
+    ajuda: "0,35 kW × 8 h × 30 dias = 84 kWh.  Custo: 84 × 0,92 = R$ 77,28 por mês."
   },
   {
-    enunciado: "Duas lâmpadas são ligadas em <b>127 V</b>. A primeira tem resistência de <b>254 &#8486;</b> e a segunda, de <b>127 &#8486;</b>.",
+    enunciado: "<b>DESAFIO —</b> Um <b>chuveiro de 4.800 W</b> é usado <b>18 minutos por dia</b>, com tarifa de <b>R$ 0,92/kWh</b>.",
     campos: [
-      {label:"Corrente da primeira lâmpada (A)", resp:0.5, tol:0.03},
-      {label:"Corrente da segunda lâmpada (A)", resp:1, tol:0.03},
-      {label:"Quantas vezes a corrente da segunda é maior", resp:2, tol:0.05}
+      {label:"Horas de uso em 30 dias", resp:9, tol:0.05},
+      {label:"Consumo mensal em kWh", resp:43.2, tol:0.06},
+      {label:"Custo mensal em reais", resp:39.74, tol:0.06}
     ],
-    ajuda: "Primeira: i = 127 ÷ 254 = 0,5 A. Segunda: i = 127 ÷ 127 = 1 A. A segunda puxa o dobro: 1 ÷ 0,5 = 2 vezes. Quanto MENOR a resistência, MAIOR a corrente."
+    ajuda: "18 min × 30 = 540 min ÷ 60 = 9 h.  Consumo: 4,8 kW × 9 h = 43,2 kWh.  Custo: 43,2 × 0,92 ≈ R$ 39,74."
   },
   {
-    enunciado: "<b>DESAFIO &mdash;</b> Uma torneira elétrica ligada em <b>127 V</b> puxa uma corrente de <b>25 A</b> e fica ligada por <b>2 minutos</b>.",
+    enunciado: "<b>ECONOMIA —</b> Uma casa troca <b>6 lâmpadas incandescentes de 60 W</b> por <b>lâmpadas de LED de 9 W</b>. Cada lâmpada fica acesa <b>5 horas por dia</b>, e a tarifa é <b>R$ 0,92/kWh</b>. Considere 30 dias.",
     campos: [
-      {label:"Resistência da torneira (Ω)", resp:5.08, tol:0.05},
-      {label:"Tempo de uso em segundos", resp:120, tol:0.5},
-      {label:"Carga total que passou, em coulombs", resp:3000, tol:1}
+      {label:"Consumo mensal das 6 incandescentes (kWh)", resp:54, tol:0.06},
+      {label:"Consumo mensal das 6 de LED (kWh)", resp:8.1, tol:0.06},
+      {label:"Economia por mês em reais", resp:42.23, tol:0.09}
     ],
-    ajuda: "R = 127 ÷ 25 = 5,08 Ω. Tempo: 2 × 60 = 120 s. Carga: da fórmula i = Q ÷ t, temos Q = i × t = 25 × 120 = 3.000 C."
+    ajuda: "Incandescentes: 6 × 0,06 kW × 5 h × 30 = 54 kWh.  LED: 6 × 0,009 kW × 5 h × 30 = 8,1 kWh.  Economia: (54 − 8,1) × 0,92 = 45,9 × 0,92 ≈ R$ 42,23 por mês."
   }
 ];
 

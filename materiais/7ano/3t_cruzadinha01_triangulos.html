@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cruzadinha Numérica — Triângulos — 7º Ano</title>
+<style>
+  :root {
+    --azul-esc: #1E3A8A; --azul: #2563EB; --azul-claro: #DBEAFE; --azul-fundo: #EFF6FF;
+    --tinta: #1F2937; --cinza: #6B7280; --fundo: #F3F4F6;
+    --atual: #93C5FD; --certo: #BBF7D0; --errado: #FECACA;
+    --tam: min(46px, calc((100vw - 64px) / 10));
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: var(--tinta); margin: 0; background: var(--fundo); }
+  .folha { max-width: 1180px; margin: 0 auto; background: #fff; min-height: 100vh; }
+  header.capa { background: linear-gradient(135deg,#1E3A8A 0%,#2563EB 60%,#3B82F6 100%); color: #fff; padding: 22px 30px 18px; }
+  header.capa .linha { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+  header.capa h1 { margin: 6px 0 4px; font-size: 27px; line-height: 1.2; }
+  header.capa h2 { margin: 0; font-size: 14.5px; font-weight: normal; opacity: .92; }
+  .tags { margin-top: 12px; }
+  .tag { display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.45);
+         color: #fff; font-size: 11.5px; padding: 4px 10px; border-radius: 999px; margin: 0 6px 6px 0; }
+  .conteudo { padding: 0 30px 30px; }
+  .como { background: var(--azul-fundo); border-left: 5px solid var(--azul-esc); padding: 12px 18px; margin: 18px 0; border-radius: 0 8px 8px 0; }
+  .como h3 { margin: 0 0 6px; font-size: 14px; color: var(--azul-esc); text-transform: uppercase; letter-spacing: .05em; }
+  .como ul { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.55; }
+  .jogo { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+  .lado-grade { position: sticky; top: 12px; }
+  .pista-atual { background: var(--azul-esc); color: #fff; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
+                 font-size: 14px; line-height: 1.45; min-height: 64px; width: calc(var(--tam) * 10 + 20px); max-width: 100%; }
+  .pista-atual b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; opacity: .8; margin-bottom: 2px; }
+  .tabuleiro { display: grid; grid-template-columns: calc(var(--tam) * .7) repeat(9, var(--tam));
+               grid-template-rows: calc(var(--tam) * .6) repeat(9, var(--tam)); }
+  .rot { display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; color: var(--azul-esc); }
+  .rot.ativo { color: #fff; background: var(--azul); border-radius: 5px; margin: 2px; }
+  .casa { border: 1px solid #94A3B8; margin: -1px 0 0 -1px; background: #fff; position: relative; }
+  .casa.bloco { background: #1F2937; border-color: #1F2937; }
+  .casa input { width: 100%; height: 100%; border: none; background: transparent; text-align: center;
+                font-size: calc(var(--tam) * .5); font-weight: bold; color: var(--tinta); caret-color: transparent;
+                cursor: pointer; outline: none; padding: 0; font-family: inherit; }
+  .casa.palavra { background: var(--azul-claro); }
+  .casa.previa { background: #FEF3C7; }
+  .casa.atual { background: var(--atual); }
+  .casa.certo { background: var(--certo); }
+  .casa.errado { background: var(--errado); }
+  .botoes { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  button { font: inherit; font-weight: bold; font-size: 14px; padding: 9px 16px; border-radius: 8px;
+           border: 2px solid var(--azul); background: var(--azul); color: #fff; cursor: pointer; }
+  button.sec { background: #fff; color: var(--azul); }
+  .progresso { font-size: 13px; color: var(--cinza); }
+  #mensagem { margin-top: 10px; font-weight: bold; font-size: 15px; min-height: 1.4em; color: var(--azul-esc); max-width: 480px; }
+  #mensagem.fim { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; border-radius: 8px; padding: 10px 14px; }
+  .pistas { flex: 1; min-width: 300px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  .pistas h3 { font-size: 15px; color: var(--azul-esc); margin: 0 0 6px; padding-bottom: 5px; border-bottom: 2px solid var(--azul-claro); }
+  .pistas ol { list-style: none; padding: 0; margin: 0; }
+  .pistas li { font-size: 13px; line-height: 1.45; padding: 7px 9px; border-radius: 6px; cursor: pointer; margin-bottom: 3px; border: 1px solid transparent; }
+  .pistas li:hover { background: #FEF3C7; }
+  .pistas li.ativa { background: var(--azul-claro); border-color: #93C5FD; }
+  .pistas li.feita { color: var(--cinza); }
+  .pistas li.feita .qual::after { content: " ✔"; color: #16A34A; }
+  .pistas .qual { display: block; font-weight: bold; color: var(--azul-esc); font-size: 12.5px; }
+  .pistas .qual span { font-weight: normal; color: var(--cinza); }
+  .assin { text-align: right; font-size: 12.5px; color: var(--cinza); margin: 20px 30px 0; padding-bottom: 20px; }
+  @media (max-width: 900px) { .pistas { grid-template-columns: 1fr; } .lado-grade { position: static; } }
+</style>
+</head>
+<body>
+<div class="folha">
+
+<header class="capa">
+  <div class="linha">Matemática · 7º Ano · 3º Trimestre · Aulas 3–4</div>
+  <h1>Cruzadinha Numérica — Triângulos</h1>
+  <h2>28 pistas · cada resposta é um número · as respostas se cruzam e conferem umas às outras</h2>
+  <div class="tags">
+    <span class="tag">RCC / BNCC · EF07MA24</span>
+    <span class="tag">Geometria</span>
+    <span class="tag">Prof. Mikael</span>
+  </div>
+</header>
+
+<div class="conteudo">
+
+<div class="como">
+  <h3>Como jogar</h3>
+  <ul>
+    <li>Cada resposta é um <b>número</b>. Escreva <b>um algarismo em cada casa</b>: nas <b>linhas</b>, da esquerda para a direita; nas <b>colunas</b>, de cima para baixo.</li>
+    <li>As linhas são numeradas (<b>1 a 9</b>) e as colunas têm letras (<b>A a I</b>). Quando uma linha tem duas respostas separadas por casa preta, a <b>1ª parte</b> é a da esquerda (ou de cima) e a <b>2ª parte</b> é a outra.</li>
+    <li>Clique numa pista ou numa casa. Clique de novo na mesma casa para trocar entre <b>linha</b> e <b>coluna</b>. As setas do teclado também funcionam.</li>
+    <li>Toda casa faz parte de <b>duas</b> respostas. Se um número não encaixa no outro, alguma conta está errada!</li>
+    <li>Resolva as contas no caderno. Seu progresso fica salvo neste computador.</li>
+  </ul>
+</div>
+
+<div class="jogo">
+  <div class="lado-grade">
+    <div class="pista-atual" id="pista-atual"></div>
+    <div class="tabuleiro" id="tabuleiro"></div>
+    <div class="botoes">
+      <button id="verificar">Verificar</button>
+      <button class="sec" id="limpar">Limpar tudo</button>
+      <span class="progresso" id="progresso"></span>
+    </div>
+    <div id="mensagem"></div>
+  </div>
+  <div class="pistas">
+    <div><h3>Linhas (→)</h3><ol id="pistas-h"></ol></div>
+    <div><h3>Colunas (↓)</h3><ol id="pistas-v"></ol></div>
+  </div>
+</div>
+
+</div>
+<div class="assin">Prof. Mikael</div>
+</div>
+
+<script>
+const DADOS = {"g": ["#####40##", "####050##", "###52#90#", "##28###98", "006###032", "47###77##", "#20#15###", "##012####", "##44#####"], "p": [{"d": "h", "r": 0, "c": 5, "tam": 2, "rot": "Linha 1", "txt": "Num triângulo retângulo, um dos ângulos agudos mede 59°. Quanto mede o outro ângulo agudo?"}, {"d": "h", "r": 1, "c": 4, "tam": 3, "rot": "Linha 2", "txt": "Os dois ângulos internos não adjacentes a um ângulo externo medem 66° e 95°. Quanto mede esse ângulo externo?"}, {"d": "h", "r": 2, "c": 3, "tam": 2, "rot": "Linha 3, 1ª parte", "txt": "Dois lados de um triângulo medem 39 cm e 29 cm. Qual é o MAIOR valor inteiro, em cm, que o terceiro lado pode ter?"}, {"d": "h", "r": 2, "c": 6, "tam": 2, "rot": "Linha 3, 2ª parte", "txt": "O ângulo externo de um vértice de um triângulo mede 99°. Quanto mede o ângulo interno desse mesmo vértice?"}, {"d": "h", "r": 3, "c": 2, "tam": 2, "rot": "Linha 4, 1ª parte", "txt": "Dois ângulos internos de um triângulo medem 46° e 59°. Quanto mede o terceiro ângulo?"}, {"d": "h", "r": 3, "c": 7, "tam": 2, "rot": "Linha 4, 2ª parte", "txt": "Um triângulo isósceles tem o ângulo do vértice medindo 10°. Quanto mede cada ângulo da base?"}, {"d": "h", "r": 4, "c": 0, "tam": 3, "rot": "Linha 5, 1ª parte", "txt": "Num vértice de um triângulo, o ângulo interno mede 61°. Quanto mede o ângulo externo desse vértice?"}, {"d": "h", "r": 4, "c": 6, "tam": 3, "rot": "Linha 5, 2ª parte", "txt": "O ângulo externo de um vértice de um triângulo mede 73°. Quanto mede o ângulo interno desse mesmo vértice?"}, {"d": "h", "r": 5, "c": 0, "tam": 2, "rot": "Linha 6, 1ª parte", "txt": "Dois lados de um triângulo medem 6 cm e 37 cm. Qual é o MENOR valor inteiro, em cm, que o terceiro lado pode ter?"}, {"d": "h", "r": 5, "c": 5, "tam": 2, "rot": "Linha 6, 2ª parte", "txt": "Dois ângulos internos de um triângulo medem (3x)° e (x + 20)°. O ângulo externo do terceiro vértice mede 108°. Quanto vale x?"}, {"d": "h", "r": 6, "c": 1, "tam": 2, "rot": "Linha 7, 1ª parte", "txt": "Os ângulos internos de um triângulo medem x°, (x + 5)° e (x + 19)°. Quanto mede o MAIOR desses ângulos?"}, {"d": "h", "r": 6, "c": 4, "tam": 2, "rot": "Linha 7, 2ª parte", "txt": "Os ângulos internos de um triângulo medem x°, 2x° e 42°. Quanto vale x?"}, {"d": "h", "r": 7, "c": 2, "tam": 3, "rot": "Linha 8", "txt": "Dois ângulos internos de um triângulo medem 14° e 19°. Quanto mede o terceiro ângulo?"}, {"d": "h", "r": 8, "c": 2, "tam": 2, "rot": "Linha 9", "txt": "Num triângulo isósceles, cada ângulo da base mede (2x + 10)° e o ângulo do vértice mede 28°. Quanto vale x?"}, {"d": "v", "r": 4, "c": 0, "tam": 2, "rot": "Coluna A", "txt": "Num triângulo retângulo, um dos ângulos agudos mede 77°. Quanto mede o outro ângulo agudo?"}, {"d": "v", "r": 4, "c": 1, "tam": 3, "rot": "Coluna B", "txt": "Os dois ângulos internos não adjacentes a um ângulo externo medem 21° e 106°. Quanto mede esse ângulo externo?"}, {"d": "v", "r": 3, "c": 2, "tam": 2, "rot": "Coluna C, 1ª parte", "txt": "Os ângulos internos de um triângulo medem x°, (x + 51)° e (x + 54)°. Quanto mede o MAIOR desses ângulos?"}, {"d": "v", "r": 6, "c": 2, "tam": 3, "rot": "Coluna C, 2ª parte", "txt": "Num vértice de um triângulo, o ângulo interno mede 67°. Quanto mede o ângulo externo desse vértice?"}, {"d": "v", "r": 2, "c": 3, "tam": 2, "rot": "Coluna D, 1ª parte", "txt": "Dois lados de um triângulo medem 26 cm e 40 cm. Qual é o MAIOR valor inteiro, em cm, que o terceiro lado pode ter?"}, {"d": "v", "r": 7, "c": 3, "tam": 2, "rot": "Coluna D, 2ª parte", "txt": "Um triângulo isósceles tem o ângulo do vértice medindo 94°. Quanto mede cada ângulo da base?"}, {"d": "v", "r": 1, "c": 4, "tam": 2, "rot": "Coluna E, 1ª parte", "txt": "Dois ângulos internos de um triângulo medem (3x)° e (x + 10)°. O ângulo externo do terceiro vértice mede 78°. Quanto vale x?"}, {"d": "v", "r": 6, "c": 4, "tam": 2, "rot": "Coluna E, 2ª parte", "txt": "Os ângulos internos de um triângulo medem x°, 2x° e 39°. Quanto vale x?"}, {"d": "v", "r": 0, "c": 5, "tam": 2, "rot": "Coluna F, 1ª parte", "txt": "Num triângulo isósceles, cada ângulo da base mede 72°. Quanto mede o ângulo do vértice?"}, {"d": "v", "r": 5, "c": 5, "tam": 2, "rot": "Coluna F, 2ª parte", "txt": "Num triângulo isósceles, cada ângulo da base mede (2x + 20)° e o ângulo do vértice mede 36°. Quanto vale x?"}, {"d": "v", "r": 0, "c": 6, "tam": 3, "rot": "Coluna G, 1ª parte", "txt": "Num triângulo isósceles, cada ângulo da base mede 31°. Quanto mede o ângulo do vértice?"}, {"d": "v", "r": 4, "c": 6, "tam": 2, "rot": "Coluna G, 2ª parte", "txt": "Dois lados de um triângulo medem 4 cm e 15 cm. Qual é o MENOR valor inteiro, em cm, que o terceiro lado pode ter?"}, {"d": "v", "r": 2, "c": 7, "tam": 3, "rot": "Coluna H", "txt": "Quanto dá a soma dos três ângulos internos de qualquer triângulo?"}, {"d": "v", "r": 3, "c": 8, "tam": 2, "rot": "Coluna I", "txt": "Um triângulo isósceles tem o ângulo do vértice medindo 66°. Quanto mede cada ângulo da base?"}]};
+const N = 9, LETRAS = "ABCDEFGHI", CHAVE = "cruzadinha-triangulos-7ano-v1";
+// respostas codificadas (não é segurança, só evita "espiar" fácil)
+const decodificar = ch => ch === "#" ? null : String((3 * (Number(ch) - 3) + 100) % 10);
+const RESP = DADOS.g.map(linha => [...linha].map(decodificar));
+const PISTAS = { h: DADOS.p.filter(p => p.d === "h"), v: DADOS.p.filter(p => p.d === "v") };
+
+const tab = document.getElementById("tabuleiro");
+const casas = [...Array(N)].map(() => Array(N).fill(null));
+const rotulosL = [], rotulosC = [];
+let atual = null, direcao = "h";
+
+// cabeçalho de colunas
+tab.appendChild(document.createElement("div"));
+for (let c = 0; c < N; c++) {
+  const d = document.createElement("div"); d.className = "rot"; d.textContent = LETRAS[c];
+  rotulosC.push(d); tab.appendChild(d);
+}
+for (let r = 0; r < N; r++) {
+  const d = document.createElement("div"); d.className = "rot"; d.textContent = r + 1;
+  rotulosL.push(d); tab.appendChild(d);
+  for (let c = 0; c < N; c++) {
+    const div = document.createElement("div");
+    div.className = "casa";
+    if (RESP[r][c] === null) { div.classList.add("bloco"); tab.appendChild(div); continue; }
+    const input = document.createElement("input");
+    input.inputMode = "numeric"; input.maxLength = 1; input.autocomplete = "off";
+    input.setAttribute("aria-label", "Linha " + (r + 1) + ", coluna " + LETRAS[c]);
+    input.addEventListener("mousedown", e => {
+      e.preventDefault();
+      if (atual && atual.r === r && atual.c === c) trocarDirecao();
+      selecionar(r, c);
+    });
+    input.addEventListener("focus", () => { if (!atual || atual.r !== r || atual.c !== c) selecionar(r, c); });
+    input.addEventListener("keydown", e => teclado(e, r, c));
+    div.appendChild(input); tab.appendChild(div);
+    casas[r][c] = { div, input };
+  }
+}
+
+const celulasDe = p => [...Array(p.tam)].map((_, i) => p.d === "h" ? [p.r, p.c + i] : [p.r + i, p.c]);
+
+for (const d of ["h", "v"]) {
+  const ol = document.getElementById("pistas-" + d);
+  for (const p of PISTAS[d]) {
+    const li = document.createElement("li");
+    li.innerHTML = '<span class="qual">' + p.rot + ' <span>(' + p.tam + ' algarismos)</span></span>' + p.txt;
+    li.addEventListener("click", () => { direcao = d; selecionar(p.r, p.c); });
+    li.addEventListener("mouseenter", () => celulasDe(p).forEach(([r, c]) => casas[r][c].div.classList.add("previa")));
+    li.addEventListener("mouseleave", () => limparClasses(["previa"]));
+    p.li = li; ol.appendChild(li);
+  }
+}
+
+function palavraDe(r, c, d) {
+  return PISTAS[d].find(p => d === "h" ? p.r === r && c >= p.c && c < p.c + p.tam
+                                       : p.c === c && r >= p.r && r < p.r + p.tam);
+}
+function trocarDirecao() {
+  const outra = direcao === "h" ? "v" : "h";
+  if (atual && palavraDe(atual.r, atual.c, outra)) direcao = outra;
+}
+function limparClasses(cls) {
+  for (const l of casas) for (const x of l) if (x) x.div.classList.remove(...cls);
+}
+function selecionar(r, c) {
+  if (!casas[r][c]) return;
+  if (!palavraDe(r, c, direcao)) direcao = direcao === "h" ? "v" : "h";
+  atual = { r, c };
+  limparClasses(["palavra", "atual"]);
+  document.querySelectorAll(".pistas li.ativa").forEach(li => li.classList.remove("ativa"));
+  rotulosL.concat(rotulosC).forEach(x => x.classList.remove("ativo"));
+  const p = palavraDe(r, c, direcao);
+  celulasDe(p).forEach(([rr, cc]) => casas[rr][cc].div.classList.add("palavra"));
+  casas[r][c].div.classList.add("atual");
+  (p.d === "h" ? rotulosL[p.r] : rotulosC[p.c]).classList.add("ativo");
+  p.li.classList.add("ativa");
+  p.li.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  document.getElementById("pista-atual").innerHTML = "<b>" + p.rot + " · " + p.tam + " algarismos</b>" + p.txt;
+  if (document.activeElement !== casas[r][c].input) casas[r][c].input.focus();
+}
+function avancar(r, c, passo) {
+  const p = palavraDe(r, c, direcao);
+  const nr = direcao === "h" ? r : r + passo, nc = direcao === "h" ? c + passo : c;
+  if (nr >= 0 && nr < N && nc >= 0 && nc < N && palavraDe(nr, nc, direcao) === p) selecionar(nr, nc);
+}
+function teclado(e, r, c) {
+  const cel = casas[r][c];
+  if (/^[0-9]$/.test(e.key)) {
+    e.preventDefault(); cel.input.value = e.key;
+    cel.div.classList.remove("certo", "errado");
+    salvar(); avancar(r, c, 1);
+  } else if (e.key === "Backspace" || e.key === "Delete") {
+    e.preventDefault();
+    if (cel.input.value) { cel.input.value = ""; cel.div.classList.remove("certo", "errado"); salvar(); }
+    else if (e.key === "Backspace") avancar(r, c, -1);
+  } else if (e.key === " " || e.key === "Enter") {
+    e.preventDefault(); trocarDirecao(); selecionar(r, c);
+  } else if (e.key.startsWith("Arrow")) {
+    e.preventDefault();
+    const m = { ArrowUp: [-1, 0, "v"], ArrowDown: [1, 0, "v"], ArrowLeft: [0, -1, "h"], ArrowRight: [0, 1, "h"] }[e.key];
+    let nr = r + m[0], nc = c + m[1];
+    while (nr >= 0 && nr < N && nc >= 0 && nc < N && !casas[nr][nc]) { nr += m[0]; nc += m[1]; }
+    if (nr >= 0 && nr < N && nc >= 0 && nc < N) { if (palavraDe(nr, nc, m[2])) direcao = m[2]; selecionar(nr, nc); }
+  } else if (e.key === "Tab") {
+    e.preventDefault();
+    const todas = PISTAS.h.concat(PISTAS.v);
+    const i = todas.indexOf(palavraDe(r, c, direcao));
+    const p = todas[(i + (e.shiftKey ? -1 : 1) + todas.length) % todas.length];
+    direcao = p.d; selecionar(p.r, p.c);
+  } else if (e.key.length === 1) e.preventDefault();
+}
+
+function cadaCasa(fn) {
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (casas[r][c]) fn(casas[r][c], RESP[r][c], r, c);
+}
+const progresso = document.getElementById("progresso");
+function atualizarProgresso() {
+  let cheias = 0, total = 0;
+  cadaCasa(cel => { total++; if (cel.input.value) cheias++; });
+  progresso.textContent = cheias + " de " + total + " casas preenchidas";
+}
+function salvar() {
+  const v = []; cadaCasa(cel => v.push(cel.input.value || " "));
+  try { localStorage.setItem(CHAVE, v.join("")); } catch (e) {}
+  atualizarProgresso();
+}
+function carregar() {
+  let s = null;
+  try { s = localStorage.getItem(CHAVE); } catch (e) {}
+  if (!s) return;
+  let i = 0; cadaCasa(cel => { const ch = s[i++]; if (ch && ch !== " ") cel.input.value = ch; });
+}
+
+const msg = document.getElementById("mensagem");
+document.getElementById("verificar").addEventListener("click", () => {
+  limparClasses(["certo", "errado"]);
+  let certas = 0, vazias = 0, total = 0;
+  cadaCasa((cel, resp) => {
+    total++;
+    if (!cel.input.value) { vazias++; return; }
+    if (cel.input.value === resp) { certas++; cel.div.classList.add("certo"); }
+    else cel.div.classList.add("errado");
+  });
+  let pistasOk = 0;
+  for (const p of PISTAS.h.concat(PISTAS.v)) {
+    const ok = celulasDe(p).every(([r, c]) => casas[r][c].input.value === RESP[r][c]);
+    p.li.classList.toggle("feita", ok); if (ok) pistasOk++;
+  }
+  msg.classList.toggle("fim", certas === total);
+  msg.textContent = certas === total
+    ? "Parabéns! Você completou a cruzadinha inteira! 🎉 Mostre ao professor."
+    : certas + " de " + total + " casas certas" + (vazias ? " (" + vazias + " ainda vazias)" : "") +
+      " · " + pistasOk + " de " + (PISTAS.h.length + PISTAS.v.length) + " pistas completas.";
+});
+document.getElementById("limpar").addEventListener("click", () => {
+  if (!confirm("Apagar todas as respostas? Isso não pode ser desfeito.")) return;
+  cadaCasa(cel => { cel.input.value = ""; });
+  limparClasses(["certo", "errado"]);
+  document.querySelectorAll(".pistas li.feita").forEach(li => li.classList.remove("feita"));
+  msg.textContent = ""; msg.classList.remove("fim"); salvar();
+});
+
+carregar(); atualizarProgresso();
+selecionar(PISTAS.h[0].r, PISTAS.h[0].c);
+</script>
+</body>
+</html>

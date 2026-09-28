@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memória da Catarata</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+  :root{
+    --bg:#EEF1F7; --panel:#FFFFFF; --ink:#16213A; --muted:#5A6580;
+    --line:#C8D0E0; --accent:#1E4FA8; --accent-soft:#DCE6FA;
+    --back:#20345E; --mark:#C2571E;
+    --ok:#1B7A4B; --ok-soft:#CBEBD8; --bad:#B3341F;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#0E1422; --panel:#182033; --ink:#E7EDF8; --muted:#95A1BC;
+    --line:#2F3B54; --accent:#7FA6F0; --accent-soft:#1E2B45;
+    --back:#2B3C63; --mark:#F0955A;
+    --ok:#5FD08D; --ok-soft:#173D2A; --bad:#F0705A; } }
+  :root[data-theme="dark"]{
+    --bg:#0E1422; --panel:#182033; --ink:#E7EDF8; --muted:#95A1BC;
+    --line:#2F3B54; --accent:#7FA6F0; --accent-soft:#1E2B45;
+    --back:#2B3C63; --mark:#F0955A;
+    --ok:#5FD08D; --ok-soft:#173D2A; --bad:#F0705A; }
+
+  body{background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.5;}
+  .wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:18px;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:"Bricolage Grotesque","Source Sans 3",sans-serif;font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.05;margin:.18em 0 .12em;text-wrap:balance;}
+  header p{margin:0;color:var(--muted);max-width:64ch;}
+  .ident{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .ident label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);}
+  .ident input,.ident select{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);}
+  .ident input{width:180px;max-width:46vw;}
+  .bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+  button{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;}
+  button:hover{border-color:var(--accent);}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .placar{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .placar b{color:var(--ink);}
+  .mesa{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  @media (max-width:700px){ .mesa{grid-template-columns:repeat(4,1fr);gap:8px;} }
+  @media (max-width:430px){ .mesa{grid-template-columns:repeat(3,1fr);} }
+  .carta{aspect-ratio:3/4;perspective:800px;cursor:pointer;}
+  .interno{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d;}
+  .carta.aberta .interno,.carta.par .interno{transform:rotateY(180deg);}
+  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    padding:8px;text-align:center;border:1px solid var(--line);}
+  .frente{background:var(--back);color:#fff;font-family:"IBM Plex Mono",monospace;font-size:20px;border-color:var(--back);}
+  .verso{background:var(--panel);transform:rotateY(180deg);font-size:clamp(10px,1.7vw,13.5px);line-height:1.25;}
+  .verso.termo{font-weight:600;color:var(--accent);font-size:clamp(11px,1.9vw,15px);}
+  .carta.par .verso{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);}
+  .carta.par{cursor:default;}
+  @media (prefers-reduced-motion: reduce){ .interno{transition:none;} }
+  .hint{font-size:13.5px;color:var(--muted);text-align:center;min-height:1.4em;}
+  #envio{font-weight:600;text-align:center;}
+  footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
+</style>
+</head>
+<body style="margin:0">
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Ciências · 3º trimestre · a luz e a visão, parte 3</div>
+    <h1>Memória da catarata e da visão</h1>
+    <p>Dez pares: de um lado o termo, do outro a definição. Vire duas cartas por vez. Os pares que você acertar ficam verdes e param de se mexer — <strong>as outras trocam de lugar</strong> de tempos em tempos.</p>
+    <div class="ident">
+      <label>Nome <input id="nome" type="text" placeholder="seu nome"></label>
+      <label>Turma <select id="turma">
+        <option value="">escolha…</option>
+        <optgroup label="Matemática">
+          <option>6A MAT</option><option>6B MAT</option><option>7A MAT</option>
+          <option>8A MAT</option><option>8B MAT</option>
+        </optgroup>
+        <optgroup label="Ciências">
+          <option>6B CIE</option><option>8B CEARA</option>
+        </optgroup>
+      </select></label>
+      <label>Data <input id="data" type="text" placeholder="__/__/____" style="width:110px"></label>
+      <label>Embaralhar <select id="modo">
+        <option value="2">a cada 2 erros</option>
+        <option value="1">a cada erro</option>
+        <option value="0">nunca</option>
+      </select></label>
+    </div>
+  </header>
+
+  <div class="bar">
+    <button id="reiniciar" type="button">Recomeçar</button>
+    <div class="placar">Pares: <b id="pares">0</b> / 10 · Tentativas: <b id="tent">0</b></div>
+  </div>
+
+  <div class="mesa" id="mesa"></div>
+  <p class="hint" id="hint">Clique em duas cartas para começar.</p>
+  <p id="envio"></p>
+
+  <footer>EMEF Ceará · Prof. Mikael Maronez · Ciências 6º ano — A luz e a visão, parte 3: a catarata (livro didático, capítulo 10).</footer>
+</div>
+
+<script>
+const PARES = [
+  ["Catarata","Perda da transparência do cristalino"],
+  ["Cristalino","A lente natural do olho, logo atrás da pupila"],
+  ["Envelhecimento","Causa mais comum da catarata"],
+  ["Lente artificial","Substitui o cristalino embaçado na cirurgia"],
+  ["Íris","Parte colorida que controla o tamanho da pupila"],
+  ["Pupila","Abertura por onde a luz entra no olho"],
+  ["Miopia","O foco cai antes da retina: vê mal de longe"],
+  ["Hipermetropia","O foco cai depois da retina: vê mal de perto"],
+  ["Astigmatismo","Córnea irregular: imagem borrada de perto e de longe"],
+  ["Retina","Fundo do olho, onde a imagem precisa se formar"]
+];
+
+const mesa = document.getElementById("mesa");
+let cartas = [], abertas = [], pares = 0, tentativas = 0, errosSeguidos = 0, travado = false;
+
+function novoBaralho(){
+  cartas = [];
+  PARES.forEach(function(p, i){
+    cartas.push({par:i, texto:p[0], tipo:"termo", achada:false});
+    cartas.push({par:i, texto:p[1], tipo:"def", achada:false});
+  });
+  embaralharTudo();
+}
+function embaralharTudo(){
+  for(let i=cartas.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [cartas[i],cartas[j]]=[cartas[j],cartas[i]];
+  }
+}
+function embaralharRestantes(){
+  const idx = cartas.map((c,i)=>i).filter(i=>!cartas[i].achada);
+  const soltas = idx.map(i=>cartas[i]);
+  for(let i=soltas.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [soltas[i],soltas[j]]=[soltas[j],soltas[i]];
+  }
+  idx.forEach(function(pos,k){ cartas[pos]=soltas[k]; });
+  desenhar();
+  document.getElementById("hint").textContent="As cartas que faltam trocaram de lugar.";
+}
+function desenhar(){
+  mesa.textContent="";
+  cartas.forEach(function(c, i){
+    const d=document.createElement("div");
+    d.className="carta"+(c.achada?" par":"");
+    d.innerHTML='<div class="interno">'
+      + '<div class="face frente">?</div>'
+      + '<div class="face verso'+(c.tipo==="termo"?" termo":"")+'"></div></div>';
+    d.querySelector(".verso").textContent=c.texto;
+    d.addEventListener("click", function(){ virar(i, d); });
+    mesa.appendChild(d);
+  });
+}
+function virar(i, el){
+  if(travado || cartas[i].achada || el.classList.contains("aberta")) return;
+  el.classList.add("aberta");
+  abertas.push({i:i, el:el});
+  if(abertas.length < 2) return;
+
+  travado = true;
+  tentativas++;
+  document.getElementById("tent").textContent = tentativas;
+  const a=abertas[0], b=abertas[1];
+
+  if(cartas[a.i].par === cartas[b.i].par && a.i !== b.i){
+    cartas[a.i].achada = true; cartas[b.i].achada = true;
+    a.el.classList.add("par"); b.el.classList.add("par");
+    pares++; errosSeguidos = 0;
+    document.getElementById("pares").textContent = pares;
+    document.getElementById("hint").textContent = "Par! " + cartas[a.i].texto + " — " + cartas[b.i].texto;
+    abertas = []; travado = false;
+    if(pares === PARES.length){
+      document.getElementById("hint").textContent = "Fechou os 10 pares em " + tentativas + " tentativas.";
+      enviarResultado();
+    }
+    return;
+  }
+
+  document.getElementById("hint").textContent = "Não é par.";
+  errosSeguidos++;
+  setTimeout(function(){
+    a.el.classList.remove("aberta"); b.el.classList.remove("aberta");
+    abertas = []; travado = false;
+    const modo = parseInt(document.getElementById("modo").value, 10);
+    if(modo > 0 && errosSeguidos % modo === 0) setTimeout(embaralharRestantes, 220);
+  }, 1000);
+}
+
+document.getElementById("reiniciar").addEventListener("click", function(){
+  pares=0; tentativas=0; errosSeguidos=0; abertas=[]; travado=false; enviado=false;
+  document.getElementById("pares").textContent="0";
+  document.getElementById("tent").textContent="0";
+  document.getElementById("hint").textContent="Clique em duas cartas para começar.";
+  document.getElementById("envio").textContent="";
+  novoBaralho(); desenhar();
+});
+
+/* ---- envio ao professor (Google Forms) ---- */
+const FORM = {
+  url: "https://docs.google.com/forms/d/e/1FAIpQLSd0cya9DeEyUh4d1lMecTy3W5P5zJR-uEUeYryzR0U8wyIyTw/formResponse",
+  nome: "entry.92939802",
+  turma: "entry.1767871945",
+  atividade: "entry.495326704",
+  resultado: "entry.664553886"
+};
+const ATIVIDADE = "Jogo da Memoria 02 - Catarata e a Visao (Ciencias 6o ano)";
+let enviado = false;
+
+function enviarResultado(){
+  const nome=(document.getElementById("nome").value||"").trim();
+  const turma=(document.getElementById("turma").value||"").trim();
+  const envio=document.getElementById("envio");
+  const resultado = "10 pares em " + tentativas + " tentativas";
+  if(!nome || !turma){
+    envio.style.color="var(--mark)";
+    envio.textContent="Escreva seu nome e escolha sua turma lá em cima para enviar ao professor.";
+    (!nome?document.getElementById("nome"):document.getElementById("turma")).focus();
+    return;
+  }
+  if(enviado) return;
+  enviado=true;
+
+  let frame=document.getElementById("gfIframe");
+  if(!frame){
+    frame=document.createElement("iframe");
+    frame.id="gfIframe"; frame.name="gfIframe"; frame.style.display="none";
+    document.body.appendChild(frame);
+  }
+  const f=document.createElement("form");
+  f.action=FORM.url; f.method="POST"; f.target="gfIframe"; f.style.display="none";
+  const add=function(k,v){ const i=document.createElement("input"); i.type="hidden"; i.name=k; i.value=v; f.appendChild(i); };
+  add(FORM.nome,nome); add(FORM.turma,turma); add(FORM.atividade,ATIVIDADE); add(FORM.resultado,resultado);
+  document.body.appendChild(f);
+
+  envio.style.color="var(--muted)"; envio.textContent="Enviando...";
+  let respondeu=false;
+  frame.onload=function(){
+    if(respondeu) return; respondeu=true;
+    envio.style.color="var(--ok)";
+    envio.textContent="Resultado enviado ao professor ✓  ("+nome+" — "+turma+")";
+    f.remove();
+  };
+  setTimeout(function(){
+    if(respondeu) return; respondeu=true; enviado=false;
+    const prefill=FORM.url.replace("/formResponse","/viewform")+"?usp=pp_url"
+      +"&"+FORM.nome+"="+encodeURIComponent(nome)
+      +"&"+FORM.turma+"="+encodeURIComponent(turma)
+      +"&"+FORM.atividade+"="+encodeURIComponent(ATIVIDADE)
+      +"&"+FORM.resultado+"="+encodeURIComponent(resultado);
+    envio.style.color="var(--mark)";
+    envio.innerHTML="O envio automático não funcionou aqui. <a href=\""+prefill
+      +"\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--accent)\">Clique aqui para confirmar</a> "
+      +"(a página abre já preenchida — só clicar em Enviar).";
+  },8000);
+
+  f.submit();
+}
+
+novoBaralho();
+desenhar();
+</script>
+
+</body>
+</html>

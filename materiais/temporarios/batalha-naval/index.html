@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batalha Naval das Continhas</title>
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+<main class="folha">
+  <header class="capa">
+    <div class="linha">Matemática · Jogo online para 2 alunos</div>
+    <h1>⚓ Batalha Naval das Continhas</h1>
+    <h2>Acerte a conta para disparar!</h2>
+  </header>
+
+  <p id="sem-conexao" class="alerta" hidden>⚠ Sem conexão — tentando reconectar...</p>
+  <!-- Aviso de colega desconectado: fora das telas (vale no posicionamento e na batalha) e por cima da janela da continha. -->
+  <div class="tela-aviso">
+    <div id="bat-desconexao" class="desconexao" hidden>
+      <p id="bat-desconexao-texto"></p>
+      <button id="btn-encerrar" class="botao" type="button" hidden>Encerrar partida</button>
+    </div>
+  </div>
+
+  <!-- 0. Carregando -->
+  <section id="tela-carregando" class="tela">
+    <p id="carregando-texto" class="centro">Carregando...</p>
+  </section>
+
+  <!-- 1. Senha da turma -->
+  <section id="tela-senha" class="tela" hidden>
+    <form id="form-senha" class="cartao estreito">
+      <p id="senha-aviso" class="aviso-senha" hidden></p>
+      <label>Senha da turma <input id="senha" maxlength="30" autocomplete="off" placeholder="peça ao professor"></label>
+      <p id="senha-erro" class="erro"></p>
+      <button class="botao principal" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- 2. Início -->
+  <section id="tela-inicio" class="tela" hidden>
+    <div class="cartao estreito">
+      <div id="partida-salva" class="partida-salva" hidden>
+        <p id="partida-salva-texto"></p>
+        <div class="linha-botoes">
+          <button id="btn-voltar-partida" class="botao principal" type="button">Voltar para a partida</button>
+          <button id="btn-abandonar" class="botao" type="button">Abandonar</button>
+        </div>
+      </div>
+      <label>Seu nome <input id="nome" maxlength="20" autocomplete="off" placeholder="Seu nome"></label>
+      <div class="linha-botoes">
+        <button id="btn-criar" class="botao principal" type="button">Criar sala</button>
+        <button id="btn-entrar" class="botao principal" type="button">Entrar na sala</button>
+      </div>
+      <p id="inicio-erro" class="erro"></p>
+      <ul id="avisos-bancos" class="avisos"></ul>
+      <button id="btn-trocar-senha" class="link" type="button">trocar senha da turma</button>
+    </div>
+  </section>
+
+  <!-- 3a. Criar sala -->
+  <section id="tela-criar" class="tela" hidden>
+    <form id="form-criar" class="cartao estreito">
+      <label>Banco de perguntas <select id="banco"></select></label>
+      <fieldset>
+        <legend>Afundar navio</legend>
+        <label class="opcao"><input type="radio" name="modo" value="classico" checked> Clássico – acertar todas as casas</label>
+        <label class="opcao"><input type="radio" name="modo" value="rapido"> Rápido – um tiro afunda</label>
+      </fieldset>
+      <label>Tempo de partida
+        <select id="tempo">
+          <option value="0" selected>Sem limite</option>
+          <option value="15">15 minutos</option>
+          <option value="20">20 minutos</option>
+          <option value="30">30 minutos</option>
+          <option value="45">45 minutos</option>
+        </select>
+      </label>
+      <p id="criar-erro" class="erro"></p>
+      <div class="linha-botoes">
+        <button id="btn-criar-confirmar" class="botao principal" type="submit">Criar</button>
+        <button class="botao btn-voltar-inicio" type="button">Voltar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3b. Entrar na sala -->
+  <section id="tela-entrar" class="tela" hidden>
+    <form id="form-entrar" class="cartao estreito">
+      <label>Código da sala <input id="codigo" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="0000"></label>
+      <p id="entrar-erro" class="erro"></p>
+      <div class="linha-botoes">
+        <button id="btn-entrar-confirmar" class="botao principal" type="submit">Entrar</button>
+        <button class="botao btn-voltar-inicio" type="button">Voltar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3c. Aguardando o colega -->
+  <section id="tela-espera" class="tela" hidden>
+    <div class="cartao estreito centro">
+      <p class="codigo-grande">SALA <span id="espera-codigo"></span></p>
+      <p>Passe este código para o seu colega. Aguardando... ⏳</p>
+      <button id="btn-cancelar-sala" class="botao" type="button">Cancelar</button>
+    </div>
+  </section>
+
+  <!-- 4. Posicionamento -->
+  <section id="tela-posicionar" class="tela" hidden>
+    <h2 id="pos-titulo" class="titulo-tela"></h2>
+    <p id="pos-colega" class="status-colega"></p>
+    <div class="pos-layout">
+      <div id="pos-tabuleiro"></div>
+      <aside class="cartao pos-lado">
+        <div id="pos-controles">
+          <p>1. Escolha um navio · 2. Clique no mar</p>
+          <div id="pos-navios" class="lista-navios"></div>
+          <button id="btn-girar" class="botao" type="button">↻ Girar (R) — <span id="pos-orientacao">deitado</span></button>
+          <button id="btn-aleatorio" class="botao" type="button">🎲 Posicionar aleatório</button>
+          <button id="btn-limpar" class="botao" type="button">🧹 Limpar</button>
+          <p id="pos-dica" class="dica"></p>
+          <button id="btn-confirmar" class="botao principal" type="button" disabled>✔ Confirmar</button>
+        </div>
+        <p id="pos-aguardando" class="aguardando" hidden></p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 5. Batalha -->
+  <section id="tela-batalha" class="tela" hidden>
+    <div class="barra">
+      <span id="bat-vez"></span>
+      <span id="bat-placar"></span>
+      <span id="bat-relogio" hidden></span>
+      <span id="bat-colega"></span>
+    </div>
+    <p id="bat-aviso-tempo" class="aviso-tempo" hidden>⏰ Tempo esgotado — última rodada</p>
+    <div id="faixa" class="reprise">
+      <p id="faixa-texto"></p>
+    </div>
+    <div class="tabuleiros">
+      <figure><figcaption>Meu mar</figcaption><div id="bat-meu"></div></figure>
+      <figure><figcaption>Mar do adversário — clique para mirar</figcaption><div id="bat-adv"></div></figure>
+    </div>
+
+    <div id="conta" class="janela" hidden>
+      <div class="cartao conta">
+        <p class="conta-mira">Mirando em <strong id="conta-casa"></strong></p>
+        <p id="conta-pergunta" class="conta-pergunta"></p>
+        <div class="cronometro"><div id="conta-barra"></div></div>
+        <p id="conta-segundos" class="conta-segundos"></p>
+        <form id="conta-form">
+          <input id="conta-input" autocomplete="off">
+          <button class="botao principal" type="submit">Responder</button>
+        </form>
+        <div id="conta-opcoes" class="opcoes"></div>
+        <p id="conta-feedback" class="feedback"></p>
+        <div id="conta-avanco" class="avanco" hidden>
+          <div class="avanco-trilho"><div id="conta-avanco-barra"></div></div>
+          <p>Clique para continuar</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Fim de jogo -->
+  <section id="tela-fim" class="tela" hidden>
+    <div class="cartao fim">
+      <h2 id="fim-titulo"></h2>
+      <p id="fim-motivo"></p>
+      <table class="placar">
+        <thead><tr><th>Jogador</th><th>Casas atingidas</th><th>Continhas certas</th></tr></thead>
+        <tbody id="fim-stats"></tbody>
+      </table>
+    </div>
+    <div class="tabuleiros">
+      <figure><figcaption id="fim-nome0"></figcaption><div id="fim-tab0"></div></figure>
+      <figure><figcaption id="fim-nome1"></figcaption><div id="fim-tab1"></div></figure>
+    </div>
+    <p id="fim-revanche" class="centro"></p>
+    <div class="acoes-fim">
+      <button id="btn-de-novo" class="botao principal" type="button">🔁 Jogar de novo</button>
+      <button id="btn-sair" class="botao" type="button">🏠 Sair da sala</button>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="bancos/lista.js"></script>
+<script src="js/regras.js"></script>
+<script src="js/perguntas.js"></script>
+<script src="js/cliente.js"></script>
+<script src="js/sala.js"></script>
+<script src="js/navios-svg.js"></script>
+<script src="js/tela.js"></script>
+<script src="js/partida-online.js"></script>
+</body>
+</html>

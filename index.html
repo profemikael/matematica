@@ -345,6 +345,27 @@
     .material-icon.img   { background: #e8f5e9; color: #2e7d32; }
     .material-icon.link  { background: #fff3e0; color: #e65100; }
     .material-icon.html  { background: #f3e8ff; color: #7c3aed; }
+    .material-icon.jogo  { background: #e3f2fd; color: #0d47a1; }
+    .material-card.jogo-card {
+      border-color: #1565c0;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
+    }
+    .material-card.jogo-card:hover { box-shadow: 0 6px 28px rgba(21,101,192,.22); }
+    .jogo-badge {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: #0d47a1;
+      background: #bbdefb; padding: .2rem .6rem; border-radius: 999px;
+    }
+    .btn-jogar {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: #1565c0; color: white;
+      padding: .5rem 1.1rem; border-radius: 8px;
+      font-size: .8rem; font-weight: 700;
+      transition: background .2s, transform .15s;
+      align-self: flex-start; margin-top: auto;
+    }
+    .btn-jogar:hover { background: #0d47a1; transform: translateY(-1px); }
     .material-meta h4 { font-size: .9rem; font-weight: 600; line-height: 1.3; }
     .material-meta span { font-size: .75rem; color: var(--text-muted); }
     .material-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.5; }
@@ -1273,9 +1294,9 @@
     { id: 74, grade: "temporarios", trimestre: 3, tipo: "html",
       titulo: "Sorteador Oscilante – Com Repetição",
       link: "materiais/temporarios/sorteador_oscilante.html", data: "19/08/2026" },
-    { id: 127, grade: "temporarios", trimestre: 3, tipo: "html",
-      titulo: "Batalha Naval das Continhas",
-      descricao: "Jogo online para 2 alunos. Acerte a conta para disparar! Usa banco de questões de quatro operações. Precisa de senha de turma (peça ao professor).",
+    { id: 127, grade: "temporarios", trimestre: 3, tipo: "jogo",
+      titulo: "Batalha Naval",
+      descricao: "Acerte a conta para disparar no navio do adversário! Jogo online de matemática para 2 alunos, em tempo real. Precisa de senha de turma (peça ao professor).",
       link: "materiais/temporarios/batalha-naval/index.html", data: "29/09/2026" },
     { id: 40, grade: "eja-mat-t7", trimestre: 3, tipo: "pdf",
       titulo: "Apostila 01 – Proporcionalidade e Regra de Três",
@@ -1479,6 +1500,21 @@
             </span></div>`;
         }
         byTri[tri].forEach(m => {
+          if (m.tipo === 'jogo') {
+            html += `<div class="material-card jogo-card">
+              <div class="material-card-top">
+                <div class="material-icon jogo"><i class="fa-solid fa-ship"></i></div>
+                <div class="material-meta">
+                  <h4>${m.titulo}</h4>
+                  <span><span class="jogo-badge"><i class="fa-solid fa-gamepad"></i> Jogo Online · 2 jogadores</span></span>
+                </div>
+              </div>
+              ${m.descricao?`<p class="material-desc">${m.descricao}</p>`:''}
+              <a class="btn-jogar" href="${m.link}" target="_blank" rel="noopener">
+                <i class="fa-solid fa-play"></i> Jogar
+              </a></div>`;
+            return;
+          }
           const iconMap = {pdf:'fa-file-pdf pdf',doc:'fa-file-word doc',img:'fa-image img',link:'fa-link link',html:'fa-display html'};
           const [icon, cls] = (iconMap[m.tipo]||'fa-file link').split(' ');
           const tipoLabel = {pdf:'PDF',doc:'Word',img:'Imagem',link:'Link',html:'Interativo'}[m.tipo]||'Arquivo';

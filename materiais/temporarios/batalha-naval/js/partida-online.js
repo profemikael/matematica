@@ -3,33 +3,28 @@
   'use strict';
 
   const $ = function (id) { return document.getElementById(id); };
-  const MS_RESULTADO_CERTO = 2500;   // tempo mostrando o resultado (água/acertou/afundou) antes de passar a vez sozinho
-  const MS_RESULTADO_ERRADO = 1500;  // tempo mostrando "Errou!" / "Tempo esgotado!" antes de passar a vez sozinho
+  const MS_RESULTADO_CERTO = 2500;
+  const MS_RESULTADO_ERRADO = 1500;
   const MS_PARA_ENCERRAR = 2 * 60 * 1000;
   const NOMES_NAVIOS = { n4: 'Navio de 4', n3a: 'Navio de 3', n3b: 'Navio de 3', n2: 'Navio de 2' };
 
-  // ---------- Armazenamento local (nunca pode quebrar o jogo) ----------
   function ler(chave) { try { return JSON.parse(localStorage.getItem(chave)); } catch (e) { return null; } }
-  function gravar(chave, valor) { try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { /* sem armazenamento */ } }
-  function apagar(chave) { try { localStorage.removeItem(chave); } catch (e) { /* sem armazenamento */ } }
+  function gravar(chave, valor) { try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { } }
+  function apagar(chave) { try { localStorage.removeItem(chave); } catch (e) { } }
 
-  // Identidade do jogador NESTA ABA (sobrevive ao F5). Cada aba é um jogador diferente — dá para testar com 2 abas.
-  // Para voltar depois de fechar a aba, a ficha da partida guarda a identidade usada naquela sala.
   function meuId() {
     let id = null;
-    try { id = sessionStorage.getItem('bn-id'); } catch (e) { /* sem armazenamento */ }
+    try { id = sessionStorage.getItem('bn-id'); } catch (e) { }
     if (!id) id = 'j' + Math.random().toString(36).slice(2) + Date.now().toString(36);
     usarId(id);
     return id;
   }
 
-  // Partida salva: uma ficha por identidade (cada aba tem a sua; duas abas no mesmo navegador não se misturam).
   function chaveFicha(id) { return 'bn-ficha-' + id; }
   function lerFicha() { return ler(chaveFicha(meuId())); }
   function gravarFicha(f) { gravar(chaveFicha(f.id), Object.assign({}, f, { salvaEm: Date.now() })); }
   function apagarFicha(id) { apagar(chaveFicha(id || meuId())); }
 
-  // A ficha desta aba; se não houver (aba nova), a mais recente deste Chromebook para esta senha.
   function fichaParaOferecer() {
     const minha = lerFicha();
     if (minha && minha.senha === senha) return minha;
@@ -41,17 +36,17 @@
         const f = ler(k);
         if (f && f.senha === senha && (!melhor || (f.salvaEm || 0) > (melhor.salvaEm || 0))) melhor = f;
       }
-    } catch (e) { /* sem armazenamento */ }
+    } catch (e) { }
     return melhor;
   }
   let fichaOferecida = null;
 
-  function usarId(id) { try { sessionStorage.setItem('bn-id', id); } catch (e) { /* sem armazenamento */ } }
+  function usarId(id) { try { sessionStorage.setItem('bn-id', id); } catch (e) { } }
 
   let carteiro = null;
   let bancos = [];
   let senha = null;
-  let sessao = null;        // { codigo, eu, config }
+  let sessao = null;
   let conexao = null;
   let cliente = null;
   let jogadoresInfo = {};
@@ -66,8 +61,6 @@
   function meuNome() { return ($('nome').value || '').trim() || 'Jogador'; }
   function tamanho(id) { return Regras.FROTA.find(function (n) { return n.id === id; }).tamanho; }
   function mostrarErro(id, texto) { $(id).textContent = texto || ''; }
-
-  // ================= Início: senha e bancos =================
 
   async function iniciar() {
     if (typeof FIREBASE_CONFIG === 'undefined' || typeof firebase === 'undefined') {
@@ -152,7 +145,7 @@
       if (!sala) { apagarFicha(ficha.id); return; }
       $('partida-salva-texto').textContent = 'Você tem uma partida na SALA ' + ficha.codigo + (outro ? ' contra ' + outro.nome : '') + '.';
       $('partida-salva').hidden = false;
-    } catch (e) { /* sem internet: não oferece */ }
+    } catch (e) { }
   }
 
   function lembrarNome() { gravar('bn-nome', meuNome()); }
@@ -174,7 +167,7 @@
     if (!ficha) return;
     try {
       if (ficha.id) usarId(ficha.id);
-      if (ficha.nome) $('nome').value = ficha.nome;   // volta com o nome daquela partida (outra aba pode ter usado outro)
+      if (ficha.nome) $('nome').value = ficha.nome;
       const r = await carteiro.entrarNaSala(senha, ficha.codigo, { nome: meuNome(), id: meuId() });
       abrirSala(ficha.codigo, r.eu, r.config);
     } catch (e) {
@@ -184,8 +177,6 @@
     }
   });
 
-  // ================= Criar / entrar / esperar =================
-
   $('form-criar').addEventListener('submit', async function (ev) {
     ev.preventDefault();
     const banco = bancos[Number($('banco').value)];
@@ -193,7 +184,8 @@
     const config = {
       banco: banco.arquivo,
       modo: document.querySelector('input[name=modo]:checked').value,
-      tempoMin: Number($('tempo').value)
+      tempoMin: Number($('tempo').value),
+      segundos: Number($('segundos').value)
     };
     mostrarErro('criar-erro', 'Criando...');
     try {
@@ -244,7 +236,6 @@
     });
   }
 
-  // A ficha salva só vale para esta sala, com esta cadeira e esta identidade (outra aba pode ter gravado a dela).
   function fichaDestaSessao(ficha, codigo, euNaSala) {
     return !!ficha && ficha.senha === senha && ficha.codigo === codigo && ficha.eu === euNaSala && ficha.id === meuId();
   }
@@ -284,8 +275,6 @@
     iniciarTimers();
     mostrarFaseAtual();
   }
-
-  // ================= Eventos do cliente =================
 
   function aoEvento(ev) {
     if (!cliente) return;
@@ -331,8 +320,6 @@
     else if (e.fase === 'batalha') entrarBatalha();
     else if (e.fase === 'fim' && (e.etapa !== 'resultado' || !aguardandoAvanco)) mostrarFim();
   }
-
-  // ================= Posicionamento =================
 
   let navioSel = null;
   let orientacao = 'h';
@@ -410,8 +397,6 @@
   $('btn-limpar').addEventListener('click', function () { cliente.limpar(); navioSel = primeiroLivre(); pintarPosicionamento(); });
   $('btn-confirmar').addEventListener('click', function () { cliente.pronto(); });
 
-  // ================= Batalha =================
-
   const tabMeu = Tela.criarTabuleiro($('bat-meu'));
   const tabAdv = Tela.criarTabuleiro($('bat-adv'), { aoClicar: mirar });
   let destaque = null;
@@ -419,7 +404,6 @@
 
   function faixa(texto) { $('faixa-texto').textContent = texto; }
 
-  // "Beto mirou em C7 e está respondendo... ⏱ 7 s" — atualizada a cada ~250 ms enquanto o colega responde.
   function colegaRespondendo() {
     const e = estado();
     return e.fase === 'batalha' && e.vez === colega() && e.etapa === 'responder' && e.mira;
@@ -508,10 +492,8 @@
 
   function mirar(l, c) {
     if (!euConectado) return;
-    cliente.mirar(l, c);   // a continha abre quando o recado "mirar" voltar
+    cliente.mirar(l, c);
   }
-
-  // ================= Continha =================
 
   let intervaloConta = null;
   let respondido = true;
@@ -558,13 +540,12 @@
     if (!pa) { clearInterval(intervaloConta); return; }
     const resta = pa.fim - conexao.horaServidor();
     if (resta <= 0) {
-      // Tempo acabou: vale o que o aluno já digitou (mesmo sem Enter). Campo vazio = tempo esgotado.
       const digitado = pa.pergunta.tipo === 'escolha' ? '' : $('conta-input').value;
       $('conta-segundos').textContent = '0 s';
       responder(digitado.trim() === '' ? null : digitado);
       return;
     }
-    $('conta-barra').style.width = Math.min(100, resta / Cliente.MS_CONTA * 100) + '%';
+    $('conta-barra').style.width = Math.min(100, resta / cliente.msConta * 100) + '%';
     $('conta-barra').classList.toggle('pouco', resta <= 3000);
     $('conta-segundos').textContent = Math.ceil(resta / 1000) + ' s';
   }
@@ -572,7 +553,7 @@
   $('conta-form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     const texto = $('conta-input').value;
-    if (texto.trim() === '') return;   // Enter sem resposta não gasta a vez
+    if (texto.trim() === '') return;
     responder(texto);
   });
 
@@ -587,7 +568,6 @@
     $('conta-feedback').textContent = r.certa ? '✔ Certo! Disparando... 🎯' : (texto === null ? '⏰ Tempo esgotado!' : '✗ Errou!');
   }
 
-  // Depois do resultado, a vez passa sozinha; um clique na janela adianta.
   function iniciarAvanco(ms) {
     aguardandoAvanco = true;
     momentoResultado = Date.now();
@@ -595,7 +575,7 @@
     $('conta-avanco').hidden = false;
     barra.style.transition = 'none';
     barra.style.width = '100%';
-    void barra.offsetWidth;   // força o navegador a aplicar os 100% antes de animar
+    void barra.offsetWidth;
     barra.style.transition = 'width ' + ms + 'ms linear';
     barra.style.width = '0%';
     clearTimeout(timerAvanco);
@@ -613,11 +593,8 @@
   }
 
   $('conta').addEventListener('click', function () {
-    // Ignora o próprio clique/Enter que enviou a resposta (ele também chega aqui).
     if (aguardandoAvanco && Date.now() - momentoResultado > 400) avancar();
   });
-
-  // ================= Relógio, presença e desconexão =================
 
   let intervaloGeral = null;
 
@@ -665,8 +642,6 @@
 
   $('btn-encerrar').addEventListener('click', function () { cliente.encerrar(); });
 
-  // ================= Fim de jogo =================
-
   const tabFim = [Tela.criarTabuleiro($('fim-tab0')), Tela.criarTabuleiro($('fim-tab1'))];
 
   function mostrarFim() {
@@ -713,8 +688,6 @@
 
   $('btn-de-novo').addEventListener('click', function () { cliente.pedirRevanche(); });
   $('btn-sair').addEventListener('click', function () { fecharSala(); apagarFicha(); mostrarInicio(); });
-
-  // ================= Tudo =================
 
   function pintarTudo() {
     if (!cliente) return;

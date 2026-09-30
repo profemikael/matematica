@@ -137,7 +137,6 @@ fieldset { border: 1px solid var(--azul-claro); border-radius: 6px; }
                  width: calc(10 * (var(--casa) + 2px) - 2px); height: calc(10 * (var(--casa) + 2px) - 2px); pointer-events: none; }
 .navio-svg, .fogo-svg { position: absolute; }
 .navio-svg svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 2px 1px rgba(0,30,60,.25)); }
-.navio-svg svg.desenho-vertical { transform-origin: 0 0; transform: rotate(90deg) translateY(-100%); }
 .navio-svg.afundado svg { filter: grayscale(.7) brightness(.55); }
 .navio-svg.afundado { transform: rotate(-4deg); }
 .fogo-svg { display: flex; align-items: center; justify-content: center; }
@@ -157,3 +156,5 @@ fieldset { border: 1px solid var(--azul-claro); border-radius: 6px; }
          background: linear-gradient(90deg, #FFF7ED, #FFEDD5); border: 1px solid #FDBA74; border-radius: 8px; padding: 6px 12px; margin: 8px 0; font-weight: bold; color: #9A3412; }
 #btn-torpedo.armado { background: #DC2626; border-color: #991B1B; color: #fff; }
 .conta-poder { margin: 6px 0 0; font-size: 20px; font-weight: bold; color: #C2410C; }
+
+.turbo-botoes { display: flex; gap: 8px; flex-wrap: wrap; }

@@ -416,6 +416,7 @@
   $('btn-girar').addEventListener('click', girar);
   document.addEventListener('keydown', function (ev) {
     if ((ev.key === 'r' || ev.key === 'R') && !$('tela-posicionar').hidden) girar();
+    else if ((ev.key === 'r' || ev.key === 'R') && !$('tela-batalha').hidden && !$('btn-girar-tiro').hidden && $('conta').hidden) girarTiro();
   });
   $('btn-aleatorio').addEventListener('click', function () { cliente.aleatorio(); navioSel = null; $('pos-dica').textContent = ''; pintarPosicionamento(); });
   $('btn-limpar').addEventListener('click', function () { cliente.limpar(); navioSel = primeiroLivre(); pintarPosicionamento(); });
@@ -434,6 +435,7 @@
   let timerDestaque = null;
   let mouseAdv = null;          // casa do mar do adversário sob o mouse (prévia do tiro)
   let torpedoArmado = false;
+  let tiroEmPe = false;         // tiro duplo girado (casa + a de baixo); a escolha fica valendo para os próximos
 
   const ROTULO_FORMATO = { duplo: '⚡ TIRO DUPLO', cruz: '✚ TIRO EM CRUZ', torpedo: '🚀 TORPEDO' };
   const AVISO_FORMATO = { duplo: '⚡ Tiro duplo!', cruz: '✚ Tiro em cruz!', torpedo: '🚀 Torpedo!' };
@@ -499,7 +501,7 @@
     // Prévia do tiro (1 casa, duplo, cruz ou torpedo) sob o mouse, na minha vez.
     let previa = null;
     if (minhaVezDeMirar && mouseAdv && !tirosAdv[Regras.chave(mouseAdv.l, mouseAdv.c)]) {
-      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, torpedoArmado).casas), valida: true };
+      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, torpedoArmado, tiroEmPe).casas), valida: true };
     }
     tabAdv.pintar({
       tiros: tirosAdv,
@@ -536,9 +538,17 @@
     b.disabled = !podeArmar;
     b.classList.toggle('armado', torpedoArmado);
     b.textContent = torpedoArmado ? '🚀 Torpedo armado — clique para desarmar' : '🚀 Torpedo (' + eu0.torpedos + ')';
+    // Girar só existe na vez do tiro duplo (e sem torpedo armado).
+    const g = $('btn-girar-tiro');
+    g.hidden = !(e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher' && !torpedoArmado &&
+                 Regras.formatoDoTiro(e, eu(), false) === 'duplo');
+    g.textContent = '↻ Girar tiro (R) — ' + (tiroEmPe ? 'em pé' : 'deitado');
   }
 
   $('btn-torpedo').addEventListener('click', function () { torpedoArmado = !torpedoArmado; pintarBatalha(); });
+
+  function girarTiro() { tiroEmPe = !tiroEmPe; pintarMarAdversario(); }
+  $('btn-girar-tiro').addEventListener('click', girarTiro);
 
   // Resultado de um tiro (para quem atirou e para quem foi atingido). Tiros do Turbo vêm como 'multiplo'.
   function textoTiro(tiro) {
@@ -583,7 +593,7 @@
 
   function mirar(l, c) {
     if (!euConectado) return;
-    if (cliente.mirar(l, c, torpedoArmado)) torpedoArmado = false;   // a continha abre quando o recado "mirar" voltar
+    if (cliente.mirar(l, c, torpedoArmado, tiroEmPe)) torpedoArmado = false;   // a continha abre quando o recado "mirar" voltar
   }
 
   // ================= Continha =================

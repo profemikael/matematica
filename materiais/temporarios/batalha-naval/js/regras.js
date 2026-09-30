@@ -112,6 +112,7 @@
     normal: [[0, 0]],
     torpedo: [[0, 0]],
     duplo: [[0, 0], [0, 1]],
+    duploEmPe: [[0, 0], [1, 0]],   // tiro duplo girado: a casa escolhida e a de baixo
     cruz: [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]
   };
 
@@ -127,11 +128,11 @@
   }
 
   // Casas que o tiro vai atingir (chaves), sem as que caem fora do mar ou já foram atingidas.
-  // A casa escolhida vem primeiro. Devolve { formato, casas }.
-  function casasDoTiro(estado, jogador, l, c, torpedo) {
+  // A casa escolhida vem primeiro. vertical = true gira o tiro duplo (casa + a de baixo). Devolve { formato, casas }.
+  function casasDoTiro(estado, jogador, l, c, torpedo, vertical) {
     const formato = formatoDoTiro(estado, jogador, torpedo);
     const tirosAlvo = estado.jogadores[1 - jogador].tiros;
-    const casas = DESLOCAMENTOS[formato]
+    const casas = DESLOCAMENTOS[formato === 'duplo' && vertical ? 'duploEmPe' : formato]
       .map(function (d) { return [l + d[0], c + d[1]]; })
       .filter(function (p, i) { return dentro(p[0], p[1]) && (i === 0 || !tirosAlvo[chave(p[0], p[1])]); })
       .map(function (p) { return chave(p[0], p[1]); });
@@ -321,8 +322,9 @@
       if (estado.jogadores[alvo].tiros[chave(acao.l, acao.c)]) return recusar(estadoAntigo, 'casa já atingida');
       const torpedo = acao.torpedo === true;
       if (torpedo && estado.jogadores[estado.vez].torpedos <= 0) return recusar(estadoAntigo, 'sem torpedos');
-      const tiro = casasDoTiro(estado, estado.vez, acao.l, acao.c, torpedo);
-      estado.mira = { l: acao.l, c: acao.c, formato: tiro.formato, casas: tiro.casas, torpedo: torpedo };
+      const vertical = acao.vertical === true;
+      const tiro = casasDoTiro(estado, estado.vez, acao.l, acao.c, torpedo, vertical);
+      estado.mira = { l: acao.l, c: acao.c, formato: tiro.formato, casas: tiro.casas, torpedo: torpedo, vertical: vertical };
       estado.etapa = 'responder';
       return { ok: true, estado: estado };
     }

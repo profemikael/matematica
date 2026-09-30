@@ -176,12 +176,15 @@
       return true;
     }
 
-    // torpedo = true para disparar um torpedo (Turbo + Clássico, com saldo).
-    function mirar(l, c, torpedo) {
+    // torpedo = true para disparar um torpedo (Turbo + Clássico, com saldo); vertical = true gira o tiro duplo.
+    function mirar(l, c, torpedo, vertical) {
       if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'escolher') return false;
       if (estado.jogadores[1 - eu].tiros[Regras.chave(l, c)]) return false;
       if (torpedo && estado.jogadores[eu].torpedos <= 0) return false;
-      enviar('mirar', torpedo ? { l: l, c: c, torpedo: true } : { l: l, c: c });
+      const dados = { l: l, c: c };
+      if (torpedo) dados.torpedo = true;
+      if (vertical) dados.vertical = true;
+      enviar('mirar', dados);
       return true;
     }
 

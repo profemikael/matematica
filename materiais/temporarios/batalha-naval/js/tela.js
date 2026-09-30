@@ -71,8 +71,8 @@
           if (tiro === 'acerto') casa.classList.add('acerto');   // o fogo é desenhado na camada dos navios
           if (tiro === 'acerto' && afundadas.has(ch)) casa.classList.add('afundado');
           if (previa.has(ch)) casa.classList.add(previa.get(ch) ? 'previa-ok' : 'previa-ruim');
-          if (op.destaque === ch) casa.classList.add('destaque');
-          if (op.mirada === ch) casa.classList.add('mirada');
+          if (contem(op.destaque, ch)) casa.classList.add('destaque');
+          if (contem(op.mirada, ch)) casa.classList.add('mirada');
           if (clicavel) casa.classList.add('clicavel');
           casa.disabled = !clicavel;
         }
@@ -98,6 +98,9 @@
     }
     return { pintar: pintar };
   }
+
+  // op.destaque / op.mirada: uma chave "l,c" ou uma lista delas (tiros do Turbo atingem várias casas).
+  function contem(valor, ch) { return Array.isArray(valor) ? valor.indexOf(ch) >= 0 : valor === ch; }
 
   function formatarTempo(ms) {
     const total = Math.max(0, Math.ceil(ms / 1000));

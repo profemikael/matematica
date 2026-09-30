@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Batalha Naval</title>
-<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/estilo.css?v=2026-09-29-turbo">
 </head>
 <body>
 <main class="folha">
@@ -68,6 +68,19 @@
         <label class="opcao"><input type="radio" name="modo" value="classico" checked> Clássico – acertar todas as casas</label>
         <label class="opcao"><input type="radio" name="modo" value="rapido"> Rápido – um tiro afunda</label>
       </fieldset>
+      <fieldset>
+        <legend>Tipo de tiro</legend>
+        <label class="opcao"><input type="radio" name="tiro" value="normal" checked> Normal – um tiro por vez</label>
+        <label class="opcao"><input type="radio" name="tiro" value="turbo"> Turbo – acertos seguidos dão tiro duplo e tiro em cruz</label>
+      </fieldset>
+      <label id="linha-torpedos" hidden>Torpedos por aluno (afundam o navio inteiro)
+        <select id="torpedos">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+        </select>
+      </label>
       <label>Tempo de partida
         <select id="tempo">
           <option value="0" selected>Sem limite</option>
@@ -154,6 +167,10 @@
       <span id="bat-relogio" hidden></span>
       <span id="bat-colega"></span>
     </div>
+    <div id="turbo" class="turbo" hidden>
+      <span id="bat-sequencia"></span>
+      <button id="btn-torpedo" class="botao" type="button" hidden>🚀 Torpedo</button>
+    </div>
     <p id="bat-aviso-tempo" class="aviso-tempo" hidden>⏰ Tempo esgotado — última rodada</p>
     <div id="faixa" class="reprise">
       <p id="faixa-texto"></p>
@@ -166,6 +183,7 @@
     <div id="conta" class="janela" hidden>
       <div class="cartao conta">
         <p class="conta-mira">Mirando em <strong id="conta-casa"></strong></p>
+        <p id="conta-poder" class="conta-poder" hidden></p>
         <p id="conta-pergunta" class="conta-pergunta"></p>
         <div class="cronometro"><div id="conta-barra"></div></div>
         <p id="conta-segundos" class="conta-segundos"></p>
@@ -189,7 +207,7 @@
       <h2 id="fim-titulo"></h2>
       <p id="fim-motivo"></p>
       <table class="placar">
-        <thead><tr><th>Jogador</th><th>Casas atingidas</th><th>Continhas certas</th></tr></thead>
+        <thead><tr><th>Jogador</th><th>Casas atingidas</th><th>Continhas certas</th><th id="fim-col-seq" hidden>Maior sequência</th></tr></thead>
         <tbody id="fim-stats"></tbody>
       </table>
     </div>
@@ -207,14 +225,14 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="bancos/lista.js"></script>
-<script src="js/regras.js"></script>
-<script src="js/perguntas.js"></script>
-<script src="js/cliente.js"></script>
-<script src="js/sala.js"></script>
-<script src="js/navios-svg.js"></script>
-<script src="js/tela.js"></script>
-<script src="js/partida-online.js"></script>
+<script src="js/firebase-config.js?v=2026-09-29-turbo"></script>
+<script src="bancos/lista.js?v=2026-09-29-turbo"></script>
+<script src="js/regras.js?v=2026-09-29-turbo"></script>
+<script src="js/perguntas.js?v=2026-09-29-turbo"></script>
+<script src="js/cliente.js?v=2026-09-29-turbo"></script>
+<script src="js/sala.js?v=2026-09-29-turbo"></script>
+<script src="js/navios-svg.js?v=2026-09-29-turbo"></script>
+<script src="js/tela.js?v=2026-09-29-turbo"></script>
+<script src="js/partida-online.js?v=2026-09-29-turbo"></script>
 </body>
 </html>

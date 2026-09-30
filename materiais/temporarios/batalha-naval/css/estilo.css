@@ -151,3 +151,9 @@ fieldset { border: 1px solid var(--azul-claro); border-radius: 6px; }
 /* Batalha e fim: tabuleiros levemente inclinados para trás (efeito 3D). O posicionamento fica reto. */
 #tela-batalha .tabuleiro, #tela-fim .tabuleiro { transform: perspective(1000px) rotateX(20deg) scale(.94); transform-origin: 50% 50%; margin: -8px 0; }
 #tela-batalha .tabuleiros, #tela-fim .tabuleiros { gap: 44px; }
+
+/* ---- Modo Turbo ---- */
+.turbo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+         background: linear-gradient(90deg, #FFF7ED, #FFEDD5); border: 1px solid #FDBA74; border-radius: 8px; padding: 6px 12px; margin: 8px 0; font-weight: bold; color: #9A3412; }
+#btn-torpedo.armado { background: #DC2626; border-color: #991B1B; color: #fff; }
+.conta-poder { margin: 6px 0 0; font-size: 20px; font-weight: bold; color: #C2410C; }

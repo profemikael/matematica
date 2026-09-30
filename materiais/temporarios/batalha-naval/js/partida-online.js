@@ -3,28 +3,33 @@
   'use strict';
 
   const $ = function (id) { return document.getElementById(id); };
-  const MS_RESULTADO_CERTO = 2500;
-  const MS_RESULTADO_ERRADO = 1500;
+  const MS_RESULTADO_CERTO = 2500;   // tempo mostrando o resultado (água/acertou/afundou) antes de passar a vez sozinho
+  const MS_RESULTADO_ERRADO = 1500;  // tempo mostrando "Errou!" / "Tempo esgotado!" antes de passar a vez sozinho
   const MS_PARA_ENCERRAR = 2 * 60 * 1000;
   const NOMES_NAVIOS = { n4: 'Navio de 4', n3a: 'Navio de 3', n3b: 'Navio de 3', n2: 'Navio de 2' };
 
+  // ---------- Armazenamento local (nunca pode quebrar o jogo) ----------
   function ler(chave) { try { return JSON.parse(localStorage.getItem(chave)); } catch (e) { return null; } }
-  function gravar(chave, valor) { try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { } }
-  function apagar(chave) { try { localStorage.removeItem(chave); } catch (e) { } }
+  function gravar(chave, valor) { try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { /* sem armazenamento */ } }
+  function apagar(chave) { try { localStorage.removeItem(chave); } catch (e) { /* sem armazenamento */ } }
 
+  // Identidade do jogador NESTA ABA (sobrevive ao F5). Cada aba é um jogador diferente — dá para testar com 2 abas.
+  // Para voltar depois de fechar a aba, a ficha da partida guarda a identidade usada naquela sala.
   function meuId() {
     let id = null;
-    try { id = sessionStorage.getItem('bn-id'); } catch (e) { }
+    try { id = sessionStorage.getItem('bn-id'); } catch (e) { /* sem armazenamento */ }
     if (!id) id = 'j' + Math.random().toString(36).slice(2) + Date.now().toString(36);
     usarId(id);
     return id;
   }
 
+  // Partida salva: uma ficha por identidade (cada aba tem a sua; duas abas no mesmo navegador não se misturam).
   function chaveFicha(id) { return 'bn-ficha-' + id; }
   function lerFicha() { return ler(chaveFicha(meuId())); }
   function gravarFicha(f) { gravar(chaveFicha(f.id), Object.assign({}, f, { salvaEm: Date.now() })); }
   function apagarFicha(id) { apagar(chaveFicha(id || meuId())); }
 
+  // A ficha desta aba; se não houver (aba nova), a mais recente deste Chromebook para esta senha.
   function fichaParaOferecer() {
     const minha = lerFicha();
     if (minha && minha.senha === senha) return minha;
@@ -36,17 +41,17 @@
         const f = ler(k);
         if (f && f.senha === senha && (!melhor || (f.salvaEm || 0) > (melhor.salvaEm || 0))) melhor = f;
       }
-    } catch (e) { }
+    } catch (e) { /* sem armazenamento */ }
     return melhor;
   }
   let fichaOferecida = null;
 
-  function usarId(id) { try { sessionStorage.setItem('bn-id', id); } catch (e) { } }
+  function usarId(id) { try { sessionStorage.setItem('bn-id', id); } catch (e) { /* sem armazenamento */ } }
 
   let carteiro = null;
   let bancos = [];
   let senha = null;
-  let sessao = null;
+  let sessao = null;        // { codigo, eu, config }
   let conexao = null;
   let cliente = null;
   let jogadoresInfo = {};
@@ -61,6 +66,8 @@
   function meuNome() { return ($('nome').value || '').trim() || 'Jogador'; }
   function tamanho(id) { return Regras.FROTA.find(function (n) { return n.id === id; }).tamanho; }
   function mostrarErro(id, texto) { $(id).textContent = texto || ''; }
+
+  // ================= Início: senha e bancos =================
 
   async function iniciar() {
     if (typeof FIREBASE_CONFIG === 'undefined' || typeof firebase === 'undefined') {
@@ -145,7 +152,7 @@
       if (!sala) { apagarFicha(ficha.id); return; }
       $('partida-salva-texto').textContent = 'Você tem uma partida na SALA ' + ficha.codigo + (outro ? ' contra ' + outro.nome : '') + '.';
       $('partida-salva').hidden = false;
-    } catch (e) { }
+    } catch (e) { /* sem internet: não oferece */ }
   }
 
   function lembrarNome() { gravar('bn-nome', meuNome()); }
@@ -167,7 +174,7 @@
     if (!ficha) return;
     try {
       if (ficha.id) usarId(ficha.id);
-      if (ficha.nome) $('nome').value = ficha.nome;
+      if (ficha.nome) $('nome').value = ficha.nome;   // volta com o nome daquela partida (outra aba pode ter usado outro)
       const r = await carteiro.entrarNaSala(senha, ficha.codigo, { nome: meuNome(), id: meuId() });
       abrirSala(ficha.codigo, r.eu, r.config);
     } catch (e) {
@@ -177,6 +184,8 @@
     }
   });
 
+  // ================= Criar / entrar / esperar =================
+
   $('form-criar').addEventListener('submit', async function (ev) {
     ev.preventDefault();
     const banco = bancos[Number($('banco').value)];
@@ -185,7 +194,9 @@
       banco: banco.arquivo,
       modo: document.querySelector('input[name=modo]:checked').value,
       tempoMin: Number($('tempo').value),
-      segundos: Number($('segundos').value)
+      segundos: Number($('segundos').value),
+      tiro: document.querySelector('input[name=tiro]:checked').value,
+      torpedos: Number($('torpedos').value)
     };
     mostrarErro('criar-erro', 'Criando...');
     try {
@@ -210,6 +221,14 @@
       mostrarErro('entrar-erro', e.message);
     }
   });
+
+  // Torpedos só com Turbo + afundar Clássico: o seletor aparece só nessa combinação.
+  function mostrarLinhaTorpedos() {
+    const turboClassico = document.querySelector('input[name=tiro]:checked').value === 'turbo' &&
+      document.querySelector('input[name=modo]:checked').value === 'classico';
+    $('linha-torpedos').hidden = !turboClassico;
+  }
+  document.querySelectorAll('input[name=tiro], input[name=modo]').forEach(function (r) { r.addEventListener('change', mostrarLinhaTorpedos); });
 
   function bancoDaSala(config) {
     return bancos.find(function (b) { return b.arquivo === config.banco && !b.erro; }) || null;
@@ -236,6 +255,7 @@
     });
   }
 
+  // A ficha salva só vale para esta sala, com esta cadeira e esta identidade (outra aba pode ter gravado a dela).
   function fichaDestaSessao(ficha, codigo, euNaSala) {
     return !!ficha && ficha.senha === senha && ficha.codigo === codigo && ficha.eu === euNaSala && ficha.id === meuId();
   }
@@ -275,6 +295,8 @@
     iniciarTimers();
     mostrarFaseAtual();
   }
+
+  // ================= Eventos do cliente =================
 
   function aoEvento(ev) {
     if (!cliente) return;
@@ -320,6 +342,8 @@
     else if (e.fase === 'batalha') entrarBatalha();
     else if (e.fase === 'fim' && (e.etapa !== 'resultado' || !aguardandoAvanco)) mostrarFim();
   }
+
+  // ================= Posicionamento =================
 
   let navioSel = null;
   let orientacao = 'h';
@@ -397,13 +421,28 @@
   $('btn-limpar').addEventListener('click', function () { cliente.limpar(); navioSel = primeiroLivre(); pintarPosicionamento(); });
   $('btn-confirmar').addEventListener('click', function () { cliente.pronto(); });
 
+  // ================= Batalha =================
+
   const tabMeu = Tela.criarTabuleiro($('bat-meu'));
-  const tabAdv = Tela.criarTabuleiro($('bat-adv'), { aoClicar: mirar });
-  let destaque = null;
+  const tabAdv = Tela.criarTabuleiro($('bat-adv'), {
+    aoClicar: mirar,
+    // Ao passar o mouse, só o mar do adversário é repintado (o Meu mar não muda; poupa Chromebook fraco).
+    aoPassar: function (l, c) { mouseAdv = { l: l, c: c }; pintarMarAdversario(); },
+    aoSair: function () { mouseAdv = null; pintarMarAdversario(); }
+  });
+  let destaque = null;          // casa(s) do último tiro recebido, piscando no Meu mar
   let timerDestaque = null;
+  let mouseAdv = null;          // casa do mar do adversário sob o mouse (prévia do tiro)
+  let torpedoArmado = false;
+
+  const ROTULO_FORMATO = { duplo: '⚡ TIRO DUPLO', cruz: '✚ TIRO EM CRUZ', torpedo: '🚀 TORPEDO' };
+  const AVISO_FORMATO = { duplo: '⚡ Tiro duplo!', cruz: '✚ Tiro em cruz!', torpedo: '🚀 Torpedo!' };
 
   function faixa(texto) { $('faixa-texto').textContent = texto; }
+  function turbo() { return estado().config.tiro === 'turbo'; }
+  function comFormato(formato) { return ROTULO_FORMATO[formato] ? ' com ' + ROTULO_FORMATO[formato] : ''; }
 
+  // "Beto mirou em C7 com ⚡ TIRO DUPLO e está respondendo... ⏱ 7 s" — atualizada a cada ~250 ms.
   function colegaRespondendo() {
     const e = estado();
     return e.fase === 'batalha' && e.vez === colega() && e.etapa === 'responder' && e.mira;
@@ -412,12 +451,14 @@
     if (!colegaRespondendo()) return;
     const e = estado();
     const resta = Math.max(0, Math.ceil((cliente.fimDaConta - conexao.horaServidor()) / 1000));
-    faixa('🎯 ' + nome(colega()) + ' mirou em ' + Regras.nomeCasa(e.mira.l, e.mira.c) + ' e está respondendo... ⏱ ' + resta + ' s');
+    faixa('🎯 ' + nome(colega()) + ' mirou em ' + Regras.nomeCasa(e.mira.l, e.mira.c) + comFormato(e.mira.formato) +
+      ' e está respondendo... ⏱ ' + resta + ' s');
   }
 
   function entrarBatalha() {
     Tela.mostrar('tela-batalha');
     const e = estado();
+    if (e.vez !== eu() || e.etapa !== 'escolher') torpedoArmado = false;
     if (e.vez === eu()) {
       if (e.etapa === 'escolher') {
         const u = e.ultimoTurno;
@@ -433,12 +474,13 @@
     pintarBatalha();
   }
 
+  function paraCasas(chaves) { return chaves.map(function (ch) { const p = ch.split(','); return { l: Number(p[0]), c: Number(p[1]) }; }); }
+
   function pintarBatalha() {
     if (!cliente || estado().fase === 'posicionamento') return;
     const e = estado();
-    const tirosAdv = e.jogadores[colega()].tiros;
     const miradaEmMim = e.fase === 'batalha' && e.vez === colega() && e.mira && (e.etapa === 'responder' || e.etapa === 'aguardando_resultado')
-      ? Regras.chave(e.mira.l, e.mira.c) : null;
+      ? (e.mira.casas || [Regras.chave(e.mira.l, e.mira.c)]) : null;
     tabMeu.pintar({
       navios: e.jogadores[eu()].navios,
       tiros: e.jogadores[eu()].tiros,
@@ -446,28 +488,76 @@
       destaque: destaque,
       mirada: miradaEmMim
     });
+    pintarMarAdversario();
+  }
+
+  function pintarMarAdversario() {
+    if (!cliente || estado().fase === 'posicionamento') return;
+    const e = estado();
+    const tirosAdv = e.jogadores[colega()].tiros;
+    const minhaVezDeMirar = euConectado && e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher';
+    // Prévia do tiro (1 casa, duplo, cruz ou torpedo) sob o mouse, na minha vez.
+    let previa = null;
+    if (minhaVezDeMirar && mouseAdv && !tirosAdv[Regras.chave(mouseAdv.l, mouseAdv.c)]) {
+      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, torpedoArmado).casas), valida: true };
+    }
     tabAdv.pintar({
       tiros: tirosAdv,
       afundadas: Regras.casasAfundadas(e, colega()),
-      clicavel: function (l, c) {
-        return euConectado && e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher' && !tirosAdv[Regras.chave(l, c)];
-      }
+      previa: previa,
+      clicavel: function (l, c) { return minhaVezDeMirar && !tirosAdv[Regras.chave(l, c)]; }
     });
+    atualizarTurbo();
   }
 
   function atualizarBarra() {
     const e = estado();
     $('bat-vez').textContent = e.vez === eu() ? '🎯 Sua vez' : '⏳ Vez de ' + nome(e.vez);
     $('bat-placar').textContent = nome(0) + ': ' + Regras.casasAtingidas(e, 1) + ' casas · ' + nome(1) + ': ' + Regras.casasAtingidas(e, 0) + ' casas';
+    atualizarTurbo();
   }
 
+  // Turbo: "🔥 Sequência: 3 · faltam 2 para ⚡ tiro duplo" e o botão do torpedo.
+  function atualizarTurbo() {
+    const e = estado();
+    $('turbo').hidden = !turbo() || e.fase !== 'batalha';
+    if (!turbo()) return;
+    const eu0 = e.jogadores[eu()];
+    const seq = eu0.sequencia;
+    const alvo = seq < 5 ? 5 : Math.max(10, (Math.floor(seq / 5) + 1) * 5);
+    const poder = alvo === 5 ? '⚡ tiro duplo' : '✚ tiro em cruz';
+    $('bat-sequencia').textContent = '🔥 Sequência: ' + seq + ' · ' + (torpedoArmado
+      ? '🚀 torpedo armado: se acertar, o tiro sai como torpedo' + (alvo - seq === 1 ? ' (no lugar do ' + poder + ')' : '')
+      : (alvo - seq === 1 ? 'se acertar a próxima: ' + poder + '!' : 'faltam ' + (alvo - seq) + ' para ' + poder));
+    const b = $('btn-torpedo');
+    b.hidden = !e.config.torpedos;
+    const podeArmar = e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher' && eu0.torpedos > 0;
+    if (!podeArmar) torpedoArmado = false;
+    b.disabled = !podeArmar;
+    b.classList.toggle('armado', torpedoArmado);
+    b.textContent = torpedoArmado ? '🚀 Torpedo armado — clique para desarmar' : '🚀 Torpedo (' + eu0.torpedos + ')';
+  }
+
+  $('btn-torpedo').addEventListener('click', function () { torpedoArmado = !torpedoArmado; pintarBatalha(); });
+
+  // Resultado de um tiro (para quem atirou e para quem foi atingido). Tiros do Turbo vêm como 'multiplo'.
   function textoTiro(tiro) {
+    if (tiro.tipo === 'multiplo') {
+      if (tiro.afundados.length) return tiro.afundados.map(function (n) { return '🚢 Afundou o navio de ' + n.tamanho + '!'; }).join(' ');
+      if (tiro.acertos.length) return '💥 Acertou ' + tiro.acertos.length + (tiro.acertos.length === 1 ? ' casa!' : ' casas!');
+      return '🌊 Água!';
+    }
     if (tiro.tipo === 'agua') return '🌊 Água!';
     if (tiro.tipo === 'acerto') return '💥 Acertou!';
     return '🚢 Afundou o navio de ' + tiro.tamanho + '!';
   }
 
   function textoImpacto(tiro) {
+    if (tiro.tipo === 'multiplo') {
+      if (tiro.afundados.length) return tiro.afundados.map(function (n) { return '🚢 Seu navio de ' + n.tamanho + ' afundou!'; }).join(' ');
+      if (tiro.acertos.length) return '💥 ' + tiro.acertos.length + (tiro.acertos.length === 1 ? ' casa do seu navio foi atingida!' : ' casas dos seus navios foram atingidas!');
+      return '🌊 Água!';
+    }
     if (tiro.tipo === 'agua') return '🌊 Água!';
     if (tiro.tipo === 'acerto') return '💥 Seu navio foi atingido!';
     return '🚢 Seu navio de ' + tiro.tamanho + ' afundou!';
@@ -476,7 +566,8 @@
   function resumoTurno(u) {
     const quem = nome(u.jogador);
     if (!u.acertouConta) return quem + ' errou a continha — nenhum tiro.';
-    const onde = quem + ' atirou em ' + Regras.nomeCasa(u.l, u.c) + ': ';
+    const onde = quem + ' atirou em ' + Regras.nomeCasa(u.l, u.c) + comFormato(u.formato) + ': ';
+    if (u.tiro.tipo === 'multiplo') return onde + textoImpacto(u.tiro);
     if (u.tiro.tipo === 'agua') return onde + '🌊 água.';
     if (u.tiro.tipo === 'acerto') return onde + '💥 acertou!';
     return onde + '🚢 afundou seu navio de ' + u.tiro.tamanho + '!';
@@ -485,15 +576,17 @@
   function mostrarImpacto() {
     const u = estado().ultimoTurno;
     faixa(textoImpacto(u.tiro));
-    destaque = Regras.chave(u.l, u.c);
+    destaque = u.casas || Regras.chave(u.l, u.c);
     clearTimeout(timerDestaque);
     timerDestaque = setTimeout(function () { destaque = null; pintarBatalha(); }, 4000);
   }
 
   function mirar(l, c) {
     if (!euConectado) return;
-    cliente.mirar(l, c);
+    if (cliente.mirar(l, c, torpedoArmado)) torpedoArmado = false;   // a continha abre quando o recado "mirar" voltar
   }
+
+  // ================= Continha =================
 
   let intervaloConta = null;
   let respondido = true;
@@ -507,6 +600,9 @@
     const p = pa.pergunta;
     $('conta-casa').textContent = Regras.nomeCasa(estado().mira.l, estado().mira.c);
     $('conta-pergunta').textContent = p.pergunta;
+    const aviso = AVISO_FORMATO[estado().mira.formato];
+    $('conta-poder').hidden = !aviso;
+    $('conta-poder').textContent = aviso || '';
     $('conta-feedback').textContent = '';
     $('conta-avanco').hidden = true;
     const opcoes = $('conta-opcoes');
@@ -540,6 +636,7 @@
     if (!pa) { clearInterval(intervaloConta); return; }
     const resta = pa.fim - conexao.horaServidor();
     if (resta <= 0) {
+      // Tempo acabou: vale o que o aluno já digitou (mesmo sem Enter). Campo vazio = tempo esgotado.
       const digitado = pa.pergunta.tipo === 'escolha' ? '' : $('conta-input').value;
       $('conta-segundos').textContent = '0 s';
       responder(digitado.trim() === '' ? null : digitado);
@@ -553,7 +650,7 @@
   $('conta-form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     const texto = $('conta-input').value;
-    if (texto.trim() === '') return;
+    if (texto.trim() === '') return;   // Enter sem resposta não gasta a vez
     responder(texto);
   });
 
@@ -568,6 +665,7 @@
     $('conta-feedback').textContent = r.certa ? '✔ Certo! Disparando... 🎯' : (texto === null ? '⏰ Tempo esgotado!' : '✗ Errou!');
   }
 
+  // Depois do resultado, a vez passa sozinha; um clique na janela adianta.
   function iniciarAvanco(ms) {
     aguardandoAvanco = true;
     momentoResultado = Date.now();
@@ -575,7 +673,7 @@
     $('conta-avanco').hidden = false;
     barra.style.transition = 'none';
     barra.style.width = '100%';
-    void barra.offsetWidth;
+    void barra.offsetWidth;   // força o navegador a aplicar os 100% antes de animar
     barra.style.transition = 'width ' + ms + 'ms linear';
     barra.style.width = '0%';
     clearTimeout(timerAvanco);
@@ -593,8 +691,11 @@
   }
 
   $('conta').addEventListener('click', function () {
+    // Ignora o próprio clique/Enter que enviou a resposta (ele também chega aqui).
     if (aguardandoAvanco && Date.now() - momentoResultado > 400) avancar();
   });
+
+  // ================= Relógio, presença e desconexão =================
 
   let intervaloGeral = null;
 
@@ -642,6 +743,8 @@
 
   $('btn-encerrar').addEventListener('click', function () { cliente.encerrar(); });
 
+  // ================= Fim de jogo =================
+
   const tabFim = [Tela.criarTabuleiro($('fim-tab0')), Tela.criarTabuleiro($('fim-tab1'))];
 
   function mostrarFim() {
@@ -657,12 +760,15 @@
     };
     $('fim-titulo').textContent = e.vencedor === 'empate' ? '🤝 Empate!' : e.vencedor === eu() ? '🏆 Você venceu!' : '🏆 ' + nome(e.vencedor) + ' venceu!';
     $('fim-motivo').textContent = motivos[e.motivoFim] || '';
+    $('fim-col-seq').hidden = e.config.tiro !== 'turbo';
     const corpo = $('fim-stats');
     corpo.innerHTML = '';
     [0, 1].forEach(function (i) {
       const tr = document.createElement('tr');
       const contas = e.jogadores[i].contas;
-      [nome(i), String(Regras.casasAtingidas(e, 1 - i)), contas.certas + ' de ' + contas.total].forEach(function (t) {
+      const colunas = [nome(i), String(Regras.casasAtingidas(e, 1 - i)), contas.certas + ' de ' + contas.total];
+      if (e.config.tiro === 'turbo') colunas.push(String(e.jogadores[i].maiorSequencia));
+      colunas.forEach(function (t) {
         const td = document.createElement('td');
         td.textContent = t;
         tr.appendChild(td);
@@ -688,6 +794,8 @@
 
   $('btn-de-novo').addEventListener('click', function () { cliente.pedirRevanche(); });
   $('btn-sair').addEventListener('click', function () { fecharSala(); apagarFicha(); mostrarInicio(); });
+
+  // ================= Tudo =================
 
   function pintarTudo() {
     if (!cliente) return;

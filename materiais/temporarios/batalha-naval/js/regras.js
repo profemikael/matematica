@@ -85,17 +85,80 @@
     return { efeito: 'acerto', casas: casas };
   }
 
+  // ---------- Modo Turbo: tiros especiais e torpedo ----------
+
+  // O defensor calcula o resultado de um tiro de várias casas (duplo, cruz) ou de torpedo, com os próprios navios.
+  // Devolve { efeito: 'multiplo', agua: [chave], acertos: [chave], afundados: [{ tamanho, casasNavio }] }.
+  function resolverTiroMultiplo(navios, tiros, modo, casas, torpedo) {
+    const sim = Object.assign({}, tiros);
+    const r = { efeito: 'multiplo', agua: [], acertos: [], afundados: [] };
+    casas.forEach(function (ch) {
+      const p = ch.split(',').map(Number);
+      const id = navioNaCasa(navios, p[0], p[1]);
+      if (id === null) { if (!sim[ch]) { sim[ch] = 'agua'; r.agua.push(ch); } return; }
+      const doNavio = casasDoNavio(navios[id]).map(function (k) { return chave(k.l, k.c); });
+      const jaAfundado = doNavio.every(function (x) { return sim[x] === 'acerto'; });
+      (modo === 'rapido' || torpedo ? doNavio : [ch]).forEach(function (x) {
+        if (sim[x] !== 'acerto') { sim[x] = 'acerto'; r.acertos.push(x); }
+      });
+      if (!jaAfundado && doNavio.every(function (x) { return sim[x] === 'acerto'; })) {
+        r.afundados.push({ tamanho: navios[id].tamanho, casasNavio: doNavio });
+      }
+    });
+    return r;
+  }
+
+  const DESLOCAMENTOS = {
+    normal: [[0, 0]],
+    torpedo: [[0, 0]],
+    duplo: [[0, 0], [0, 1]],
+    cruz: [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]
+  };
+
+  // Formato do tiro de `jogador` neste turno: 'torpedo' se armado; no Turbo, 'duplo' no 5º acerto seguido
+  // e 'cruz' no 10º, 15º, 20º...; senão 'normal'. (n = a sequência que ele terá se acertar a conta.)
+  function formatoDoTiro(estado, jogador, torpedo) {
+    if (torpedo) return 'torpedo';
+    if (estado.config.tiro !== 'turbo') return 'normal';
+    const n = estado.jogadores[jogador].sequencia + 1;
+    if (n === 5) return 'duplo';
+    if (n >= 10 && n % 5 === 0) return 'cruz';
+    return 'normal';
+  }
+
+  // Casas que o tiro vai atingir (chaves), sem as que caem fora do mar ou já foram atingidas.
+  // A casa escolhida vem primeiro. Devolve { formato, casas }.
+  function casasDoTiro(estado, jogador, l, c, torpedo) {
+    const formato = formatoDoTiro(estado, jogador, torpedo);
+    const tirosAlvo = estado.jogadores[1 - jogador].tiros;
+    const casas = DESLOCAMENTOS[formato]
+      .map(function (d) { return [l + d[0], c + d[1]]; })
+      .filter(function (p, i) { return dentro(p[0], p[1]) && (i === 0 || !tirosAlvo[chave(p[0], p[1])]); })
+      .map(function (p) { return chave(p[0], p[1]); });
+    return { formato: formato, casas: casas };
+  }
+
+  // Torpedos por aluno: só no Turbo com afundar Clássico (0 a 3); em qualquer outro caso, 0.
+  function torpedosDaSala(config) {
+    if (config.tiro !== 'turbo' || config.modo === 'rapido') return 0;
+    return Math.min(3, Math.max(0, Math.round(Number(config.torpedos) || 0)));
+  }
+
   function novaPartida(config) {
     const nomes = (config.nomes || []).map(function (n, i) {
       const limpo = String(n || '').trim();
       return limpo === '' ? 'Jogador ' + (i + 1) : limpo;
     });
     while (nomes.length < 2) nomes.push('Jogador ' + (nomes.length + 1));
+    const torpedos = torpedosDaSala(config);
     function jogador() {
-      return { navios: {}, pronto: false, tiros: {}, afundadas: [], contas: { certas: 0, total: 0 } };
+      return { navios: {}, pronto: false, tiros: {}, afundadas: [], contas: { certas: 0, total: 0 },
+               sequencia: 0, maiorSequencia: 0, torpedos: torpedos };
     }
+    const cfg = { nomes: nomes, modo: config.modo === 'rapido' ? 'rapido' : 'classico', tempoMin: config.tempoMin || 0 };
+    if (config.tiro === 'turbo') { cfg.tiro = 'turbo'; cfg.torpedos = torpedos; }   // sala Normal: igual a antes
     return {
-      config: { nomes: nomes, modo: config.modo === 'rapido' ? 'rapido' : 'classico', tempoMin: config.tempoMin || 0 },
+      config: cfg,
       eu: config.eu === 1 ? 1 : 0,
       fase: 'posicionamento',
       jogadores: [jogador(), jogador()],
@@ -202,7 +265,18 @@
       if (acao.jogador !== defensor) return recusar(estadoAntigo, 'só o defensor responde o tiro');
       const d = estado.jogadores[defensor];
       const tiro = { tipo: acao.efeito, casas: acao.casas || [] };
-      if (acao.efeito === 'agua') {
+      if (acao.efeito === 'multiplo') {   // Turbo: tiro duplo, cruz ou torpedo
+        const agua = acao.agua || [], acertos = acao.acertos || [], afundados = acao.afundados || [];
+        agua.forEach(function (ch) { if (!d.tiros[ch]) d.tiros[ch] = 'agua'; });
+        acertos.forEach(function (ch) { d.tiros[ch] = 'acerto'; });
+        afundados.forEach(function (n) {
+          (n.casasNavio || []).forEach(function (ch) { d.tiros[ch] = 'acerto'; if (d.afundadas.indexOf(ch) < 0) d.afundadas.push(ch); });
+        });
+        tiro.casas = agua.concat(acertos);
+        tiro.agua = agua;
+        tiro.acertos = acertos;
+        tiro.afundados = afundados;
+      } else if (acao.efeito === 'agua') {
         d.tiros[chave(estado.mira.l, estado.mira.c)] = 'agua';
         tiro.casas = [chave(estado.mira.l, estado.mira.c)];
       } else {
@@ -245,7 +319,10 @@
       if (estado.etapa !== 'escolher') return recusar(estadoAntigo, 'já escolheu a casa neste turno');
       if (!dentro(acao.l, acao.c)) return recusar(estadoAntigo, 'fora do tabuleiro');
       if (estado.jogadores[alvo].tiros[chave(acao.l, acao.c)]) return recusar(estadoAntigo, 'casa já atingida');
-      estado.mira = { l: acao.l, c: acao.c };
+      const torpedo = acao.torpedo === true;
+      if (torpedo && estado.jogadores[estado.vez].torpedos <= 0) return recusar(estadoAntigo, 'sem torpedos');
+      const tiro = casasDoTiro(estado, estado.vez, acao.l, acao.c, torpedo);
+      estado.mira = { l: acao.l, c: acao.c, formato: tiro.formato, casas: tiro.casas, torpedo: torpedo };
       estado.etapa = 'responder';
       return { ok: true, estado: estado };
     }
@@ -256,7 +333,14 @@
       const atirador = estado.jogadores[estado.vez];
       atirador.contas.total += 1;
       if (certa) atirador.contas.certas += 1;
+      atirador.sequencia = certa ? atirador.sequencia + 1 : 0;
+      if (atirador.sequencia > atirador.maiorSequencia) atirador.maiorSequencia = atirador.sequencia;
+      if (estado.mira.torpedo) atirador.torpedos -= 1;   // o torpedo é gasto mesmo errando a conta
       estado.ultimoTurno = { jogador: estado.vez, l: estado.mira.l, c: estado.mira.c, acertouConta: certa, tiro: null };
+      if (estado.mira.formato !== 'normal') {   // só em tiros especiais (a sala Normal fica igual a antes)
+        estado.ultimoTurno.formato = estado.mira.formato;
+        estado.ultimoTurno.casas = estado.mira.casas;
+      }
       estado.etapa = certa ? 'aguardando_resultado' : 'resultado';
       return { ok: true, estado: estado };
     }
@@ -266,7 +350,8 @@
 
   const Regras = {
     TAMANHO, FROTA, TOTAL_CASAS_FROTA, chave, nomeCasa, casasDoNavio, podePosicionar, gerarFrotaAleatoria,
-    navioNaCasa, resolverTiro, novaPartida, casasAtingidas, casasAfundadas, aplicar
+    navioNaCasa, resolverTiro, resolverTiroMultiplo, formatoDoTiro, casasDoTiro, torpedosDaSala,
+    novaPartida, casasAtingidas, casasAfundadas, aplicar
   };
   raiz.Regras = Regras;
   if (typeof module !== 'undefined' && module.exports) module.exports = Regras;

@@ -111,12 +111,13 @@
       const r = Regras.aplicar(estado, acao, aleatorio);
       if (!r.ok) return;   // recado repetido ou fora de hora: ignorado
       estado = r.estado;
-      if (recado.tipo === 'mirar') { turno += 1; ultimoMirarEm = recado.em; }
+      // Cada "mirar" (tiro) ou "pedir_mover" (⚓) abre uma continha: conta como um turno novo.
+      if (recado.tipo === 'mirar' || recado.tipo === 'pedir_mover') { turno += 1; ultimoMirarEm = recado.em; }
       if (recado.tipo === 'resultado' && recado.jogador === eu) respondiTiroDoTurno = turno;
       if (recado.tipo === 'revelar' && recado.jogador === eu) revelei = true;
       if (faseAntes === 'posicionamento' && estado.fase === 'batalha') inicioBatalha = recado.em;
       // Minha continha: sorteia quando meu "mirar" volta (durante a releitura, só no fim — ver marcarSincronizado).
-      if (recado.tipo === 'mirar' && recado.jogador === eu && sincronizado) sortearPergunta();
+      if ((recado.tipo === 'mirar' || recado.tipo === 'pedir_mover') && recado.jogador === eu && sincronizado) sortearPergunta();
       if (recado.tipo === 'responder' && recado.jogador === eu && perguntaDestaVez()) {
         pergunta = null;
         guardar();
@@ -177,14 +178,46 @@
     }
 
     // torpedo = true para disparar um torpedo (Turbo + Clássico, com saldo); vertical = true gira o tiro duplo.
-    function mirar(l, c, torpedo, vertical) {
+    // poder = 'duplo' | 'cruz' | 'x' | 'torpedo' (ou true = torpedo) para usar um poder; vertical = true gira o duplo.
+    function mirar(l, c, poder, vertical) {
+      if (poder === true) poder = 'torpedo';
       if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'escolher') return false;
       if (estado.jogadores[1 - eu].tiros[Regras.chave(l, c)]) return false;
-      if (torpedo && estado.jogadores[eu].torpedos <= 0) return false;
+      if (poder && !Regras.temPoder(estado.jogadores[eu], poder)) return false;
       const dados = { l: l, c: c };
-      if (torpedo) dados.torpedo = true;
-      if (vertical) dados.vertical = true;
+      if (poder) dados.poder = poder;
+      if (vertical && poder === 'duplo') dados.vertical = true;
       enviar('mirar', dados);
+      return true;
+    }
+
+    // ---------- Arsenal do Turbo ----------
+
+    // Troca a sequência por um poder ('duplo' | 'mover' com 5–9; 'cruz' | 'x' com 10 ou mais).
+    function trocar(poder) {
+      if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'escolher') return false;
+      if (Regras.trocasPossiveis(estado, eu).indexOf(poder) < 0) return false;
+      enviar('trocar', { poder: poder });
+      return true;
+    }
+
+    // Usa o ⚓: abre a continha; acertando, a etapa vira 'movendo'.
+    function pedirMover() {
+      if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'escolher') return false;
+      if (!Regras.temPoder(estado.jogadores[eu], 'mover')) return false;
+      enviar('pedir_mover');
+      return true;
+    }
+
+    // Move o navio no meu computador (as posições nunca vão para a sala) e guarda na ficha.
+    function moverNavio(navio, l, c, orientacao) {
+      return local({ acao: 'mover_navio', navio: navio, l: l, c: c, orientacao: orientacao });
+    }
+
+    // Encerra o movimento (moveu ou desistiu) e passa a vez.
+    function concluirMover(desistiu) {
+      if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'movendo') return false;
+      enviar('mover', { desistiu: desistiu === true, tempoEsgotado: tempoAcabou() });
       return true;
     }
 
@@ -252,6 +285,10 @@
       limpar: function () { return local({ acao: 'limpar' }); },
       pronto: pronto,
       mirar: mirar,
+      trocar: trocar,
+      pedirMover: pedirMover,
+      moverNavio: moverNavio,
+      concluirMover: concluirMover,
       responder: responder,
       passarVez: passarVez,
       encerrar: encerrar,

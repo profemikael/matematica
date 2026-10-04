@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Batalha Naval</title>
-<link rel="stylesheet" href="css/estilo.css?v=2026-09-30-girar">
+<link rel="stylesheet" href="css/estilo.css?v=2026-10-04-arsenal">
 </head>
 <body>
 <main class="folha">
@@ -12,6 +12,7 @@
     <div class="linha">Prof. Mikael · Matemática · Jogo online para 2 alunos</div>
     <h1>⚓ Batalha Naval</h1>
     <h2>Acerte a conta para disparar!</h2>
+    <button id="btn-som" class="btn-som" type="button" title="Ligar/desligar o som">🔊</button>
   </header>
 
   <p id="sem-conexao" class="alerta" hidden>⚠ Sem conexão — tentando reconectar...</p>
@@ -88,6 +89,40 @@
           <option value="20">20 minutos</option>
           <option value="30">30 minutos</option>
           <option value="45">45 minutos</option>
+        </select>
+      </label>
+      <label>Contagem de suspense (quando o aluno responde antes do fim)
+        <select id="suspense">
+          <option value="0.1">0,1 s</option>
+          <option value="0.2">0,2 s</option>
+          <option value="0.3">0,3 s</option>
+          <option value="0.4">0,4 s</option>
+          <option value="0.5">0,5 s</option>
+          <option value="0.6">0,6 s</option>
+          <option value="0.7">0,7 s</option>
+          <option value="0.8">0,8 s</option>
+          <option value="0.9">0,9 s</option>
+          <option value="1" selected>1,0 s</option>
+          <option value="1.1">1,1 s</option>
+          <option value="1.2">1,2 s</option>
+          <option value="1.3">1,3 s</option>
+          <option value="1.4">1,4 s</option>
+          <option value="1.5">1,5 s</option>
+          <option value="1.6">1,6 s</option>
+          <option value="1.7">1,7 s</option>
+          <option value="1.8">1,8 s</option>
+          <option value="1.9">1,9 s</option>
+          <option value="2">2,0 s</option>
+          <option value="2.1">2,1 s</option>
+          <option value="2.2">2,2 s</option>
+          <option value="2.3">2,3 s</option>
+          <option value="2.4">2,4 s</option>
+          <option value="2.5">2,5 s</option>
+          <option value="2.6">2,6 s</option>
+          <option value="2.7">2,7 s</option>
+          <option value="2.8">2,8 s</option>
+          <option value="2.9">2,9 s</option>
+          <option value="3">3,0 s</option>
         </select>
       </label>
       <label>Tempo para responder cada conta
@@ -169,9 +204,26 @@
     </div>
     <div id="turbo" class="turbo" hidden>
       <span id="bat-sequencia"></span>
+      <span id="bat-arsenal" class="arsenal"></span>
       <span class="turbo-botoes">
+        <button id="btn-trocar-duplo" class="botao troca" type="button" hidden>Trocar por ⚡ tiro duplo</button>
+        <button id="btn-trocar-mover" class="botao troca" type="button" hidden>Trocar por ⚓ mover navio</button>
+        <button id="btn-trocar-cruz" class="botao troca" type="button" hidden>Trocar por ✚ tiro em cruz</button>
+        <button id="btn-trocar-x" class="botao troca" type="button" hidden>Trocar por ✖ tiro em X</button>
+        <button id="btn-usar-duplo" class="botao" type="button" hidden>⚡ tiro duplo</button>
+        <button id="btn-usar-cruz" class="botao" type="button" hidden>✚ tiro em cruz</button>
+        <button id="btn-usar-x" class="botao" type="button" hidden>✖ tiro em X</button>
         <button id="btn-girar-tiro" class="botao" type="button" hidden>↻ Girar tiro (R) — deitado</button>
         <button id="btn-torpedo" class="botao" type="button" hidden>🚀 Torpedo</button>
+        <button id="btn-mover" class="botao" type="button" hidden>⚓ Mover navio</button>
+      </span>
+    </div>
+    <div id="mover-painel" class="mover-painel" hidden>
+      <p id="mover-texto"></p>
+      <span class="turbo-botoes">
+        <button id="btn-mover-girar" class="botao" type="button">↻ Girar (R)</button>
+        <button id="btn-mover-confirmar" class="botao principal" type="button" disabled>✔ Confirmar movimento</button>
+        <button id="btn-mover-desistir" class="botao" type="button">Desistir de mover</button>
       </span>
     </div>
     <p id="bat-aviso-tempo" class="aviso-tempo" hidden>⏰ Tempo esgotado — última rodada</p>
@@ -185,9 +237,10 @@
 
     <div id="conta" class="janela" hidden>
       <div class="cartao conta">
-        <p class="conta-mira">Mirando em <strong id="conta-casa"></strong></p>
+        <p class="conta-mira"><span id="conta-mira-texto">Mirando em</span> <strong id="conta-casa"></strong></p>
         <p id="conta-poder" class="conta-poder" hidden></p>
         <p id="conta-pergunta" class="conta-pergunta"></p>
+        <p id="conta-suspense" class="conta-suspense" hidden></p>
         <div class="cronometro"><div id="conta-barra"></div></div>
         <p id="conta-segundos" class="conta-segundos"></p>
         <form id="conta-form">
@@ -203,6 +256,19 @@
       </div>
     </div>
   </section>
+
+  <!-- Contagem de suspense 3, 2, 1 e a revelação do tiro (os dois alunos veem) -->
+  <div id="suspense-tela" class="suspense" hidden>
+    <div class="suspense-caixa">
+      <p id="suspense-titulo" class="suspense-titulo"></p>
+      <p id="suspense-numero" class="suspense-numero"></p>
+      <p id="suspense-texto" class="suspense-texto"></p>
+      <div id="suspense-avanco" class="avanco" hidden>
+        <div class="avanco-trilho"><div id="suspense-avanco-barra"></div></div>
+        <p>Clique para continuar</p>
+      </div>
+    </div>
+  </div>
 
   <!-- 6. Fim de jogo -->
   <section id="tela-fim" class="tela" hidden>
@@ -228,14 +294,15 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="js/firebase-config.js?v=2026-09-30-girar"></script>
-<script src="bancos/lista.js?v=2026-09-30-girar"></script>
-<script src="js/regras.js?v=2026-09-30-girar"></script>
-<script src="js/perguntas.js?v=2026-09-30-girar"></script>
-<script src="js/cliente.js?v=2026-09-30-girar"></script>
-<script src="js/sala.js?v=2026-09-30-girar"></script>
-<script src="js/navios-svg.js?v=2026-09-30-girar"></script>
-<script src="js/tela.js?v=2026-09-30-girar"></script>
-<script src="js/partida-online.js?v=2026-09-30-girar"></script>
+<script src="js/firebase-config.js?v=2026-10-04-arsenal"></script>
+<script src="bancos/lista.js?v=2026-10-04-arsenal"></script>
+<script src="js/regras.js?v=2026-10-04-arsenal"></script>
+<script src="js/perguntas.js?v=2026-10-04-arsenal"></script>
+<script src="js/cliente.js?v=2026-10-04-arsenal"></script>
+<script src="js/sala.js?v=2026-10-04-arsenal"></script>
+<script src="js/navios-svg.js?v=2026-10-04-arsenal"></script>
+<script src="js/sons.js?v=2026-10-04-arsenal"></script>
+<script src="js/tela.js?v=2026-10-04-arsenal"></script>
+<script src="js/partida-online.js?v=2026-10-04-arsenal"></script>
 </body>
 </html>

@@ -158,3 +158,29 @@ fieldset { border: 1px solid var(--azul-claro); border-radius: 6px; }
 .conta-poder { margin: 6px 0 0; font-size: 20px; font-weight: bold; color: #C2410C; }
 
 .turbo-botoes { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---- Som e contagem de suspense ---- */
+header.capa { position: relative; }
+.btn-som { position: absolute; top: 12px; right: 16px; font-size: 22px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.5); border-radius: 50%; width: 44px; height: 44px; cursor: pointer; }
+.btn-som:hover { background: rgba(255,255,255,.3); }
+.suspense { position: fixed; inset: 0; z-index: 15; background: rgba(8, 20, 50, .78); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.suspense-caixa { text-align: center; color: #fff; max-width: 680px; }
+.suspense-titulo { font-size: 24px; margin: 0 0 6px; opacity: .92; }
+.suspense-numero { font-size: 160px; font-weight: bold; line-height: 1; margin: 0; color: #FDE68A; text-shadow: 0 6px 24px rgba(0,0,0,.5); animation: pulsar .35s ease-out; }
+.suspense-numero:empty { display: none; }
+.suspense-texto { font-size: 44px; font-weight: bold; margin: 8px 0 0; }
+.suspense-texto:empty { display: none; }
+.suspense .avanco { margin-top: 18px; }
+.suspense .avanco p { color: #E5E7EB; }
+#suspense-avanco-barra { height: 100%; width: 100%; background: #FDE68A; }
+.conta-suspense { font-size: 64px; font-weight: bold; color: #DC2626; margin: 0; line-height: 1; animation: pulsar .35s ease-out; }
+@keyframes pulsar { from { transform: scale(1.35); opacity: .4; } to { transform: scale(1); opacity: 1; } }
+
+/* ---- Turbo: arsenal, trocas e mover navio ---- */
+.arsenal { font-weight: bold; color: #7C2D12; }
+.turbo .botao, .mover-painel .botao { font-size: 14px; padding: 6px 10px; }
+.botao.troca { background: #FEF3C7; border-color: #F59E0B; color: #92400E; }
+.botao.armado { background: #DC2626; border-color: #991B1B; color: #fff; }
+.mover-painel { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+                background: #ECFEFF; border: 1px solid #22D3EE; border-radius: 8px; padding: 6px 12px; margin: 8px 0; }
+.mover-painel p { margin: 0; font-weight: bold; color: #155E75; }

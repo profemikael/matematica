@@ -195,6 +195,7 @@
       modo: document.querySelector('input[name=modo]:checked').value,
       tempoMin: Number($('tempo').value),
       segundos: Number($('segundos').value),
+      suspense: Number($('suspense').value),
       tiro: document.querySelector('input[name=tiro]:checked').value,
       torpedos: Number($('torpedos').value)
     };
@@ -305,22 +306,36 @@
       case 'local': pintarPosicionamento(); break;
       case 'pronto': mostrarFaseAtual(); break;
       case 'mirar':
+        if (cliente.sincronizado) { esconderSuspense(); if (r.torpedo || r.poder === 'torpedo') Sons.tocar('torpedo'); }
         if (r.jogador === eu()) abrirConta();
         else faixaMira();
         pintarBatalha();
         break;
       case 'responder':
-        if (r.jogador === eu()) { if (!r.certa) iniciarAvanco(MS_RESULTADO_ERRADO); }
-        else faixa(r.certa ? '✅ ' + nome(r.jogador) + ' acertou a conta! Prepare-se para o impacto!' : '❌ ' + nome(r.jogador) + ' errou a conta! Você escapou!');
+        // O resultado (certo/errado, água/acerto) só aparece no 0 da contagem de suspense.
+        if (r.jogador !== eu()) faixa('⏳ ' + nome(r.jogador) + ' respondeu…');
+        if (cliente.sincronizado) contagemRapida();
         pintarBatalha();
         atualizarBarra();
         break;
       case 'resultado':
-        if (r.jogador === eu()) mostrarImpacto();
-        else { $('conta-feedback').textContent = '✔ Certo! ' + textoTiro(estado().ultimoTurno.tiro); iniciarAvanco(MS_RESULTADO_CERTO); }
+        // Revela agora se a contagem já chegou a 0 esperando este resultado; senão, revela no 0.
+        if (cliente.sincronizado && (susp.fase === 'esperando' || susp.fase === null)) revelar();
         pintarBatalha();
         atualizarBarra();
-        if (estado().fase === 'fim' && r.jogador === eu()) mostrarFim();
+        break;
+      case 'pedir_mover':
+        if (cliente.sincronizado) esconderSuspense();
+        if (r.jogador === eu()) abrirConta();
+        else faixaMira();
+        pintarBatalha();
+        break;
+      case 'trocar':
+        pintarBatalha();
+        break;
+      case 'mover':
+        if (r.jogador !== eu() && cliente.sincronizado && !r.desistiu) Sons.tocar('agua');
+        mostrarFaseAtual();
         break;
       case 'passar_vez':
         $('conta').hidden = true;
@@ -416,7 +431,10 @@
   $('btn-girar').addEventListener('click', girar);
   document.addEventListener('keydown', function (ev) {
     if ((ev.key === 'r' || ev.key === 'R') && !$('tela-posicionar').hidden) girar();
-    else if ((ev.key === 'r' || ev.key === 'R') && !$('tela-batalha').hidden && !$('btn-girar-tiro').hidden && $('conta').hidden) girarTiro();
+    else if ((ev.key === 'r' || ev.key === 'R') && !$('tela-batalha').hidden && $('conta').hidden) {
+      if (modoMovimento()) girarMovimento();
+      else if (!$('btn-girar-tiro').hidden) girarTiro();
+    }
   });
   $('btn-aleatorio').addEventListener('click', function () { cliente.aleatorio(); navioSel = null; $('pos-dica').textContent = ''; pintarPosicionamento(); });
   $('btn-limpar').addEventListener('click', function () { cliente.limpar(); navioSel = primeiroLivre(); pintarPosicionamento(); });
@@ -424,7 +442,12 @@
 
   // ================= Batalha =================
 
-  const tabMeu = Tela.criarTabuleiro($('bat-meu'));
+  const tabMeu = Tela.criarTabuleiro($('bat-meu'), {
+    // No modo "mover navio" (Turbo), o Meu mar fica clicável: escolher o navio e o novo lugar.
+    aoClicar: function (l, c) { if (modoMovimento()) cliqueMovimento(l, c); },
+    aoPassar: function (l, c) { if (modoMovimento()) { mov.mouse = { l: l, c: c }; pintarBatalha(); } },
+    aoSair: function () { if (modoMovimento()) { mov.mouse = null; pintarBatalha(); } }
+  });
   const tabAdv = Tela.criarTabuleiro($('bat-adv'), {
     aoClicar: mirar,
     // Ao passar o mouse, só o mar do adversário é repintado (o Meu mar não muda; poupa Chromebook fraco).
@@ -434,15 +457,20 @@
   let destaque = null;          // casa(s) do último tiro recebido, piscando no Meu mar
   let timerDestaque = null;
   let mouseAdv = null;          // casa do mar do adversário sob o mouse (prévia do tiro)
-  let torpedoArmado = false;
+  let poderArmado = null;       // Turbo: 'duplo' | 'cruz' | 'x' | 'torpedo' armado para o próximo tiro
   let tiroEmPe = false;         // tiro duplo girado (casa + a de baixo); a escolha fica valendo para os próximos
+  let mov = { navio: null, orientacao: 'h', alvo: null, mouse: null };   // modo "mover navio"
 
-  const ROTULO_FORMATO = { duplo: '⚡ TIRO DUPLO', cruz: '✚ TIRO EM CRUZ', torpedo: '🚀 TORPEDO' };
-  const AVISO_FORMATO = { duplo: '⚡ Tiro duplo!', cruz: '✚ Tiro em cruz!', torpedo: '🚀 Torpedo!' };
+  const ROTULO_FORMATO = { duplo: '⚡ TIRO DUPLO', cruz: '✚ TIRO EM CRUZ', x: '✖ TIRO EM X', torpedo: '🚀 TORPEDO' };
+  const AVISO_FORMATO = { duplo: '⚡ Tiro duplo!', cruz: '✚ Tiro em cruz!', x: '✖ Tiro em X!', torpedo: '🚀 Torpedo!',
+                          mover: '⚓ Acerte a conta para mover um navio!' };
+  const NOME_PODER = { duplo: '⚡ tiro duplo', mover: '⚓ mover navio', cruz: '✚ tiro em cruz', x: '✖ tiro em X', torpedo: '🚀 torpedo' };
 
   function faixa(texto) { $('faixa-texto').textContent = texto; }
   function turbo() { return estado().config.tiro === 'turbo'; }
   function comFormato(formato) { return ROTULO_FORMATO[formato] ? ' com ' + ROTULO_FORMATO[formato] : ''; }
+  function minhaVezDeEscolher() { const e = estado(); return euConectado && e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher'; }
+  function modoMovimento() { const e = estado(); return !!cliente && e.fase === 'batalha' && e.vez === eu() && e.etapa === 'movendo'; }
 
   // "Beto mirou em C7 com ⚡ TIRO DUPLO e está respondendo... ⏱ 7 s" — atualizada a cada ~250 ms.
   function colegaRespondendo() {
@@ -453,6 +481,7 @@
     if (!colegaRespondendo()) return;
     const e = estado();
     const resta = Math.max(0, Math.ceil((cliente.fimDaConta - conexao.horaServidor()) / 1000));
+    if (e.mira.mover) { faixa('⚓ ' + nome(colega()) + ' vai mover um navio e está respondendo... ⏱ ' + resta + ' s'); return; }
     faixa('🎯 ' + nome(colega()) + ' mirou em ' + Regras.nomeCasa(e.mira.l, e.mira.c) + comFormato(e.mira.formato) +
       ' e está respondendo... ⏱ ' + resta + ' s');
   }
@@ -460,16 +489,20 @@
   function entrarBatalha() {
     Tela.mostrar('tela-batalha');
     const e = estado();
-    if (e.vez !== eu() || e.etapa !== 'escolher') torpedoArmado = false;
+    if (e.vez !== eu() || e.etapa !== 'escolher') poderArmado = null;
+    if (!modoMovimento()) mov = { navio: null, orientacao: 'h', alvo: null, mouse: null };
     if (e.vez === eu()) {
       if (e.etapa === 'escolher') {
         const u = e.ultimoTurno;
         faixa(u && u.jogador === colega() ? resumoTurno(u) + ' Agora é sua vez: escolha uma casa no mar do adversário.' : 'Sua vez: escolha uma casa no mar do adversário.');
       } else if (e.etapa === 'responder') abrirConta();
+      else if (e.etapa === 'movendo') faixa('⚓ Escolha um navio intacto no Meu mar e clique no novo lugar.');
     } else if (e.etapa === 'escolher') {
       faixa('🎯 ' + nome(colega()) + ' está escolhendo um alvo...');
     } else if (e.etapa === 'responder') {
       faixaMira();
+    } else if (e.etapa === 'movendo') {
+      faixa('⚓ ' + nome(colega()) + ' está movendo um navio...');
     }
     atualizarBarra();
     atualizarPresenca();
@@ -481,15 +514,29 @@
   function pintarBatalha() {
     if (!cliente || estado().fase === 'posicionamento') return;
     const e = estado();
-    const miradaEmMim = e.fase === 'batalha' && e.vez === colega() && e.mira && (e.etapa === 'responder' || e.etapa === 'aguardando_resultado')
+    const miradaEmMim = e.fase === 'batalha' && e.vez === colega() && e.mira && !e.mira.mover && (e.etapa === 'responder' || e.etapa === 'aguardando_resultado')
       ? (e.mira.casas || [Regras.chave(e.mira.l, e.mira.c)]) : null;
+    let navios = e.jogadores[eu()].navios;
+    let previa = null;
+    if (modoMovimento()) {
+      // Mostra o navio escolhido no lugar provisório e a prévia (verde/vermelha) sob o mouse.
+      navios = Object.assign({}, navios);
+      if (mov.navio && mov.alvo) navios[mov.navio] = Object.assign({}, navios[mov.navio], mov.alvo);
+      if (mov.navio && mov.mouse) {
+        const cand = { l: mov.mouse.l, c: mov.mouse.c, orientacao: mov.orientacao, tamanho: e.jogadores[eu()].navios[mov.navio].tamanho };
+        previa = { casas: Regras.casasDoNavio(cand), valida: motivoMovimento(cand) === null };
+      }
+    }
     tabMeu.pintar({
-      navios: e.jogadores[eu()].navios,
+      navios: navios,
       tiros: e.jogadores[eu()].tiros,
       afundadas: Regras.casasAfundadas(e, eu()),
       destaque: destaque,
-      mirada: miradaEmMim
+      mirada: miradaEmMim,
+      previa: previa,
+      clicavel: function () { return modoMovimento(); }
     });
+    atualizarPainelMovimento();
     pintarMarAdversario();
   }
 
@@ -497,11 +544,11 @@
     if (!cliente || estado().fase === 'posicionamento') return;
     const e = estado();
     const tirosAdv = e.jogadores[colega()].tiros;
-    const minhaVezDeMirar = euConectado && e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher';
-    // Prévia do tiro (1 casa, duplo, cruz ou torpedo) sob o mouse, na minha vez.
+    const minhaVezDeMirar = minhaVezDeEscolher();
+    // Prévia do tiro (1 casa, duplo, cruz, X ou torpedo) sob o mouse, na minha vez.
     let previa = null;
     if (minhaVezDeMirar && mouseAdv && !tirosAdv[Regras.chave(mouseAdv.l, mouseAdv.c)]) {
-      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, torpedoArmado, tiroEmPe).casas), valida: true };
+      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, poderArmado, tiroEmPe).casas), valida: true };
     }
     tabAdv.pintar({
       tiros: tirosAdv,
@@ -519,36 +566,127 @@
     atualizarTurbo();
   }
 
-  // Turbo: "🔥 Sequência: 3 · faltam 2 para ⚡ tiro duplo" e o botão do torpedo.
+  // ---------- Turbo: sequência, trocas e arsenal ----------
+
   function atualizarTurbo() {
     const e = estado();
     $('turbo').hidden = !turbo() || e.fase !== 'batalha';
     if (!turbo()) return;
     const eu0 = e.jogadores[eu()];
     const seq = eu0.sequencia;
-    const alvo = seq < 5 ? 5 : Math.max(10, (Math.floor(seq / 5) + 1) * 5);
-    const poder = alvo === 5 ? '⚡ tiro duplo' : '✚ tiro em cruz';
-    $('bat-sequencia').textContent = '🔥 Sequência: ' + seq + ' · ' + (torpedoArmado
-      ? '🚀 torpedo armado: se acertar, o tiro sai como torpedo' + (alvo - seq === 1 ? ' (no lugar do ' + poder + ')' : '')
-      : (alvo - seq === 1 ? 'se acertar a próxima: ' + poder + '!' : 'faltam ' + (alvo - seq) + ' para ' + poder));
-    const b = $('btn-torpedo');
-    b.hidden = !e.config.torpedos;
-    const podeArmar = e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher' && eu0.torpedos > 0;
-    if (!podeArmar) torpedoArmado = false;
-    b.disabled = !podeArmar;
-    b.classList.toggle('armado', torpedoArmado);
-    b.textContent = torpedoArmado ? '🚀 Torpedo armado — clique para desarmar' : '🚀 Torpedo (' + eu0.torpedos + ')';
-    // Girar só existe na vez do tiro duplo (e sem torpedo armado).
+    const ars = eu0.arsenal;
+    const podeAgir = minhaVezDeEscolher();
+    if (!podeAgir) poderArmado = null;
+    if (poderArmado && !Regras.temPoder(eu0, poderArmado)) poderArmado = null;
+    $('bat-sequencia').textContent = '🔥 Sequência: ' + seq + ' · ' +
+      (seq < 5 ? 'faltam ' + (5 - seq) + ' para trocar por ⚡ ou ⚓'
+        : seq < 10 ? 'pode trocar por ⚡ ou ⚓ — ou chegue a 10 para ✚ ou ✖ (faltam ' + (10 - seq) + ')'
+          : 'pode trocar por ✚ ou ✖') +
+      (poderArmado ? ' · armado: ' + NOME_PODER[poderArmado] : '');
+    $('bat-arsenal').textContent = 'Arsenal: ⚡ ' + ars.duplo + ' · ⚓ ' + ars.mover + ' · ✚ ' + ars.cruz + ' · ✖ ' + ars.x +
+      (e.config.torpedos ? ' · 🚀 ' + eu0.torpedos : '');
+    // Trocas (só na minha vez, antes de mirar).
+    const trocas = podeAgir ? Regras.trocasPossiveis(e, eu()) : [];
+    ['duplo', 'mover', 'cruz', 'x'].forEach(function (p) { $('btn-trocar-' + p).hidden = trocas.indexOf(p) < 0; });
+    // Usar poderes de tiro guardados.
+    ['duplo', 'cruz', 'x'].forEach(function (p) {
+      const b = $('btn-usar-' + p);
+      b.hidden = ars[p] <= 0;
+      b.disabled = !podeAgir;
+      b.classList.toggle('armado', poderArmado === p);
+      b.textContent = poderArmado === p ? NOME_PODER[p] + ' armado — clique para desarmar' : NOME_PODER[p] + ' (' + ars[p] + ')';
+    });
+    const t = $('btn-torpedo');
+    t.hidden = !e.config.torpedos;
+    t.disabled = !podeAgir || eu0.torpedos <= 0;
+    t.classList.toggle('armado', poderArmado === 'torpedo');
+    t.textContent = poderArmado === 'torpedo' ? '🚀 Torpedo armado — clique para desarmar' : '🚀 Torpedo (' + eu0.torpedos + ')';
+    const m = $('btn-mover');
+    m.hidden = ars.mover <= 0;
+    const algumIntacto = Regras.naviosQuePodemMover(e.jogadores[eu()]).length > 0;
+    m.disabled = !podeAgir || !algumIntacto;
+    m.title = algumIntacto ? '' : 'Todos os seus navios já foram atingidos';
+    m.textContent = '⚓ Mover navio (' + ars.mover + ')';
     const g = $('btn-girar-tiro');
-    g.hidden = !(e.fase === 'batalha' && e.vez === eu() && e.etapa === 'escolher' && !torpedoArmado &&
-                 Regras.formatoDoTiro(e, eu(), false) === 'duplo');
+    g.hidden = !(podeAgir && poderArmado === 'duplo');
     g.textContent = '↻ Girar tiro (R) — ' + (tiroEmPe ? 'em pé' : 'deitado');
   }
 
-  $('btn-torpedo').addEventListener('click', function () { torpedoArmado = !torpedoArmado; pintarBatalha(); });
+  function armar(poder) { poderArmado = poderArmado === poder ? null : poder; pintarMarAdversario(); }
+  ['duplo', 'mover', 'cruz', 'x'].forEach(function (p) {
+    $('btn-trocar-' + p).addEventListener('click', function () { poderArmado = null; cliente.trocar(p); });
+  });
+  ['duplo', 'cruz', 'x'].forEach(function (p) { $('btn-usar-' + p).addEventListener('click', function () { armar(p); }); });
+  $('btn-torpedo').addEventListener('click', function () { armar('torpedo'); });
+  $('btn-mover').addEventListener('click', function () { poderArmado = null; cliente.pedirMover(); });
 
   function girarTiro() { tiroEmPe = !tiroEmPe; pintarMarAdversario(); }
   $('btn-girar-tiro').addEventListener('click', girarTiro);
+
+  // ---------- Turbo: mover navio (depois de acertar a conta) ----------
+
+  // Motivo para não poder pôr o navio escolhido em `cand` (null = pode). Usa a própria regra do jogo.
+  function motivoMovimento(cand) {
+    const r = Regras.aplicar(estado(), { acao: 'mover_navio', navio: mov.navio, l: cand.l, c: cand.c, orientacao: cand.orientacao });
+    return r.ok ? null : r.motivo;
+  }
+
+  function navioIntacto(id) {
+    const j = estado().jogadores[eu()];
+    return Regras.casasDoNavio(j.navios[id]).every(function (k) { return j.tiros[Regras.chave(k.l, k.c)] !== 'acerto'; });
+  }
+
+  // Aviso de recusa: fica no painel (mesmo mexendo o mouse) até o próximo clique.
+  function avisarMovimento(texto) { mov.aviso = texto; atualizarPainelMovimento(); }
+
+  function cliqueMovimento(l, c) {
+    mov.aviso = null;
+    const j = estado().jogadores[eu()];
+    const naCasa = Regras.navioNaCasa(j.navios, l, c);
+    if (naCasa && naCasa !== mov.navio && !mov.alvo) {
+      if (!navioIntacto(naCasa)) { avisarMovimento('Só dá para mover navio que ainda não foi atingido.'); return; }
+      mov = { navio: naCasa, orientacao: j.navios[naCasa].orientacao, alvo: null, mouse: null };
+      pintarBatalha();
+      return;
+    }
+    if (!mov.navio) { avisarMovimento('Primeiro clique num navio seu que ainda não foi atingido.'); return; }
+    const cand = { l: l, c: c, orientacao: mov.orientacao };
+    const motivo = motivoMovimento(cand);
+    if (motivo) { avisarMovimento('Não dá: ' + motivo + '.'); return; }
+    mov.alvo = cand;
+    pintarBatalha();
+  }
+
+  function atualizarPainelMovimento() {
+    const ativo = modoMovimento();
+    $('mover-painel').hidden = !ativo;
+    if (!ativo) return;
+    $('btn-mover-confirmar').disabled = !mov.alvo;
+    if (mov.aviso) $('mover-texto').textContent = mov.aviso;
+    else if (!mov.navio) $('mover-texto').textContent = '⚓ Clique num navio seu que ainda não foi atingido.';
+    else if (!mov.alvo) $('mover-texto').textContent = '⚓ Agora clique no novo lugar (não pode ser onde o colega já atirou). Girar: R.';
+    else $('mover-texto').textContent = '⚓ Pronto? Confirme o movimento (ou clique em outro lugar para mudar).';
+  }
+
+  function girarMovimento() {
+    if (!mov.navio) return;
+    mov.orientacao = mov.orientacao === 'h' ? 'v' : 'h';
+    if (mov.alvo) { const cand = { l: mov.alvo.l, c: mov.alvo.c, orientacao: mov.orientacao }; mov.alvo = motivoMovimento(cand) ? null : cand; }
+    pintarBatalha();
+  }
+
+  $('btn-mover-girar').addEventListener('click', girarMovimento);
+  $('btn-mover-confirmar').addEventListener('click', function () {
+    if (!mov.navio || !mov.alvo) return;
+    if (!cliente.moverNavio(mov.navio, mov.alvo.l, mov.alvo.c, mov.alvo.orientacao).ok) return;
+    mov = { navio: null, orientacao: 'h', alvo: null, mouse: null };
+    Sons.tocar('agua');
+    cliente.concluirMover(false);
+  });
+  $('btn-mover-desistir').addEventListener('click', function () {
+    mov = { navio: null, orientacao: 'h', alvo: null, mouse: null };
+    cliente.concluirMover(true);
+  });
 
   // Resultado de um tiro (para quem atirou e para quem foi atingido). Tiros do Turbo vêm como 'multiplo'.
   function textoTiro(tiro) {
@@ -575,6 +713,10 @@
 
   function resumoTurno(u) {
     const quem = nome(u.jogador);
+    if (u.mover) {
+      if (!u.acertouConta) return quem + ' errou a continha — não moveu o navio.';
+      return u.moveu ? '⚓ ' + quem + ' moveu um navio!' : quem + ' desistiu de mover o navio.';
+    }
     if (!u.acertouConta) return quem + ' errou a continha — nenhum tiro.';
     const onde = quem + ' atirou em ' + Regras.nomeCasa(u.l, u.c) + comFormato(u.formato) + ': ';
     if (u.tiro.tipo === 'multiplo') return onde + textoImpacto(u.tiro);
@@ -593,7 +735,7 @@
 
   function mirar(l, c) {
     if (!euConectado) return;
-    if (cliente.mirar(l, c, torpedoArmado, tiroEmPe)) torpedoArmado = false;   // a continha abre quando o recado "mirar" voltar
+    if (cliente.mirar(l, c, poderArmado, tiroEmPe)) poderArmado = null;   // a continha abre quando o recado "mirar" voltar
   }
 
   // ================= Continha =================
@@ -608,13 +750,16 @@
     const pa = cliente.perguntaAtual();
     if (!pa || !respondido && !$('conta').hidden) return;
     const p = pa.pergunta;
-    $('conta-casa').textContent = Regras.nomeCasa(estado().mira.l, estado().mira.c);
+    const m = estado().mira;
+    $('conta-mira-texto').textContent = m.mover ? '⚓' : 'Mirando em';
+    $('conta-casa').textContent = m.mover ? 'Mover um navio' : Regras.nomeCasa(m.l, m.c);
     $('conta-pergunta').textContent = p.pergunta;
     const aviso = AVISO_FORMATO[estado().mira.formato];
     $('conta-poder').hidden = !aviso;
     $('conta-poder').textContent = aviso || '';
     $('conta-feedback').textContent = '';
     $('conta-avanco').hidden = true;
+    $('conta-suspense').hidden = true;
     const opcoes = $('conta-opcoes');
     opcoes.innerHTML = '';
     if (p.tipo === 'escolha') {
@@ -652,6 +797,7 @@
       responder(digitado.trim() === '' ? null : digitado);
       return;
     }
+    suspenseNormal(resta, true);
     $('conta-barra').style.width = Math.min(100, resta / cliente.msConta * 100) + '%';
     $('conta-barra').classList.toggle('pouco', resta <= 3000);
     $('conta-segundos').textContent = Math.ceil(resta / 1000) + ' s';
@@ -668,19 +814,20 @@
     if (respondido) return;
     respondido = true;
     clearInterval(intervaloConta);
+    respostaFoiTempo = texto === null;
     const r = cliente.responder(texto);
     $('conta-input').disabled = true;
     $('conta-opcoes').querySelectorAll('button').forEach(function (b) { b.disabled = true; });
     if (!r) return;
-    $('conta-feedback').textContent = r.certa ? '✔ Certo! Disparando... 🎯' : (texto === null ? '⏰ Tempo esgotado!' : '✗ Errou!');
+    $('conta-feedback').textContent = '';   // a revelação vem no 0 da contagem de suspense
   }
 
   // Depois do resultado, a vez passa sozinha; um clique na janela adianta.
   function iniciarAvanco(ms) {
     aguardandoAvanco = true;
     momentoResultado = Date.now();
-    const barra = $('conta-avanco-barra');
-    $('conta-avanco').hidden = false;
+    const barra = $('suspense-avanco-barra');
+    $('suspense-avanco').hidden = false;
     barra.style.transition = 'none';
     barra.style.width = '100%';
     void barra.offsetWidth;   // força o navegador a aplicar os 100% antes de animar
@@ -694,7 +841,7 @@
     if (!aguardandoAvanco) return;
     aguardandoAvanco = false;
     clearTimeout(timerAvanco);
-    $('conta-avanco').hidden = true;
+    esconderSuspense();
     $('conta').hidden = true;
     if (estado().fase === 'fim') mostrarFim();
     else cliente.passarVez();
@@ -704,6 +851,153 @@
     // Ignora o próprio clique/Enter que enviou a resposta (ele também chega aqui).
     if (aguardandoAvanco && Date.now() - momentoResultado > 400) avancar();
   });
+
+  // ================= Contagem de suspense 3, 2, 1 e revelação =================
+  // Os dois alunos veem. Respondeu antes do fim: 3, 2, 1 acelerado (duração da sala, padrão 1 s).
+  // Deixou o tempo correr: o 3, 2, 1 dos últimos segundos do cronômetro. No 0, a revelação (errou / água / acertou / afundou).
+
+  let susp = { fase: null, numero: null, timer: null };   // fase: null | normal | rapido | esperando | revelado
+  let respostaFoiTempo = false;
+
+  function duracaoSuspenseMs() {
+    const s = Number(sessao && sessao.config && sessao.config.suspense);
+    return Math.min(3, Math.max(0.1, isFinite(s) && s > 0 ? s : 1)) * 1000;
+  }
+
+  function tituloSuspense() {
+    const e = estado();
+    if (e.mira && e.mira.mover) return e.vez === eu() ? '⚓ Você quer mover um navio…' : '⚓ ' + nome(e.vez) + ' quer mover um navio…';
+    const u = e.mira || e.ultimoTurno;
+    const onde = u ? ' em ' + Regras.nomeCasa(u.l, u.c) + comFormato(u.formato) : '';
+    return e.vez === eu() ? '🎯 Disparando' + onde + '…' : '🎯 ' + nome(e.vez) + ' respondeu — tiro' + onde + '…';
+  }
+
+  function mostrarNumero(n) {
+    $('suspense-tela').hidden = false;
+    $('suspense-titulo').textContent = tituloSuspense();
+    $('suspense-texto').textContent = '';
+    $('suspense-avanco').hidden = true;
+    const el = $('suspense-numero');
+    el.textContent = String(n);
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';   // reinicia o "pulo" do número
+    if (susp.numero !== n) Sons.tocar('tic');
+    susp.numero = n;
+  }
+
+  function esconderSuspense() {
+    clearTimeout(susp.timer);
+    susp = { fase: null, numero: null, timer: null };
+    $('suspense-tela').hidden = true;
+    $('suspense-numero').textContent = '';
+    $('suspense-texto').textContent = '';
+    $('conta-suspense').hidden = true;
+    $('conta-suspense').textContent = '';
+  }
+
+  // Últimos 3 segundos no ritmo do cronômetro (quem espera vê em tela cheia; quem responde, dentro da continha).
+  function suspenseNormal(restaMs, souEuRespondendo) {
+    if (!cliente.sincronizado || (susp.fase && susp.fase !== 'normal') || restaMs <= 0 || restaMs > 3000) return;
+    const n = Math.ceil(restaMs / 1000);
+    susp.fase = 'normal';
+    if (souEuRespondendo) {
+      const el = $('conta-suspense');
+      el.hidden = false;
+      if (el.textContent !== String(n)) { el.textContent = String(n); el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
+      if (susp.numero !== n) Sons.tocar('tic');
+      susp.numero = n;
+    } else {
+      mostrarNumero(n);
+    }
+  }
+
+  // Respondeu: 3, 2, 1 acelerado (ou continua de onde o cronômetro estava) e revela no 0.
+  function contagemRapida() {
+    if (susp.fase === 'rapido' || susp.fase === 'esperando' || susp.fase === 'revelado') return;
+    clearTimeout(susp.timer);
+    susp.fase = 'rapido';
+    $('conta-suspense').hidden = true;
+    let n = susp.numero ? susp.numero - 1 : 3;
+    const passo = duracaoSuspenseMs() / 3;
+    (function proximo() {
+      if (n <= 0) { revelar(); return; }
+      mostrarNumero(n);
+      n -= 1;
+      susp.timer = setTimeout(proximo, passo);
+    })();
+  }
+
+  function somDoTiro(tiro) {
+    if (tiro.tipo === 'multiplo') return tiro.afundados.length ? 'afundou' : tiro.acertos.length ? 'explosao' : 'agua';
+    return tiro.tipo === 'agua' ? 'agua' : tiro.tipo === 'acerto' ? 'explosao' : 'afundou';
+  }
+
+  function revelar() {
+    const e = estado();
+    const u = e.ultimoTurno;
+    if (!u) { esconderSuspense(); return; }
+    $('suspense-tela').hidden = false;
+    $('suspense-numero').textContent = '';
+    if (u.mover) { revelarMovimento(u); return; }
+    if (u.acertouConta && !u.tiro) {   // conta certa, mas o computador do colega ainda não respondeu o tiro
+      susp.fase = 'esperando';
+      $('suspense-texto').textContent = '…';
+      return;
+    }
+    susp.fase = 'revelado';
+    const souAtirador = u.jogador === eu();
+    let texto;
+    if (!u.acertouConta) {
+      texto = souAtirador ? (respostaFoiTempo ? '⏰ Tempo esgotado!' : '✗ Errou!') : '❌ ' + nome(u.jogador) + ' errou a conta! Você escapou!';
+      Sons.tocar('errado');
+    } else {
+      texto = souAtirador ? textoTiro(u.tiro) : textoImpacto(u.tiro);
+      Sons.tocar(somDoTiro(u.tiro));
+    }
+    $('suspense-texto').textContent = texto;
+    if (souAtirador) {
+      $('conta-feedback').textContent = texto;
+      iniciarAvanco(u.acertouConta ? MS_RESULTADO_CERTO : MS_RESULTADO_ERRADO);
+    } else {
+      if (u.acertouConta) mostrarImpacto();
+      else faixa('❌ ' + nome(u.jogador) + ' errou a conta! Você escapou!');
+      pintarBatalha();   // mostra o impacto (casa piscando) no Meu mar agora, no 0 da contagem
+      susp.timer = setTimeout(function () {
+        esconderSuspense();
+        if (estado().fase === 'fim') mostrarFim();
+      }, 2000);
+    }
+  }
+
+  // Mover navio: no 0 da contagem, "pode mover" (abre o modo mover) ou "errou, perdeu o movimento".
+  function revelarMovimento(u) {
+    susp.fase = 'revelado';
+    const souEu = u.jogador === eu();
+    let texto;
+    if (u.acertouConta) {
+      texto = souEu ? '⚓ Pode mover um navio!' : '⚓ ' + nome(u.jogador) + ' acertou a conta e vai mover um navio!';
+    } else {
+      texto = souEu ? (respostaFoiTempo ? '⏰ Tempo esgotado!' : '✗ Errou!') + ' Perdeu o movimento.' : '❌ ' + nome(u.jogador) + ' errou a conta! Não vai mover.';
+      Sons.tocar('errado');
+    }
+    $('suspense-texto').textContent = texto;
+    if (souEu && !u.acertouConta) { $('conta-feedback').textContent = texto; iniciarAvanco(MS_RESULTADO_ERRADO); return; }
+    faixa(souEu ? '⚓ Escolha um navio intacto no Meu mar e clique no novo lugar.' : texto);
+    susp.timer = setTimeout(function () {
+      esconderSuspense();
+      $('conta').hidden = true;
+      pintarBatalha();
+    }, 1500);
+  }
+
+  $('suspense-tela').addEventListener('click', function () {
+    // Quem atirou pode adiantar depois da revelação (o próprio clique que enviou a resposta é ignorado).
+    if (aguardandoAvanco && Date.now() - momentoResultado > 400) avancar();
+  });
+
+  // ================= Botão de som =================
+  function mostrarBotaoSom() { $('btn-som').textContent = Sons.ligado() ? '🔊' : '🔇'; }
+  $('btn-som').addEventListener('click', function () { Sons.alternar(); mostrarBotaoSom(); });
+  mostrarBotaoSom();
 
   // ================= Relógio, presença e desconexão =================
 
@@ -718,6 +1012,7 @@
       if (resta !== null) $('bat-relogio').textContent = '⏱ ' + Tela.formatarTempo(resta);
       $('bat-aviso-tempo').hidden = !(estado().fase === 'batalha' && cliente.tempoAcabou());
       faixaMira();
+      if (cliente.sincronizado && colegaRespondendo()) suspenseNormal(cliente.fimDaConta - conexao.horaServidor(), false);
       atualizarPresenca();
     }, 250);
   }
@@ -727,6 +1022,7 @@
     clearInterval(intervaloConta);
     clearTimeout(timerAvanco);
     clearTimeout(timerDestaque);
+    esconderSuspense();
     respondido = true;
     aguardandoAvanco = false;
     destaque = null;
@@ -757,6 +1053,8 @@
 
   const tabFim = [Tela.criarTabuleiro($('fim-tab0')), Tela.criarTabuleiro($('fim-tab1'))];
 
+  let vitoriaTocadaNaPartida = null;
+
   function mostrarFim() {
     clearInterval(intervaloConta);
     $('conta').hidden = true;
@@ -771,6 +1069,7 @@
     $('fim-titulo').textContent = e.vencedor === 'empate' ? '🤝 Empate!' : e.vencedor === eu() ? '🏆 Você venceu!' : '🏆 ' + nome(e.vencedor) + ' venceu!';
     $('fim-motivo').textContent = motivos[e.motivoFim] || '';
     $('fim-col-seq').hidden = e.config.tiro !== 'turbo';
+    if (e.vencedor === eu() && vitoriaTocadaNaPartida !== cliente.partida) { vitoriaTocadaNaPartida = cliente.partida; Sons.tocar('vitoria'); }
     const corpo = $('fim-stats');
     corpo.innerHTML = '';
     [0, 1].forEach(function (i) {

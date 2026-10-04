@@ -72,6 +72,13 @@
     return null;
   }
 
+  // Meus navios que ainda podem mover (nenhuma casa atingida). Só para a minha tela: o colega não sabe disso.
+  function naviosQuePodemMover(jogador) {
+    return Object.keys(jogador.navios).filter(function (id) {
+      return casasDoNavio(jogador.navios[id]).every(function (k) { return jogador.tiros[chave(k.l, k.c)] !== 'acerto'; });
+    });
+  }
+
   // O defensor calcula o resultado de um tiro com os próprios navios (não altera nada).
   // Devolve { efeito: 'agua'|'acerto'|'afundou', casas: [chave], tamanho?, casasNavio?: [chave] } — pronto para o recado "resultado".
   function resolverTiro(navios, tiros, modo, l, c) {
@@ -113,24 +120,39 @@
     torpedo: [[0, 0]],
     duplo: [[0, 0], [0, 1]],
     duploEmPe: [[0, 0], [1, 0]],   // tiro duplo girado: a casa escolhida e a de baixo
-    cruz: [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]
+    cruz: [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]],
+    x: [[0, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]   // tiro em X: a casa e as 4 diagonais
   };
 
-  // Formato do tiro de `jogador` neste turno: 'torpedo' se armado; no Turbo, 'duplo' no 5º acerto seguido
-  // e 'cruz' no 10º, 15º, 20º...; senão 'normal'. (n = a sequência que ele terá se acertar a conta.)
-  function formatoDoTiro(estado, jogador, torpedo) {
-    if (torpedo) return 'torpedo';
-    if (estado.config.tiro !== 'turbo') return 'normal';
-    const n = estado.jogadores[jogador].sequencia + 1;
-    if (n === 5) return 'duplo';
-    if (n >= 10 && n % 5 === 0) return 'cruz';
-    return 'normal';
+  // Arsenal do Turbo: a sequência de acertos é trocada por poderes, guardados para usar quando quiser.
+  const PODERES_DE_TIRO = ['duplo', 'cruz', 'x'];
+  const TROCAS_5 = ['duplo', 'mover'];
+  const TROCAS_10 = ['cruz', 'x'];
+
+  // Trocas que `jogador` pode fazer agora: sequência 5–9 → duplo ou mover; 10 ou mais → cruz ou x.
+  function trocasPossiveis(estado, jogador) {
+    if (estado.config.tiro !== 'turbo') return [];
+    const seq = estado.jogadores[jogador].sequencia;
+    return seq >= 10 ? TROCAS_10.slice() : seq >= 5 ? TROCAS_5.slice() : [];
+  }
+
+  // O poder pode ser usado? (torpedo: saldo da sala; os outros: arsenal)
+  function temPoder(jogadorEstado, poder) {
+    if (poder === 'torpedo') return jogadorEstado.torpedos > 0;
+    return !!jogadorEstado.arsenal && jogadorEstado.arsenal[poder] > 0;
+  }
+
+  // Formato do tiro: o poder armado ('duplo' | 'cruz' | 'x' | 'torpedo'), ou 'normal' sem poder.
+  // Não há mais tiro especial automático: os poderes vêm das trocas do arsenal. (poder = true vale 'torpedo'.)
+  function formatoDoTiro(estado, jogador, poder) {
+    if (poder === true) return 'torpedo';
+    return poder && DESLOCAMENTOS[poder] && poder !== 'duploEmPe' ? poder : 'normal';
   }
 
   // Casas que o tiro vai atingir (chaves), sem as que caem fora do mar ou já foram atingidas.
   // A casa escolhida vem primeiro. vertical = true gira o tiro duplo (casa + a de baixo). Devolve { formato, casas }.
-  function casasDoTiro(estado, jogador, l, c, torpedo, vertical) {
-    const formato = formatoDoTiro(estado, jogador, torpedo);
+  function casasDoTiro(estado, jogador, l, c, poder, vertical) {
+    const formato = formatoDoTiro(estado, jogador, poder);
     const tirosAlvo = estado.jogadores[1 - jogador].tiros;
     const casas = DESLOCAMENTOS[formato === 'duplo' && vertical ? 'duploEmPe' : formato]
       .map(function (d) { return [l + d[0], c + d[1]]; })
@@ -154,7 +176,7 @@
     const torpedos = torpedosDaSala(config);
     function jogador() {
       return { navios: {}, pronto: false, tiros: {}, afundadas: [], contas: { certas: 0, total: 0 },
-               sequencia: 0, maiorSequencia: 0, torpedos: torpedos };
+               sequencia: 0, maiorSequencia: 0, torpedos: torpedos, arsenal: { duplo: 0, mover: 0, cruz: 0, x: 0 } };
     }
     const cfg = { nomes: nomes, modo: config.modo === 'rapido' ? 'rapido' : 'classico', tempoMin: config.tempoMin || 0 };
     if (config.tiro === 'turbo') { cfg.tiro = 'turbo'; cfg.torpedos = torpedos; }   // sala Normal: igual a antes
@@ -232,6 +254,22 @@
       return { ok: true, estado: estado };
     }
 
+    // Mover navio (Turbo): só na minha vez, depois de acertar a conta (etapa 'movendo'); navio intacto;
+    // nova posição válida e sem nenhuma casa onde o colega já atirou. Ação local (as posições não saem do computador).
+    if (a === 'mover_navio') {
+      if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'movendo') return recusar(estadoAntigo, 'não é hora de mover');
+      const j = estado.jogadores[eu];
+      const atual = j.navios[acao.navio];
+      if (!atual) return recusar(estadoAntigo, 'navio desconhecido');
+      if (casasDoNavio(atual).some(function (k) { return j.tiros[chave(k.l, k.c)] === 'acerto'; })) return recusar(estadoAntigo, 'só navio intacto pode mover');
+      const novo = { l: acao.l, c: acao.c, orientacao: acao.orientacao === 'v' ? 'v' : 'h', tamanho: atual.tamanho };
+      const motivo = podePosicionar(j.navios, acao.navio, novo);
+      if (motivo) return recusar(estadoAntigo, motivo);
+      if (casasDoNavio(novo).some(function (k) { return j.tiros[chave(k.l, k.c)]; })) return recusar(estadoAntigo, 'casa onde o colega já atirou');
+      j.navios[acao.navio] = novo;
+      return { ok: true, estado: estado };
+    }
+
     if (a === 'pronto') {
       if (estado.fase !== 'posicionamento') return recusar(estadoAntigo, 'não é hora de posicionar');
       const j = estado.jogadores[acao.jogador];
@@ -298,6 +336,15 @@
       return { ok: true, estado: estado };
     }
 
+    // Fim do movimento (Turbo): encerra a vez de quem moveu (ou desistiu), com a mesma regra de tempo do passar_vez.
+    if (a === 'mover') {
+      if (estado.etapa !== 'movendo') return recusar(estadoAntigo, 'não está movendo');
+      if (acao.jogador !== estado.vez) return recusar(estadoAntigo, 'só quem está movendo encerra');
+      estado.ultimoTurno.moveu = acao.desistiu !== true;
+      estado.etapa = 'resultado';
+      return aplicar(estado, { acao: 'passar_vez', jogador: acao.jogador, tempoEsgotado: acao.tempoEsgotado }, aleatorio);
+    }
+
     if (a === 'passar_vez') {
       if (estado.etapa !== 'resultado') return recusar(estadoAntigo, 'o turno ainda não terminou');
       if (acao.jogador !== estado.vez) return recusar(estadoAntigo, 'só quem atirou passa a vez');
@@ -316,15 +363,36 @@
     if (acao.jogador !== estado.vez) return recusar(estadoAntigo, 'não é a vez deste jogador');
     const alvo = 1 - estado.vez;
 
+    // Trocar a sequência por um poder do arsenal (só na minha vez, antes de escolher o alvo).
+    if (a === 'trocar') {
+      if (estado.etapa !== 'escolher') return recusar(estadoAntigo, 'só antes de escolher o alvo');
+      if (trocasPossiveis(estado, estado.vez).indexOf(acao.poder) < 0) return recusar(estadoAntigo, 'troca não disponível');
+      const j = estado.jogadores[estado.vez];
+      j.sequencia = 0;
+      j.arsenal[acao.poder] += 1;
+      return { ok: true, estado: estado };
+    }
+
+    // Usar o ⚓: abre a continha (como um "mirar" sem casa); acertando, a etapa vira 'movendo'.
+    if (a === 'pedir_mover') {
+      if (estado.etapa !== 'escolher') return recusar(estadoAntigo, 'só antes de escolher o alvo');
+      if (!temPoder(estado.jogadores[estado.vez], 'mover')) return recusar(estadoAntigo, 'sem movimento no arsenal');
+      estado.mira = { l: null, c: null, formato: 'mover', casas: [], poder: 'mover', mover: true, torpedo: false, vertical: false };
+      estado.etapa = 'responder';
+      return { ok: true, estado: estado };
+    }
+
     if (a === 'mirar') {
       if (estado.etapa !== 'escolher') return recusar(estadoAntigo, 'já escolheu a casa neste turno');
       if (!dentro(acao.l, acao.c)) return recusar(estadoAntigo, 'fora do tabuleiro');
       if (estado.jogadores[alvo].tiros[chave(acao.l, acao.c)]) return recusar(estadoAntigo, 'casa já atingida');
-      const torpedo = acao.torpedo === true;
-      if (torpedo && estado.jogadores[estado.vez].torpedos <= 0) return recusar(estadoAntigo, 'sem torpedos');
+      const poder = acao.torpedo === true ? 'torpedo' : (acao.poder || null);
+      if (poder !== null && ['torpedo'].concat(PODERES_DE_TIRO).indexOf(poder) < 0) return recusar(estadoAntigo, 'poder desconhecido');
+      if (poder === 'torpedo' && estado.jogadores[estado.vez].torpedos <= 0) return recusar(estadoAntigo, 'sem torpedos');
+      if (poder && poder !== 'torpedo' && !temPoder(estado.jogadores[estado.vez], poder)) return recusar(estadoAntigo, 'poder não está no arsenal');
       const vertical = acao.vertical === true;
-      const tiro = casasDoTiro(estado, estado.vez, acao.l, acao.c, torpedo, vertical);
-      estado.mira = { l: acao.l, c: acao.c, formato: tiro.formato, casas: tiro.casas, torpedo: torpedo, vertical: vertical };
+      const tiro = casasDoTiro(estado, estado.vez, acao.l, acao.c, poder, vertical);
+      estado.mira = { l: acao.l, c: acao.c, formato: tiro.formato, casas: tiro.casas, poder: poder, torpedo: poder === 'torpedo', vertical: vertical };
       estado.etapa = 'responder';
       return { ok: true, estado: estado };
     }
@@ -337,11 +405,18 @@
       if (certa) atirador.contas.certas += 1;
       atirador.sequencia = certa ? atirador.sequencia + 1 : 0;
       if (atirador.sequencia > atirador.maiorSequencia) atirador.maiorSequencia = atirador.sequencia;
-      if (estado.mira.torpedo) atirador.torpedos -= 1;   // o torpedo é gasto mesmo errando a conta
+      // O poder armado (torpedo, duplo, cruz, x, mover) é gasto mesmo errando a conta.
+      if (estado.mira.poder === 'torpedo') atirador.torpedos -= 1;
+      else if (estado.mira.poder) atirador.arsenal[estado.mira.poder] -= 1;
       estado.ultimoTurno = { jogador: estado.vez, l: estado.mira.l, c: estado.mira.c, acertouConta: certa, tiro: null };
-      if (estado.mira.formato !== 'normal') {   // só em tiros especiais (a sala Normal fica igual a antes)
+      if (estado.mira.formato !== 'normal') {   // só em tiros especiais e no mover (a sala Normal fica igual a antes)
         estado.ultimoTurno.formato = estado.mira.formato;
         estado.ultimoTurno.casas = estado.mira.casas;
+      }
+      if (estado.mira.mover) {
+        estado.ultimoTurno.mover = true;
+        estado.etapa = certa ? 'movendo' : 'resultado';
+        return { ok: true, estado: estado };
       }
       estado.etapa = certa ? 'aguardando_resultado' : 'resultado';
       return { ok: true, estado: estado };
@@ -352,7 +427,8 @@
 
   const Regras = {
     TAMANHO, FROTA, TOTAL_CASAS_FROTA, chave, nomeCasa, casasDoNavio, podePosicionar, gerarFrotaAleatoria,
-    navioNaCasa, resolverTiro, resolverTiroMultiplo, formatoDoTiro, casasDoTiro, torpedosDaSala,
+    navioNaCasa, resolverTiro, resolverTiroMultiplo, formatoDoTiro, casasDoTiro, torpedosDaSala, trocasPossiveis, temPoder,
+    naviosQuePodemMover,
     novaPartida, casasAtingidas, casasAfundadas, aplicar
   };
   raiz.Regras = Regras;

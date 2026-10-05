@@ -46,7 +46,7 @@
     camada.className = 'camada-navios';
     elemento.appendChild(camada);
 
-    // op = { navios, tiros, esconder: [chaves], afundadas: [chaves], previa: { casas, valida }, destaque: chave, mirada: chave, clicavel(l, c) }
+    // op = { navios, tiros, esconder: [chaves], afundadas: [chaves], previa: { casas, valida, radar? }, destaque: chave, mirada: chave, clicavel(l, c) }
     function pintar(op) {
       const naviosCasas = new Set();
       if (op.navios) {
@@ -70,7 +70,7 @@
           if (tiro === 'agua') { casa.classList.add('agua'); casa.textContent = '🌊'; }
           if (tiro === 'acerto') casa.classList.add('acerto');   // o fogo é desenhado na camada dos navios
           if (tiro === 'acerto' && afundadas.has(ch)) casa.classList.add('afundado');
-          if (previa.has(ch)) casa.classList.add(previa.get(ch) ? 'previa-ok' : 'previa-ruim');
+          if (previa.has(ch)) casa.classList.add(op.previa.radar ? 'previa-radar' : previa.get(ch) ? 'previa-ok' : 'previa-ruim');
           if (contem(op.destaque, ch)) casa.classList.add('destaque');
           if (contem(op.mirada, ch)) casa.classList.add('mirada');
           if (clicavel) casa.classList.add('clicavel');

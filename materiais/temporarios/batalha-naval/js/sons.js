@@ -1,5 +1,5 @@
 // Sons do jogo, criados pelo próprio navegador (Web Audio) — nenhum arquivo de áudio.
-// Sons.tocar('agua' | 'explosao' | 'afundou' | 'torpedo' | 'errado' | 'tic' | 'vitoria')
+// Sons.tocar('agua' | 'explosao' | 'afundou' | 'torpedo' | 'errado' | 'tic' | 'vitoria' | 'radarTem' | 'radarNada')
 // O botão 🔊/🔇 liga e desliga; o Chromebook lembra a escolha. Sons.tocados guarda o que tocou (para os testes).
 (function (raiz) {
   'use strict';
@@ -105,6 +105,12 @@
     errado: function (t) { tom('square', 196, 140, t, 0.35, 0.25, 0.2); },
     // ⏱ Um número da contagem 3, 2, 1.
     tic: function (t) { tom('square', 1300, 1300, t, 0.04, 0.25); },
+    // 📡 Radar: dois bipes agudos quando tem navio; um bipe grave quando não tem.
+    radarTem: function (t) {
+      tom('sine', 1400, 1400, t, 0.12, 0.35, 0.1);
+      tom('sine', 1800, 1800, t + 0.18, 0.18, 0.35, 0.15);
+    },
+    radarNada: function (t) { tom('sine', 700, 600, t, 0.3, 0.3, 0.2); },
     // 🏆 Vitória.
     vitoria: function (t) {
       [523, 659, 784, 1047].forEach(function (f, i) { tom('triangle', f, f, t + i * 0.13, 0.25, 0.45, 0.3); });

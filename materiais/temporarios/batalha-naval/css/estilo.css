@@ -184,3 +184,8 @@ header.capa { position: relative; }
 .mover-painel { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
                 background: #ECFEFF; border: 1px solid #22D3EE; border-radius: 8px; padding: 6px 12px; margin: 8px 0; }
 .mover-painel p { margin: 0; font-weight: bold; color: #155E75; }
+
+/* ---- Turbo: radar ---- */
+.casa.previa-radar { background: #CFFAFE; outline: 2px dashed #0891B2; }
+#faixa.faixa-radar { background: #0E7490; }
+#faixa.faixa-radar #faixa-texto { font-size: 1.35em; font-weight: bold; }

@@ -75,11 +75,15 @@
         respondiTiroDoTurno = turno;
         const meu = estado.jogadores[eu];
         const mira = estado.mira;
-        const especial = mira.torpedo || (mira.casas && mira.casas.length > 1);   // Turbo: duplo, cruz ou torpedo
-        const r = especial
-          ? Regras.resolverTiroMultiplo(meu.navios, meu.tiros, estado.config.modo, mira.casas, mira.torpedo)
-          : Regras.resolverTiro(meu.navios, meu.tiros, estado.config.modo, mira.l, mira.c);
-        enviar('resultado', r);
+        if (mira.radar) {   // Turbo: o radar só pergunta se há navio na área — a resposta não leva posições
+          enviar('radar', { tem: Regras.resolverRadar(meu.navios, meu.tiros, mira.casas) });
+        } else {
+          const especial = mira.torpedo || (mira.casas && mira.casas.length > 1);   // Turbo: duplo, cruz ou torpedo
+          const r = especial
+            ? Regras.resolverTiroMultiplo(meu.navios, meu.tiros, estado.config.modo, mira.casas, mira.torpedo)
+            : Regras.resolverTiro(meu.navios, meu.tiros, estado.config.modo, mira.l, mira.c);
+          enviar('resultado', r);
+        }
       }
       // A partida acabou: mostro meu mar.
       if (estado.fase === 'fim' && !revelei) {
@@ -182,7 +186,8 @@
     function mirar(l, c, poder, vertical) {
       if (poder === true) poder = 'torpedo';
       if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'escolher') return false;
-      if (estado.jogadores[1 - eu].tiros[Regras.chave(l, c)]) return false;
+      const radar = poder === 'radar3' || poder === 'radar4';   // o radar pode ser apontado até para uma casa já atingida
+      if (!radar && estado.jogadores[1 - eu].tiros[Regras.chave(l, c)]) return false;
       if (poder && !Regras.temPoder(estado.jogadores[eu], poder)) return false;
       const dados = { l: l, c: c };
       if (poder) dados.poder = poder;
@@ -193,7 +198,7 @@
 
     // ---------- Arsenal do Turbo ----------
 
-    // Troca a sequência por um poder ('duplo' | 'mover' com 5–9; 'cruz' | 'x' com 10 ou mais).
+    // Troca a sequência por um poder ('duplo' | 'mover' | 'radar3' com 5–9; 'cruz' | 'x' | 'radar4' com 10 ou mais).
     function trocar(poder) {
       if (estado.fase !== 'batalha' || estado.vez !== eu || estado.etapa !== 'escolher') return false;
       if (Regras.trocasPossiveis(estado, eu).indexOf(poder) < 0) return false;

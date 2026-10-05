@@ -324,6 +324,11 @@
         pintarBatalha();
         atualizarBarra();
         break;
+      case 'radar':
+        // Resposta do radar: revela agora se a contagem já chegou a 0 esperando por ela; senão, revela no 0.
+        if (cliente.sincronizado && (susp.fase === 'esperando' || susp.fase === null)) revelar();
+        pintarBatalha();
+        break;
       case 'pedir_mover':
         if (cliente.sincronizado) esconderSuspense();
         if (r.jogador === eu()) abrirConta();
@@ -457,14 +462,20 @@
   let destaque = null;          // casa(s) do último tiro recebido, piscando no Meu mar
   let timerDestaque = null;
   let mouseAdv = null;          // casa do mar do adversário sob o mouse (prévia do tiro)
-  let poderArmado = null;       // Turbo: 'duplo' | 'cruz' | 'x' | 'torpedo' armado para o próximo tiro
+  let poderArmado = null;       // Turbo: 'duplo' | 'cruz' | 'x' | 'torpedo' | 'radar3' | 'radar4' armado para o próximo tiro
   let tiroEmPe = false;         // tiro duplo girado (casa + a de baixo); a escolha fica valendo para os próximos
   let mov = { navio: null, orientacao: 'h', alvo: null, mouse: null };   // modo "mover navio"
+  let radarVisivel = null;      // { jogador, casas }: área do radar piscando por 3 s depois da revelação (depois some)
+  let timerRadar = null;
+  const MS_RADAR = 3000;
 
-  const ROTULO_FORMATO = { duplo: '⚡ TIRO DUPLO', cruz: '✚ TIRO EM CRUZ', x: '✖ TIRO EM X', torpedo: '🚀 TORPEDO' };
+  const ROTULO_FORMATO = { duplo: '⚡ TIRO DUPLO', cruz: '✚ TIRO EM CRUZ', x: '✖ TIRO EM X', torpedo: '🚀 TORPEDO',
+                           radar3: '📡 RADAR 3×3', radar4: '📡 RADAR 4×4' };
   const AVISO_FORMATO = { duplo: '⚡ Tiro duplo!', cruz: '✚ Tiro em cruz!', x: '✖ Tiro em X!', torpedo: '🚀 Torpedo!',
-                          mover: '⚓ Acerte a conta para mover um navio!' };
-  const NOME_PODER = { duplo: '⚡ tiro duplo', mover: '⚓ mover navio', cruz: '✚ tiro em cruz', x: '✖ tiro em X', torpedo: '🚀 torpedo' };
+                          mover: '⚓ Acerte a conta para mover um navio!', radar3: '📡 Radar 3×3!', radar4: '📡 Radar 4×4!' };
+  const NOME_PODER = { duplo: '⚡ tiro duplo', mover: '⚓ mover navio', cruz: '✚ tiro em cruz', x: '✖ tiro em X', torpedo: '🚀 torpedo',
+                       radar3: '📡 radar 3×3', radar4: '📡 radar 4×4' };
+  function ehRadar(poder) { return poder === 'radar3' || poder === 'radar4'; }
 
   function faixa(texto) { $('faixa-texto').textContent = texto; }
   function turbo() { return estado().config.tiro === 'turbo'; }
@@ -482,6 +493,7 @@
     const e = estado();
     const resta = Math.max(0, Math.ceil((cliente.fimDaConta - conexao.horaServidor()) / 1000));
     if (e.mira.mover) { faixa('⚓ ' + nome(colega()) + ' vai mover um navio e está respondendo... ⏱ ' + resta + ' s'); return; }
+    if (e.mira.radar) { faixa('📡 ' + nome(colega()) + ' vai usar o radar e está respondendo... ⏱ ' + resta + ' s'); return; }
     faixa('🎯 ' + nome(colega()) + ' mirou em ' + Regras.nomeCasa(e.mira.l, e.mira.c) + comFormato(e.mira.formato) +
       ' e está respondendo... ⏱ ' + resta + ' s');
   }
@@ -532,7 +544,7 @@
       tiros: e.jogadores[eu()].tiros,
       afundadas: Regras.casasAfundadas(e, eu()),
       destaque: destaque,
-      mirada: miradaEmMim,
+      mirada: miradaEmMim || (radarVisivel && radarVisivel.jogador === colega() ? radarVisivel.casas : null),
       previa: previa,
       clicavel: function () { return modoMovimento(); }
     });
@@ -545,16 +557,19 @@
     const e = estado();
     const tirosAdv = e.jogadores[colega()].tiros;
     const minhaVezDeMirar = minhaVezDeEscolher();
-    // Prévia do tiro (1 casa, duplo, cruz, X ou torpedo) sob o mouse, na minha vez.
+    // Prévia do tiro (1 casa, duplo, cruz, X, torpedo ou área do radar) sob o mouse, na minha vez.
+    // O radar pode ser apontado até para uma casa já atingida.
+    const radar = ehRadar(poderArmado);
     let previa = null;
-    if (minhaVezDeMirar && mouseAdv && !tirosAdv[Regras.chave(mouseAdv.l, mouseAdv.c)]) {
-      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, poderArmado, tiroEmPe).casas), valida: true };
+    if (minhaVezDeMirar && mouseAdv && (radar || !tirosAdv[Regras.chave(mouseAdv.l, mouseAdv.c)])) {
+      previa = { casas: paraCasas(Regras.casasDoTiro(e, eu(), mouseAdv.l, mouseAdv.c, poderArmado, tiroEmPe).casas), valida: true, radar: radar };
     }
     tabAdv.pintar({
       tiros: tirosAdv,
       afundadas: Regras.casasAfundadas(e, colega()),
       previa: previa,
-      clicavel: function (l, c) { return minhaVezDeMirar && !tirosAdv[Regras.chave(l, c)]; }
+      mirada: radarVisivel && radarVisivel.jogador === eu() ? radarVisivel.casas : null,
+      clicavel: function (l, c) { return minhaVezDeMirar && (radar || !tirosAdv[Regras.chave(l, c)]); }
     });
     atualizarTurbo();
   }
@@ -579,17 +594,18 @@
     if (!podeAgir) poderArmado = null;
     if (poderArmado && !Regras.temPoder(eu0, poderArmado)) poderArmado = null;
     $('bat-sequencia').textContent = '🔥 Sequência: ' + seq + ' · ' +
-      (seq < 5 ? 'faltam ' + (5 - seq) + ' para trocar por ⚡ ou ⚓'
-        : seq < 10 ? 'pode trocar por ⚡ ou ⚓ — ou chegue a 10 para ✚ ou ✖ (faltam ' + (10 - seq) + ')'
-          : 'pode trocar por ✚ ou ✖') +
+      (seq < 5 ? 'faltam ' + (5 - seq) + ' para trocar por ⚡, ⚓ ou 📡'
+        : seq < 10 ? 'pode trocar por ⚡, ⚓ ou 📡 3×3 — ou chegue a 10 para ✚, ✖ ou 📡 4×4 (faltam ' + (10 - seq) + ')'
+          : 'pode trocar por ✚, ✖ ou 📡 4×4') +
       (poderArmado ? ' · armado: ' + NOME_PODER[poderArmado] : '');
     $('bat-arsenal').textContent = 'Arsenal: ⚡ ' + ars.duplo + ' · ⚓ ' + ars.mover + ' · ✚ ' + ars.cruz + ' · ✖ ' + ars.x +
+      ' · 📡3×3 ' + ars.radar3 + ' · 📡4×4 ' + ars.radar4 +
       (e.config.torpedos ? ' · 🚀 ' + eu0.torpedos : '');
     // Trocas (só na minha vez, antes de mirar).
     const trocas = podeAgir ? Regras.trocasPossiveis(e, eu()) : [];
-    ['duplo', 'mover', 'cruz', 'x'].forEach(function (p) { $('btn-trocar-' + p).hidden = trocas.indexOf(p) < 0; });
-    // Usar poderes de tiro guardados.
-    ['duplo', 'cruz', 'x'].forEach(function (p) {
+    ['duplo', 'mover', 'cruz', 'x', 'radar3', 'radar4'].forEach(function (p) { $('btn-trocar-' + p).hidden = trocas.indexOf(p) < 0; });
+    // Usar poderes guardados (tiros e radar).
+    ['duplo', 'cruz', 'x', 'radar3', 'radar4'].forEach(function (p) {
       const b = $('btn-usar-' + p);
       b.hidden = ars[p] <= 0;
       b.disabled = !podeAgir;
@@ -613,10 +629,10 @@
   }
 
   function armar(poder) { poderArmado = poderArmado === poder ? null : poder; pintarMarAdversario(); }
-  ['duplo', 'mover', 'cruz', 'x'].forEach(function (p) {
+  ['duplo', 'mover', 'cruz', 'x', 'radar3', 'radar4'].forEach(function (p) {
     $('btn-trocar-' + p).addEventListener('click', function () { poderArmado = null; cliente.trocar(p); });
   });
-  ['duplo', 'cruz', 'x'].forEach(function (p) { $('btn-usar-' + p).addEventListener('click', function () { armar(p); }); });
+  ['duplo', 'cruz', 'x', 'radar3', 'radar4'].forEach(function (p) { $('btn-usar-' + p).addEventListener('click', function () { armar(p); }); });
   $('btn-torpedo').addEventListener('click', function () { armar('torpedo'); });
   $('btn-mover').addEventListener('click', function () { poderArmado = null; cliente.pedirMover(); });
 
@@ -717,6 +733,10 @@
       if (!u.acertouConta) return quem + ' errou a continha — não moveu o navio.';
       return u.moveu ? '⚓ ' + quem + ' moveu um navio!' : quem + ' desistiu de mover o navio.';
     }
+    if (u.radar) {
+      if (!u.acertouConta) return quem + ' errou a continha — perdeu o radar.';
+      return '📡 ' + quem + ' usou o radar: ' + (u.tem ? 'tem navio.' : 'nada.');
+    }
     if (!u.acertouConta) return quem + ' errou a continha — nenhum tiro.';
     const onde = quem + ' atirou em ' + Regras.nomeCasa(u.l, u.c) + comFormato(u.formato) + ': ';
     if (u.tiro.tipo === 'multiplo') return onde + textoImpacto(u.tiro);
@@ -751,7 +771,7 @@
     if (!pa || !respondido && !$('conta').hidden) return;
     const p = pa.pergunta;
     const m = estado().mira;
-    $('conta-mira-texto').textContent = m.mover ? '⚓' : 'Mirando em';
+    $('conta-mira-texto').textContent = m.mover ? '⚓' : m.radar ? '📡 Radar em' : 'Mirando em';
     $('conta-casa').textContent = m.mover ? 'Mover um navio' : Regras.nomeCasa(m.l, m.c);
     $('conta-pergunta').textContent = p.pergunta;
     const aviso = AVISO_FORMATO[estado().mira.formato];
@@ -867,6 +887,7 @@
   function tituloSuspense() {
     const e = estado();
     if (e.mira && e.mira.mover) return e.vez === eu() ? '⚓ Você quer mover um navio…' : '⚓ ' + nome(e.vez) + ' quer mover um navio…';
+    if ((e.mira && e.mira.radar) || (!e.mira && e.ultimoTurno && e.ultimoTurno.radar)) return e.vez === eu() ? '📡 Ligando o radar…' : '📡 ' + nome(e.vez) + ' respondeu — radar…';
     const u = e.mira || e.ultimoTurno;
     const onde = u ? ' em ' + Regras.nomeCasa(u.l, u.c) + comFormato(u.formato) : '';
     return e.vez === eu() ? '🎯 Disparando' + onde + '…' : '🎯 ' + nome(e.vez) + ' respondeu — tiro' + onde + '…';
@@ -938,6 +959,7 @@
     $('suspense-tela').hidden = false;
     $('suspense-numero').textContent = '';
     if (u.mover) { revelarMovimento(u); return; }
+    if (u.radar) { revelarRadar(u); return; }
     if (u.acertouConta && !u.tiro) {   // conta certa, mas o computador do colega ainda não respondeu o tiro
       susp.fase = 'esperando';
       $('suspense-texto').textContent = '…';
@@ -987,6 +1009,43 @@
       $('conta').hidden = true;
       pintarBatalha();
     }, 1500);
+  }
+
+  // Radar: no 0 da contagem a tela escura fecha e a área pisca em amarelo por 3 s nos dois computadores,
+  // com "📡 Tem navio aqui!" ou "📡 Nada aqui" em destaque. Depois some (não fica marca) e a vez passa.
+  function revelarRadar(u) {
+    const souEu = u.jogador === eu();
+    if (u.acertouConta && u.tem === undefined) {   // conta certa, mas o computador do colega ainda não respondeu o radar
+      susp.fase = 'esperando';
+      $('suspense-texto').textContent = '…';
+      return;
+    }
+    susp.fase = 'revelado';
+    if (!u.acertouConta) {
+      const texto = souEu ? (respostaFoiTempo ? '⏰ Tempo esgotado!' : '✗ Errou!') + ' Perdeu o radar.' : '❌ ' + nome(u.jogador) + ' errou a conta! Perdeu o radar.';
+      Sons.tocar('errado');
+      $('suspense-texto').textContent = texto;
+      if (souEu) { $('conta-feedback').textContent = texto; iniciarAvanco(MS_RESULTADO_ERRADO); return; }
+      faixa(texto);
+      susp.timer = setTimeout(esconderSuspense, 2000);
+      return;
+    }
+    const texto = souEu ? (u.tem ? '📡 Tem navio aqui!' : '📡 Nada aqui') : '📡 ' + nome(u.jogador) + ' usou o radar: ' + (u.tem ? 'tem navio!' : 'nada.');
+    Sons.tocar(u.tem ? 'radarTem' : 'radarNada');
+    esconderSuspense();
+    susp.fase = 'revelado';
+    $('conta').hidden = true;
+    faixa(texto);
+    $('faixa').classList.add('faixa-radar');
+    radarVisivel = { jogador: u.jogador, casas: u.casas };
+    pintarBatalha();
+    clearTimeout(timerRadar);
+    timerRadar = setTimeout(function () {
+      radarVisivel = null;
+      $('faixa').classList.remove('faixa-radar');
+      pintarBatalha();
+      if (souEu) { aguardandoAvanco = true; avancar(); }   // a vez passa depois dos 3 s
+    }, MS_RADAR);
   }
 
   $('suspense-tela').addEventListener('click', function () {

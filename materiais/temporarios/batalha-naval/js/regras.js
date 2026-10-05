@@ -126,10 +126,11 @@
 
   // Arsenal do Turbo: a sequência de acertos é trocada por poderes, guardados para usar quando quiser.
   const PODERES_DE_TIRO = ['duplo', 'cruz', 'x'];
-  const TROCAS_5 = ['duplo', 'mover'];
-  const TROCAS_10 = ['cruz', 'x'];
+  const PODERES_RADAR = ['radar3', 'radar4'];   // radar: não atira, só diz se há navio na área
+  const TROCAS_5 = ['duplo', 'mover', 'radar3'];
+  const TROCAS_10 = ['cruz', 'x', 'radar4'];
 
-  // Trocas que `jogador` pode fazer agora: sequência 5–9 → duplo ou mover; 10 ou mais → cruz ou x.
+  // Trocas que `jogador` pode fazer agora: sequência 5–9 → duplo, mover ou radar 3×3; 10 ou mais → cruz, x ou radar 4×4.
   function trocasPossiveis(estado, jogador) {
     if (estado.config.tiro !== 'turbo') return [];
     const seq = estado.jogadores[jogador].sequencia;
@@ -142,17 +143,38 @@
     return !!jogadorEstado.arsenal && jogadorEstado.arsenal[poder] > 0;
   }
 
-  // Formato do tiro: o poder armado ('duplo' | 'cruz' | 'x' | 'torpedo'), ou 'normal' sem poder.
+  // Formato do tiro: o poder armado ('duplo' | 'cruz' | 'x' | 'torpedo' | 'radar3' | 'radar4'), ou 'normal' sem poder.
   // Não há mais tiro especial automático: os poderes vêm das trocas do arsenal. (poder = true vale 'torpedo'.)
   function formatoDoTiro(estado, jogador, poder) {
     if (poder === true) return 'torpedo';
+    if (PODERES_RADAR.indexOf(poder) >= 0) return poder;
     return poder && DESLOCAMENTOS[poder] && poder !== 'duploEmPe' ? poder : 'normal';
+  }
+
+  function limitar(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  // Área do radar: 3×3 com a casa no centro; 4×4 com a casa no canto de cima à esquerda do miolo 2×2.
+  // Perto da borda a área escorrega para dentro do mar (sempre 9 ou 16 casas). Casas já atingidas ficam.
+  function areaDoRadar(l, c, tam) {
+    const l0 = limitar(l - 1, 0, TAMANHO - tam), c0 = limitar(c - 1, 0, TAMANHO - tam);
+    const casas = [];
+    for (let i = l0; i < l0 + tam; i++) for (let j = c0; j < c0 + tam; j++) casas.push(chave(i, j));
+    return casas;
+  }
+
+  // O defensor responde o radar com os próprios navios (posição atual): há na área alguma parte de navio ainda não atingida?
+  function resolverRadar(navios, tiros, casas) {
+    return casas.some(function (ch) {
+      const p = ch.split(',').map(Number);
+      return navioNaCasa(navios, p[0], p[1]) !== null && tiros[ch] !== 'acerto';
+    });
   }
 
   // Casas que o tiro vai atingir (chaves), sem as que caem fora do mar ou já foram atingidas.
   // A casa escolhida vem primeiro. vertical = true gira o tiro duplo (casa + a de baixo). Devolve { formato, casas }.
   function casasDoTiro(estado, jogador, l, c, poder, vertical) {
     const formato = formatoDoTiro(estado, jogador, poder);
+    if (formato === 'radar3' || formato === 'radar4') return { formato: formato, casas: areaDoRadar(l, c, formato === 'radar3' ? 3 : 4) };
     const tirosAlvo = estado.jogadores[1 - jogador].tiros;
     const casas = DESLOCAMENTOS[formato === 'duplo' && vertical ? 'duploEmPe' : formato]
       .map(function (d) { return [l + d[0], c + d[1]]; })
@@ -176,7 +198,7 @@
     const torpedos = torpedosDaSala(config);
     function jogador() {
       return { navios: {}, pronto: false, tiros: {}, afundadas: [], contas: { certas: 0, total: 0 },
-               sequencia: 0, maiorSequencia: 0, torpedos: torpedos, arsenal: { duplo: 0, mover: 0, cruz: 0, x: 0 } };
+               sequencia: 0, maiorSequencia: 0, torpedos: torpedos, arsenal: { duplo: 0, mover: 0, cruz: 0, x: 0, radar3: 0, radar4: 0 } };
     }
     const cfg = { nomes: nomes, modo: config.modo === 'rapido' ? 'rapido' : 'classico', tempoMin: config.tempoMin || 0 };
     if (config.tiro === 'turbo') { cfg.tiro = 'turbo'; cfg.torpedos = torpedos; }   // sala Normal: igual a antes
@@ -227,7 +249,7 @@
   // Aplica uma ação e devolve { ok, estado, motivo? }. Nunca altera o estado recebido.
   // Ações locais (só no meu computador): posicionar, remover, aleatorio, limpar.
   // Recados (chegam pela sala, iguais nos dois computadores): pronto, mirar, responder, resultado,
-  // passar_vez (com tempoEsgotado), encerrar, revelar.
+  // radar (resposta do defensor ao radar), passar_vez (com tempoEsgotado), encerrar, revelar.
   function aplicar(estadoAntigo, acao, aleatorio) {
     aleatorio = aleatorio || Math.random;
     const estado = structuredClone(estadoAntigo);
@@ -298,8 +320,18 @@
 
     if (estado.fase !== 'batalha') return recusar(estadoAntigo, 'a partida não está em andamento');
 
+    // Resposta do radar (Turbo): o defensor diz só se há navio na área. Nenhuma casa muda.
+    if (a === 'radar') {
+      if (estado.etapa !== 'aguardando_resultado' || !estado.mira.radar) return recusar(estadoAntigo, 'não há radar esperando resposta');
+      if (acao.jogador !== 1 - estado.vez) return recusar(estadoAntigo, 'só o defensor responde o radar');
+      estado.ultimoTurno.tem = acao.tem === true;
+      estado.etapa = 'resultado';
+      return { ok: true, estado: estado };
+    }
+
     if (a === 'resultado') {
       if (estado.etapa !== 'aguardando_resultado') return recusar(estadoAntigo, 'não há tiro esperando resultado');
+      if (estado.mira.radar) return recusar(estadoAntigo, 'o radar espera a resposta do radar');
       const defensor = 1 - estado.vez;
       if (acao.jogador !== defensor) return recusar(estadoAntigo, 'só o defensor responde o tiro');
       const d = estado.jogadores[defensor];
@@ -385,14 +417,16 @@
     if (a === 'mirar') {
       if (estado.etapa !== 'escolher') return recusar(estadoAntigo, 'já escolheu a casa neste turno');
       if (!dentro(acao.l, acao.c)) return recusar(estadoAntigo, 'fora do tabuleiro');
-      if (estado.jogadores[alvo].tiros[chave(acao.l, acao.c)]) return recusar(estadoAntigo, 'casa já atingida');
       const poder = acao.torpedo === true ? 'torpedo' : (acao.poder || null);
-      if (poder !== null && ['torpedo'].concat(PODERES_DE_TIRO).indexOf(poder) < 0) return recusar(estadoAntigo, 'poder desconhecido');
+      if (poder !== null && ['torpedo'].concat(PODERES_DE_TIRO, PODERES_RADAR).indexOf(poder) < 0) return recusar(estadoAntigo, 'poder desconhecido');
+      const radar = PODERES_RADAR.indexOf(poder) >= 0;   // o radar pode ser apontado até para uma casa já atingida
+      if (!radar && estado.jogadores[alvo].tiros[chave(acao.l, acao.c)]) return recusar(estadoAntigo, 'casa já atingida');
       if (poder === 'torpedo' && estado.jogadores[estado.vez].torpedos <= 0) return recusar(estadoAntigo, 'sem torpedos');
       if (poder && poder !== 'torpedo' && !temPoder(estado.jogadores[estado.vez], poder)) return recusar(estadoAntigo, 'poder não está no arsenal');
       const vertical = acao.vertical === true;
       const tiro = casasDoTiro(estado, estado.vez, acao.l, acao.c, poder, vertical);
       estado.mira = { l: acao.l, c: acao.c, formato: tiro.formato, casas: tiro.casas, poder: poder, torpedo: poder === 'torpedo', vertical: vertical };
+      if (radar) estado.mira.radar = true;
       estado.etapa = 'responder';
       return { ok: true, estado: estado };
     }
@@ -405,7 +439,7 @@
       if (certa) atirador.contas.certas += 1;
       atirador.sequencia = certa ? atirador.sequencia + 1 : 0;
       if (atirador.sequencia > atirador.maiorSequencia) atirador.maiorSequencia = atirador.sequencia;
-      // O poder armado (torpedo, duplo, cruz, x, mover) é gasto mesmo errando a conta.
+      // O poder armado (torpedo, duplo, cruz, x, mover, radar) é gasto mesmo errando a conta.
       if (estado.mira.poder === 'torpedo') atirador.torpedos -= 1;
       else if (estado.mira.poder) atirador.arsenal[estado.mira.poder] -= 1;
       estado.ultimoTurno = { jogador: estado.vez, l: estado.mira.l, c: estado.mira.c, acertouConta: certa, tiro: null };
@@ -413,6 +447,7 @@
         estado.ultimoTurno.formato = estado.mira.formato;
         estado.ultimoTurno.casas = estado.mira.casas;
       }
+      if (estado.mira.radar) estado.ultimoTurno.radar = true;   // acertando, o defensor responde com o recado "radar"
       if (estado.mira.mover) {
         estado.ultimoTurno.mover = true;
         estado.etapa = certa ? 'movendo' : 'resultado';
@@ -427,7 +462,7 @@
 
   const Regras = {
     TAMANHO, FROTA, TOTAL_CASAS_FROTA, chave, nomeCasa, casasDoNavio, podePosicionar, gerarFrotaAleatoria,
-    navioNaCasa, resolverTiro, resolverTiroMultiplo, formatoDoTiro, casasDoTiro, torpedosDaSala, trocasPossiveis, temPoder,
+    navioNaCasa, resolverTiro, resolverTiroMultiplo, resolverRadar, formatoDoTiro, casasDoTiro, torpedosDaSala, trocasPossiveis, temPoder,
     naviosQuePodemMover,
     novaPartida, casasAtingidas, casasAfundadas, aplicar
   };

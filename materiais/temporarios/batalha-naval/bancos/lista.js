@@ -6,4 +6,5 @@ var BANCOS = [
   "operacoes-basicas-nivel2.js",
   "operacoes-basicas-nivel3.js",
   "operacoes-basicas-nivel4.js",
+  "lua-eclipses-terra.js",
 ];

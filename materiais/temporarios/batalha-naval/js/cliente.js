@@ -10,7 +10,7 @@
   const MS_CONTA = 10000;
 
   // opcoes = {
-  //   conexao: { enviar(recado), horaServidor() },   ← vem da sala (Firebase ou falsa)
+  //   conexao: { enviar(recado), horaServidor(), publicarConta?(conta) },   ← vem da sala (Firebase ou falsa)
   //   eu: 0 | 1, nomes: [n0, n1], config: { banco, modo, tempoMin }, perguntas: [pergunta],
   //   ficha: { partida, navios, monte, pergunta } | null,   ← partida salva neste Chromebook
   //   guardar(ficha),                                    ← chamado sempre que a ficha muda
@@ -29,7 +29,7 @@
     let partida = 1;
     let estado = null;
     let monte = fichaInicial && fichaInicial.monte ? fichaInicial.monte : Perguntas.criarMonte(perguntas.length, aleatorio);
-    let pergunta = fichaInicial && fichaInicial.pergunta ? fichaInicial.pergunta : null;  // { partida, turno, idx, fim, respondida?, certa? }
+    let pergunta = fichaInicial && fichaInicial.pergunta ? fichaInicial.pergunta : null;  // { partida, turno, idx, fim, opcoes?, respondida?, certa?, resposta? }
     // Meus navios de cada partida da sala (1, 2, ...): quem volta relê TODAS as partidas e precisa dos navios de cada uma.
     const naviosPorPartida = Object.assign({}, fichaInicial && fichaInicial.naviosPorPartida);
     if (fichaInicial && fichaInicial.partida && fichaInicial.navios && !naviosPorPartida[fichaInicial.partida]) {
@@ -136,7 +136,25 @@
     function sortearPergunta() {
       if (perguntaDestaVez()) return;   // a ficha já tem a pergunta deste turno
       pergunta = { partida: partida, turno: turno, idx: Perguntas.sortear(monte, aleatorio), fim: ultimoMirarEm + msConta };
+      const p = perguntas[pergunta.idx];
+      // Alternativas embaralhadas uma vez só: o aluno e o painel do professor veem na mesma ordem.
+      if (p.tipo === 'escolha') pergunta.opcoes = Perguntas.embaralhar([p.certa].concat(p.erradas), aleatorio).map(String);
       guardar();
+      publicarConta();
+    }
+
+    // Painel do professor: a cadeira mostra a conta em andamento (o texto e as alternativas — nunca a resposta certa).
+    function publicarConta() {
+      if (!conexao.publicarConta) return;
+      const c = { partida: pergunta.partida, turno: pergunta.turno, pergunta: perguntas[pergunta.idx].pergunta };
+      if (pergunta.opcoes) c.opcoes = pergunta.opcoes;
+      conexao.publicarConta(c);
+    }
+
+    // O recado "responder" leva a pergunta e o que o aluno respondeu (null = tempo esgotado), para o painel.
+    function dadosDaResposta() {
+      return { certa: pergunta.certa === true, pergunta: perguntas[pergunta.idx].pergunta,
+               resposta: pergunta.resposta === undefined ? null : pergunta.resposta };
     }
 
     // Chamado pela sala quando terminou de entregar os recados antigos.
@@ -146,7 +164,7 @@
       if (estado.fase === 'batalha' && estado.vez === eu && estado.etapa === 'responder' && perguntaDestaVez()) {
         if (pergunta.respondida) {
           // Eu já tinha respondido, mas o recado se perdeu (a aba fechou antes de chegar): reenvia a mesma resposta.
-          enviar('responder', { certa: pergunta.certa === true });
+          enviar('responder', dadosDaResposta());
         } else if (conexao.horaServidor() >= pergunta.fim) {
           // Voltei no meio da minha continha e o tempo já passou: conta como tempo esgotado.
           responder(null);
@@ -234,8 +252,9 @@
       Perguntas.registrarResultado(monte, pergunta.idx, certa);
       pergunta.respondida = true;
       pergunta.certa = certa;
+      pergunta.resposta = texto === null || texto === undefined ? null : String(texto);
       guardar();
-      enviar('responder', { certa: certa });
+      enviar('responder', dadosDaResposta());
       return { certa: certa };
     }
 
@@ -271,7 +290,7 @@
 
     function perguntaAtual() {
       if (!perguntaDestaVez() || pergunta.respondida || estado.etapa !== 'responder' || estado.vez !== eu) return null;
-      return { pergunta: perguntas[pergunta.idx], fim: pergunta.fim };
+      return { pergunta: perguntas[pergunta.idx], fim: pergunta.fim, opcoes: pergunta.opcoes || null };
     }
 
     return {

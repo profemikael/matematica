@@ -784,7 +784,7 @@
     opcoes.innerHTML = '';
     if (p.tipo === 'escolha') {
       $('conta-form').hidden = true;
-      Perguntas.embaralhar([p.certa].concat(p.erradas), Math.random).forEach(function (texto) {
+      (pa.opcoes || Perguntas.embaralhar([p.certa].concat(p.erradas), Math.random)).forEach(function (texto) {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'botao';
@@ -1051,6 +1051,16 @@
   $('suspense-tela').addEventListener('click', function () {
     // Quem atirou pode adiantar depois da revelação (o próprio clique que enviou a resposta é ignorado).
     if (aguardandoAvanco && Date.now() - momentoResultado > 400) avancar();
+  });
+
+  // ================= Painel do professor: toque secreto =================
+  // 5 cliques seguidos (em até 3 s) no ⚓ do título, na tela da senha ou na inicial, abrem o painel.
+  let cliquesAncora = [];
+  $('ancora').addEventListener('click', function () {
+    if ($('tela-senha').hidden && $('tela-inicio').hidden) return;
+    const agora = Date.now();
+    cliquesAncora = cliquesAncora.filter(function (t) { return agora - t < 3000; }).concat(agora);
+    if (cliquesAncora.length >= 5) location.href = 'painel.html';
   });
 
   // ================= Botão de som =================

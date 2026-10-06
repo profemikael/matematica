@@ -204,7 +204,7 @@
     if (config.tiro === 'turbo') { cfg.tiro = 'turbo'; cfg.torpedos = torpedos; }   // sala Normal: igual a antes
     return {
       config: cfg,
-      eu: config.eu === 1 ? 1 : 0,
+      eu: config.eu === 1 ? 1 : config.eu === -1 ? -1 : 0,   // -1 = espectador (painel do professor): não tem navios
       fase: 'posicionamento',
       jogadores: [jogador(), jogador()],
       vez: 0,

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel do professor — Batalha Naval</title>
+<link rel="stylesheet" href="css/estilo.css?v=2026-10-05-painel">
+<link rel="stylesheet" href="css/painel.css?v=2026-10-05-painel">
+</head>
+<body>
+<main class="folha">
+  <header class="capa">
+    <div class="linha">Prof. Mikael · Painel do professor</div>
+    <h1>📺 Batalha Naval — Painel</h1>
+    <h2>Confrontos de hoje, ao vivo</h2>
+    <button id="btn-som" class="btn-som" type="button" title="Ligar/desligar o som do painel">🔇</button>
+  </header>
+
+  <p id="sem-conexao" class="alerta" hidden>⚠ Sem conexão — tentando reconectar...</p>
+
+  <!-- 0. Carregando -->
+  <section id="tela-carregando" class="tela">
+    <p id="carregando-texto" class="centro">Carregando...</p>
+  </section>
+
+  <!-- 1. Senha de uma turma -->
+  <section id="tela-turmas" class="tela" hidden>
+    <form id="form-turma" class="cartao estreito">
+      <label>Senha da turma <input id="turma-senha" maxlength="30" autocomplete="off" placeholder="ex.: a senha da turma"></label>
+      <p id="turma-erro" class="erro"></p>
+      <button class="botao principal" type="submit">Adicionar turma</button>
+      <button id="btn-cancelar-turma" class="link" type="button" hidden>Cancelar</button>
+    </form>
+    <p class="centro"><a href="index.html">← Voltar ao jogo</a></p>
+  </section>
+
+  <!-- 2. Visão geral: um cartão por confronto de hoje -->
+  <section id="tela-geral" class="tela" hidden>
+    <div class="painel-topo">
+      <div id="chips-turmas" class="chips"></div>
+      <button id="btn-mais-turma" class="botao" type="button">+ turma</button>
+      <label class="filtro">Mostrar <select id="filtro-turma"><option value="">Todas</option></select></label>
+      <button id="btn-paradas" class="link" type="button" hidden></button>
+      <button id="btn-ocultas" class="link" type="button" hidden></button>
+      <a class="voltar-jogo" href="index.html">← Voltar ao jogo</a>
+    </div>
+    <p id="geral-vazio" class="centro vazio" hidden>Nenhum confronto em andamento agora nas turmas escolhidas.</p>
+    <div id="cartoes" class="cartoes"></div>
+  </section>
+
+  <!-- 3. Visão de torcida (projetor): dois mares, mira e conta ao vivo, sem revelar navios -->
+  <section id="tela-torcida" class="tela" hidden>
+    <div class="torcida-topo">
+      <button id="btn-voltar-geral" class="botao" type="button">← Voltar</button>
+      <span id="tor-info" class="tor-info"></span>
+      <span class="chave-conta" role="group" aria-label="Mostrar a conta">
+        <span class="chave-rotulo">Conta:</span>
+        <button class="botao" type="button" data-modo="esconder" title="Esconder a conta">🙈</button>
+        <button class="botao" type="button" data-modo="depois" title="Mostrar depois que o aluno responder">⏳</button>
+        <button class="botao" type="button" data-modo="aovivo" title="Mostrar ao vivo">👀</button>
+      </span>
+      <button id="btn-tela-cheia" class="botao" type="button" title="Tela cheia">⛶</button>
+    </div>
+    <p id="tor-placar" class="tor-placar"></p>
+    <p id="tor-afundados" class="tor-afundados"></p>
+    <div class="tabuleiros">
+      <figure><figcaption id="tor-titulo-1"></figcaption><div id="tor-mar-1"></div></figure>
+      <figure><figcaption id="tor-titulo-0"></figcaption><div id="tor-mar-0"></div></figure>
+    </div>
+    <div id="tor-faixa" class="reprise"><p id="tor-faixa-texto"></p></div>
+    <div id="tor-conta" class="tor-conta"></div>
+    <div id="tor-stats" class="tor-stats"></div>
+    <h3 class="tor-linha-titulo">Linha do tempo</h3>
+    <ol id="tor-linha" class="tor-linha"></ol>
+    <!-- Contagem 3, 2, 1 e a revelação (igual à dos alunos) -->
+    <div id="tor-suspense" class="suspense" hidden>
+      <div class="suspense-caixa">
+        <p id="tor-suspense-titulo" class="suspense-titulo"></p>
+        <p id="tor-suspense-numero" class="suspense-numero"></p>
+        <p id="tor-suspense-texto" class="suspense-texto"></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js?v=2026-10-05-painel"></script>
+<script src="js/regras.js?v=2026-10-05-painel"></script>
+<script src="js/sala.js?v=2026-10-05-painel"></script>
+<script src="js/navios-svg.js?v=2026-10-05-painel"></script>
+<script src="js/sons.js?v=2026-10-05-painel"></script>
+<script src="js/tela.js?v=2026-10-05-painel"></script>
+<script src="js/painel-modelo.js?v=2026-10-05-painel"></script>
+<script src="js/painel.js?v=2026-10-05-painel"></script>
+</body>
+</html>

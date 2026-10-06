@@ -73,7 +73,7 @@
     }
 
     // Abre a sala para jogar. eventos = { aoRecado(recado), aoSincronizado(), aoJogadores(jogadores), aoConexao(ligado) }
-    // Devolve a conexão que o Cliente usa: { enviar(recado), horaServidor(), fechar() }.
+    // Devolve a conexão que o Cliente usa: { enviar(recado), horaServidor(), publicarConta(conta), fechar() }.
     function abrir(senha, codigo, eu, jogador, eventos) {
       const sala = refSala(senha, codigo);
       const cadeira = sala.child('jogadores/' + eu);
@@ -115,6 +115,8 @@
       return {
         enviar: function (recado) { ordenador.enviar(recado); },
         horaServidor: horaServidor,
+        // Painel do professor: a conta em andamento fica na minha cadeira (só o texto; nunca a resposta certa).
+        publicarConta: function (conta) { if (!fechada) cadeira.update({ conta: conta }); },
         fechar: function () {
           fechada = true;
           conectado.off('value', aoConectado);
@@ -135,7 +137,27 @@
       return sala;
     }
 
-    return { verificarSenha, criarSala, entrarNaSala, abrir, lerSala, horaServidor };
+    // Painel do professor: acompanha as salas de uma turma criadas desde `desde` (hora do servidor).
+    // eventos = { aoSala(codigo, sala | null), aoErro(erro) }. Devolve parar().
+    function observarTurma(senha, desde, eventos) {
+      const consulta = db.ref('turmas/' + senha + '/salas').orderByChild('criadaEm').startAt(desde);
+      let parado = false;
+      let avisouErro = false;
+      function mudou(s) { if (!parado) eventos.aoSala(s.key, s.val()); }
+      function saiu(s) { if (!parado) eventos.aoSala(s.key, null); }
+      function erro(e) { if (!parado && !avisouErro && eventos.aoErro) { avisouErro = true; eventos.aoErro(e); } }
+      consulta.on('child_added', mudou, erro);
+      consulta.on('child_changed', mudou, erro);
+      consulta.on('child_removed', saiu, erro);
+      return function parar() {
+        parado = true;
+        consulta.off('child_added', mudou);
+        consulta.off('child_changed', mudou);
+        consulta.off('child_removed', saiu);
+      };
+    }
+
+    return { verificarSenha, criarSala, entrarNaSala, abrir, lerSala, horaServidor, observarTurma };
   }
 
   // Ordenador: garante que os dois computadores apliquem os recados na MESMA ordem.

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jogo da Memória</title>
+<link rel="stylesheet" href="css/estilo.css?v=2026-10-06-memoria">
+</head>
+<body>
+<main class="folha">
+  <header class="capa">
+    <div class="linha">Prof. Mikael · Jogo online para 2 a 8 alunos</div>
+    <h1>🧠 Jogo da Memória</h1>
+    <h2 id="capa-banco">Encontre os pares!</h2>
+    <button id="btn-som" class="btn-som" type="button" title="Ligar/desligar o som">🔊</button>
+  </header>
+
+  <p id="sem-conexao" class="alerta" hidden>⚠ Sem conexão — tentando reconectar...</p>
+
+  <!-- 0. Carregando -->
+  <section id="tela-carregando" class="tela">
+    <p id="carregando-texto" class="centro">Carregando...</p>
+  </section>
+
+  <!-- 1. Senha da turma -->
+  <section id="tela-senha" class="tela" hidden>
+    <form id="form-senha" class="cartao estreito">
+      <p id="senha-aviso" class="aviso-senha" hidden></p>
+      <label>Senha da turma <input id="senha" maxlength="30" autocomplete="off" placeholder="peça ao professor"></label>
+      <p id="senha-erro" class="erro"></p>
+      <button class="botao principal" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- 2. Início -->
+  <section id="tela-inicio" class="tela" hidden>
+    <div class="cartao estreito">
+      <div id="sala-salva" class="sala-salva" hidden>
+        <p id="sala-salva-texto"></p>
+        <div class="linha-botoes">
+          <button id="btn-voltar-sala" class="botao principal" type="button">Voltar para a sala</button>
+          <button id="btn-esquecer-sala" class="botao" type="button">Esquecer</button>
+        </div>
+      </div>
+      <label>Seu nome <input id="nome" maxlength="20" autocomplete="off" placeholder="Seu nome"></label>
+      <div class="linha-botoes">
+        <button id="btn-criar" class="botao principal" type="button">Criar sala</button>
+        <button id="btn-entrar" class="botao principal" type="button">Entrar na sala</button>
+      </div>
+      <p id="inicio-erro" class="erro"></p>
+      <ul id="avisos-bancos" class="avisos"></ul>
+      <button id="btn-trocar-senha" class="link" type="button">trocar senha da turma</button>
+    </div>
+  </section>
+
+  <!-- 3a. Criar sala -->
+  <section id="tela-criar" class="tela" hidden>
+    <form id="form-criar" class="cartao estreito">
+      <label>Banco de cartas <select id="banco"></select></label>
+      <fieldset>
+        <legend>Quantos pares?</legend>
+        <div id="opcoes-pares" class="linha-opcoes"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Como jogar</legend>
+        <label class="opcao"><input type="radio" name="modo" value="solo" checked> Cada um por si</label>
+        <label class="opcao"><input type="radio" name="modo" value="times"> Em times
+          <select id="qtd-times" disabled>
+            <option value="2">2 times</option>
+            <option value="3">3 times</option>
+            <option value="4">4 times</option>
+          </select>
+        </label>
+      </fieldset>
+      <label>Tempo de cada vez
+        <select id="tempo">
+          <option value="10">10 segundos</option>
+          <option value="15">15 segundos</option>
+          <option value="20">20 segundos</option>
+          <option value="25">25 segundos</option>
+          <option value="30" selected>30 segundos</option>
+          <option value="0">Sem limite</option>
+        </select>
+      </label>
+      <fieldset>
+        <legend>Quem acerta um par…</legend>
+        <label class="opcao"><input type="radio" name="acerto" value="denovo" checked> joga de novo</label>
+        <label class="opcao"><input type="radio" name="acerto" value="passa"> passa a vez (uma vez para cada um)</label>
+      </fieldset>
+      <p id="criar-erro" class="erro"></p>
+      <div class="linha-botoes">
+        <button id="btn-criar-voltar" class="botao" type="button">Voltar</button>
+        <button id="btn-criar-confirmar" class="botao principal" type="submit">Criar sala</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3b. Entrar na sala -->
+  <section id="tela-entrar" class="tela" hidden>
+    <form id="form-entrar" class="cartao estreito">
+      <label>Código da sala <input id="codigo" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="4 números"></label>
+      <p id="entrar-erro" class="erro"></p>
+      <div class="linha-botoes">
+        <button id="btn-entrar-voltar" class="botao" type="button">Voltar</button>
+        <button class="botao principal" type="submit">Entrar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 4. Sala de espera -->
+  <section id="tela-espera" class="tela" hidden>
+    <div class="espera-topo">
+      <p>Código da sala</p>
+      <div id="espera-codigo" class="codigo-grande"></div>
+      <p id="espera-config" class="espera-config"></p>
+    </div>
+    <div id="espera-grupos" class="espera-grupos"></div>
+    <p id="espera-motivo" class="centro espera-motivo"></p>
+    <div class="linha-botoes centro-botoes">
+      <button id="btn-sair-espera" class="botao" type="button">Sair da sala</button>
+      <button id="btn-comecar" class="botao principal" type="button" hidden>Começar</button>
+    </div>
+  </section>
+
+  <!-- 5. Partida -->
+  <section id="tela-jogo" class="tela" hidden>
+    <div id="faixa" class="faixa">
+      <span id="faixa-texto"></span>
+      <span id="relogio" class="relogio"></span>
+    </div>
+    <div class="jogo-layout">
+      <div id="tabuleiro" class="tabuleiro"></div>
+      <aside id="placar" class="placar"></aside>
+    </div>
+  </section>
+
+  <!-- 6. Fim -->
+  <section id="tela-fim" class="tela" hidden>
+    <div class="fim">
+      <h2 id="fim-titulo"></h2>
+      <ol id="podio" class="podio"></ol>
+      <p id="fim-aguarde" class="centro"></p>
+      <div class="linha-botoes centro-botoes">
+        <button id="btn-sair-fim" class="botao" type="button">Sair</button>
+        <button id="btn-de-novo" class="botao principal" type="button" hidden>Jogar de novo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Carta ampliada no centro (uma ou duas) -->
+  <div id="ampliacao" class="ampliacao" hidden>
+    <div id="ampliacao-cartas" class="ampliacao-cartas"></div>
+    <p id="ampliacao-texto" class="ampliacao-texto"></p>
+  </div>
+  <p id="aviso-flutuante" class="aviso-flutuante" hidden></p>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js?v=2026-10-06-memoria"></script>
+<script src="bancos/lista.js?v=2026-10-06-memoria"></script>
+<script src="js/regras.js?v=2026-10-06-memoria"></script>
+<script src="js/bancos.js?v=2026-10-06-memoria"></script>
+<script src="js/desenhos.js?v=2026-10-06-memoria"></script>
+<script src="js/sala.js?v=2026-10-06-memoria"></script>
+<script src="js/sons.js?v=2026-10-06-memoria"></script>
+<script src="js/tela.js?v=2026-10-06-memoria"></script>
+<script src="js/tabuleiro.js?v=2026-10-06-memoria"></script>
+<script src="js/partida-online.js?v=2026-10-06-memoria"></script>
+</body>
+</html>

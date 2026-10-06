@@ -10,8 +10,9 @@
   const TAMANHOS = [10, 20, 30, 40];
   const GRADES = { 10: [5, 4], 20: [8, 5], 30: [10, 6], 40: [10, 8] };   // pares → [colunas, linhas]
   const PAUSA_MS = 2000;      // depois de um par, erro ou tempo esgotado: as cartas ficam à mostra e o relógio espera
-  const FOLGA_QUEDA_MS = 2000;   // quem estava na vez caiu: espera isto antes de pular (um F5 rápido não perde a vez)
+  const FOLGA_QUEDA_MS = 2000;   // quem estava na vez caiu: espera isto antes de pular (cobre uma oscilação rápida da rede)
   const FOLGA_TEMPO_MS = 3000;   // tempo esgotado e o computador da vez não avisou: outro avisa depois disto
+  const ESCALA_MS = 1500;        // reservas: o 2º conectado avisa 1,5 s depois do 1º, o 3º depois do 2º… (aba dormindo)
   const CORES = [
     { nome: 'Vermelho', emoji: '🔴', cor: '#e04848' },
     { nome: 'Azul', emoji: '🔵', cor: '#3b7be0' },
@@ -189,7 +190,7 @@
       if (pos < 0 || r.alvo === estado.jogador) return false;
       estado.ultimo = { tipo: 'pular', cartas: estado.abertas.slice(), time: estado.timeDaVez, jogador: estado.jogador, vez: estado.vez };
       fecharAbertas(estado);
-      darVez(estado, pos, indice, r.em);
+      darVez(estado, pos, indice, Math.max(r.em, estado.inicioVez));   // nunca encurta a pausa
       return true;
     }
     return false;
@@ -221,21 +222,24 @@
   }
 
   // O que ESTE computador deve mandar agora para a partida andar (ou null).
-  // - quem está na vez caiu há mais de FOLGA_QUEDA_MS → o primeiro conectado manda 'pular';
-  // - o tempo acabou → quem está na vez manda 'tempo' (se ele não mandar em FOLGA_TEMPO_MS, o primeiro conectado manda).
+  // - quem está na vez caiu há mais de FOLGA_QUEDA_MS (e a pausa já acabou) → os conectados mandam 'pular';
+  // - o tempo acabou → quem está na vez manda 'tempo'; se ele não mandar em FOLGA_TEMPO_MS, os outros mandam.
+  // Os outros vão em escada (o 1º conectado, depois o 2º ESCALA_MS mais tarde…): se a aba de um estiver
+  // dormindo, o seguinte cobre. Recados repetidos são ignorados pelo motor (mesma vez).
   function acaoPendente(config, estado, jogadores, eu, agora) {
     if (estado.fase !== 'jogo') return null;
     const atual = jogadores[estado.jogador];
-    const primeiro = lugaresConectados(jogadores).filter(function (l) { return l !== estado.jogador; })[0];
+    const posicao = lugaresConectados(jogadores).filter(function (l) { return l !== estado.jogador; }).indexOf(eu);
+    const espera = posicao * ESCALA_MS;
     if (!atual || !atual.conectado) {
-      if (eu !== primeiro) return null;
-      if (atual && agora - (atual.vistoEm || 0) < FOLGA_QUEDA_MS) return null;
+      if (posicao < 0 || agora < estado.inicioVez + espera) return null;
+      if (atual && agora - (atual.vistoEm || 0) < FOLGA_QUEDA_MS + espera) return null;
       const alvo = proximoConectado(estado, jogadores);
       return alvo === null ? null : { tipo: 'pular', alvo: alvo };
     }
     const fim = prazo(config, estado);
     if (eu === estado.jogador && agora >= fim) return { tipo: 'tempo' };
-    if (eu === primeiro && agora >= fim + FOLGA_TEMPO_MS) return { tipo: 'tempo' };
+    if (posicao >= 0 && agora >= fim + FOLGA_TEMPO_MS + espera) return { tipo: 'tempo' };
     return null;
   }
 
@@ -250,7 +254,7 @@
   }
 
   const Regras = {
-    MAX_JOGADORES, TEMPOS, TEMPO_PADRAO, TAMANHOS, GRADES, PAUSA_MS, FOLGA_QUEDA_MS, FOLGA_TEMPO_MS, CORES,
+    MAX_JOGADORES, TEMPOS, TEMPO_PADRAO, TAMANHOS, GRADES, PAUSA_MS, FOLGA_QUEDA_MS, FOLGA_TEMPO_MS, ESCALA_MS, CORES,
     embaralhar, lugaresConectados, anfitriao, podeComecar, prepararPartida, novoEstado, aplicar, calcular,
     proximoConectado, acaoPendente, classificacao, prazo
   };

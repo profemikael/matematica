@@ -88,6 +88,7 @@
         }
       }
       function aoSair() { marcar(false); }
+      raiz.CarteiroLocal.abertas += 1;
       ouvintes.add(olhar);
       raiz.addEventListener('pagehide', aoSair);
       marcar(true);
@@ -100,7 +101,7 @@
           gravar(chave(codigo, 'r:' + n), Object.assign({}, recado, { em: Date.now() }));
         },
         horaServidor: horaServidor,
-        fechar: function () { fechada = true; ouvintes.delete(olhar); raiz.removeEventListener('pagehide', aoSair); marcar(false); }
+        fechar: function () { fechada = true; raiz.CarteiroLocal.abertas -= 1; ouvintes.delete(olhar); raiz.removeEventListener('pagehide', aoSair); marcar(false); }
       };
     }
 
@@ -109,5 +110,6 @@
     return { verificarSenha, criarSala, entrarNaSala, mudarTime, abrir, lerSala, horaServidor };
   }
 
-  raiz.CarteiroLocal = { criar: criar };
+  // abertas: quantas conexões desta aba estão abertas agora (o teste confere que um clique duplo não abre duas).
+  raiz.CarteiroLocal = { criar: criar, abertas: 0 };
 })(window);

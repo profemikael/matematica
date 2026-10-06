@@ -257,7 +257,10 @@
     entrar($('codigo').value.trim(), 'entrar-erro');
   });
 
+  let entrando = false;   // trava contra clique duplo em "Entrar" / "Voltar para a sala"
   async function entrar(codigo, idErro) {
+    if (entrando) return;
+    entrando = true;
     mostrarErro(idErro, 'Entrando...');
     try {
       const r = await carteiro.entrarNaSala(senha, codigo, { nome: meuNome(), id: meuId() });
@@ -265,6 +268,8 @@
       abrirSala(codigo, r.eu, r.config);
     } catch (e) {
       mostrarErro(idErro, e.message || 'Não foi possível entrar. Tente de novo.');
+    } finally {
+      entrando = false;
     }
   }
 
@@ -277,6 +282,8 @@
       Tela.mostrar('tela-inicio');
       return;
     }
+    if (conexao) conexao.fechar();   // nunca duas salas abertas ao mesmo tempo
+    conexao = null;
     sessao = { codigo: codigo, eu: lugar, config: cfg, banco: banco };
     gravarFicha({ senha: senha, codigo: codigo, id: meuId(), nome: meuNome() });
     estado = Regras.novoEstado();

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jogo da Memória</title>
-<link rel="stylesheet" href="css/estilo.css?v=2026-10-06-memoria2">
+<link rel="stylesheet" href="css/estilo.css?v=2026-10-08-geometria">
 </head>
 <body>
 <main class="folha">
@@ -42,7 +42,11 @@
           <button id="btn-esquecer-sala" class="botao" type="button">Esquecer</button>
         </div>
       </div>
-      <label>Seu nome <input id="nome" maxlength="20" autocomplete="off" placeholder="Seu nome"></label>
+      <label id="linha-nome">Seu nome <input id="nome" maxlength="40" autocomplete="off" placeholder="Seu nome"></label>
+      <div id="caixa-nomes" class="caixa-nomes" hidden>
+        <p id="lista-titulo" class="lista-titulo"></p>
+        <div id="lista-nomes" class="lista-nomes"></div>
+      </div>
       <div class="linha-botoes">
         <button id="btn-criar" class="botao principal" type="button">Criar sala</button>
         <button id="btn-entrar" class="botao principal" type="button">Entrar na sala</button>
@@ -60,6 +64,11 @@
       <fieldset>
         <legend>Quantos pares?</legend>
         <div id="opcoes-pares" class="linha-opcoes"></div>
+      </fieldset>
+      <fieldset id="linha-jeito" hidden>
+        <legend>Jeito de jogar</legend>
+        <label class="opcao"><input type="radio" name="jeito" value="iguais" checked> Cartas iguais (desenho + nome nas duas)</label>
+        <label class="opcao"><input type="radio" name="jeito" value="perguntas"> Perguntas e respostas (dois baralhos separados)</label>
       </fieldset>
       <fieldset>
         <legend>Como jogar</legend>
@@ -127,6 +136,7 @@
     <div id="faixa" class="faixa">
       <span id="faixa-texto"></span>
       <span id="relogio" class="relogio"></span>
+      <div class="trilho-tempo"><div id="barra-tempo"></div></div>
     </div>
     <div class="jogo-layout">
       <div id="tabuleiro" class="tabuleiro"></div>
@@ -157,15 +167,16 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="js/firebase-config.js?v=2026-10-06-memoria2"></script>
-<script src="bancos/lista.js?v=2026-10-06-memoria2"></script>
-<script src="js/regras.js?v=2026-10-06-memoria2"></script>
-<script src="js/bancos.js?v=2026-10-06-memoria2"></script>
-<script src="js/desenhos.js?v=2026-10-06-memoria2"></script>
-<script src="js/sala.js?v=2026-10-06-memoria2"></script>
-<script src="js/sons.js?v=2026-10-06-memoria2"></script>
-<script src="js/tela.js?v=2026-10-06-memoria2"></script>
-<script src="js/tabuleiro.js?v=2026-10-06-memoria2"></script>
-<script src="js/partida-online.js?v=2026-10-06-memoria2"></script>
+<script src="js/firebase-config.js?v=2026-10-08-geometria"></script>
+<script src="bancos/lista.js?v=2026-10-08-geometria"></script>
+<script src="js/regras.js?v=2026-10-08-geometria"></script>
+<script src="js/bancos.js?v=2026-10-08-geometria"></script>
+<script src="js/desenhos.js?v=2026-10-08-geometria"></script>
+<script src="js/nomes.js?v=2026-10-08-geometria"></script>
+<script src="js/sala.js?v=2026-10-08-geometria"></script>
+<script src="js/sons.js?v=2026-10-08-geometria"></script>
+<script src="js/tela.js?v=2026-10-08-geometria"></script>
+<script src="js/tabuleiro.js?v=2026-10-08-geometria"></script>
+<script src="js/partida-online.js?v=2026-10-08-geometria"></script>
 </body>
 </html>

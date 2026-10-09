@@ -19,7 +19,8 @@
     const modo = config.modo === 'times' ? config.times + ' times' : 'cada um por si';
     const tempo = config.tempo > 0 ? config.tempo + ' s por vez' : 'sem limite de tempo';
     const acerto = config.acerto === 'passa' ? 'acertou, passa a vez' : 'acertou, joga de novo';
-    return (banco ? banco.titulo + ' · ' : '') + config.pares + ' pares · ' + modo + ' · ' + tempo + ' · ' + acerto;
+    const jeito = config.jeito === 'perguntas' ? ' · perguntas e respostas' : '';
+    return (banco ? banco.titulo + ' · ' : '') + config.pares + ' pares' + jeito + ' · ' + modo + ' · ' + tempo + ' · ' + acerto;
   }
 
   // Sala de espera. op = { config, jogadores, eu, anfitriao (lugar), aoEscolherTime(lugar, time) }

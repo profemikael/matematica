@@ -1,0 +1,50 @@
+// Banco: Matemática — Geometria (40 itens: desenho + nome + pergunta).
+// Serve para os dois jeitos de jogar: "cartas iguais" (desenho + nome nas duas cartas) e
+// "perguntas e respostas" (um baralho de perguntas e outro de respostas com desenho + nome).
+// Os desenhos estão em desenhos/geometria.js. Para editar: mude o texto entre aspas;
+// mantenha as chaves, as aspas e a vírgula no fim da linha.
+registrarBancoMemoria({
+  titulo: "Matemática — Geometria",
+  itens: [
+    { imagem: "triangulo-equilatero", nome: "Triângulo Equilátero", pergunta: "Triângulo com os três lados iguais" },
+    { imagem: "quadrado", nome: "Quadrado", pergunta: "Quadrilátero com 4 lados iguais e 4 ângulos retos" },
+    { imagem: "pentagono-regular", nome: "Pentágono Regular", pergunta: "Polígono regular de 5 lados" },
+    { imagem: "hexagono-regular", nome: "Hexágono Regular", pergunta: "Polígono regular de 6 lados" },
+    { imagem: "heptagono-regular", nome: "Heptágono Regular", pergunta: "Polígono regular de 7 lados" },
+    { imagem: "octogono-regular", nome: "Octógono Regular", pergunta: "Polígono regular de 8 lados" },
+    { imagem: "eneagono-regular", nome: "Eneágono Regular", pergunta: "Polígono regular de 9 lados" },
+    { imagem: "decagono-regular", nome: "Decágono Regular", pergunta: "Polígono regular de 10 lados" },
+    { imagem: "triangulo-isosceles", nome: "Triângulo Isósceles", pergunta: "Triângulo com exatamente dois lados iguais" },
+    { imagem: "triangulo-escaleno", nome: "Triângulo Escaleno", pergunta: "Triângulo com os três lados diferentes" },
+    { imagem: "triangulo-retangulo", nome: "Triângulo Retângulo", pergunta: "Triângulo que tem um ângulo reto" },
+    { imagem: "triangulo-acutangulo", nome: "Triângulo Acutângulo", pergunta: "Triângulo com os três ângulos agudos" },
+    { imagem: "triangulo-obtusangulo", nome: "Triângulo Obtusângulo", pergunta: "Triângulo que tem um ângulo obtuso" },
+    { imagem: "angulo-agudo", nome: "Ângulo Agudo", pergunta: "Ângulo que mede menos de 90°" },
+    { imagem: "angulo-reto", nome: "Ângulo Reto", pergunta: "Ângulo que mede exatamente 90°" },
+    { imagem: "angulo-obtuso", nome: "Ângulo Obtuso", pergunta: "Ângulo que mede mais de 90° e menos de 180°" },
+    { imagem: "angulo-raso", nome: "Ângulo Raso", pergunta: "Ângulo que mede exatamente 180°" },
+    { imagem: "opostos-pelo-vertice", nome: "Opostos pelo Vértice", pergunta: "Ângulos frente a frente quando duas retas se cruzam (são iguais)" },
+    { imagem: "angulos-complementares", nome: "Ângulos Complementares", pergunta: "Dois ângulos cuja soma é 90°" },
+    { imagem: "angulos-suplementares", nome: "Ângulos Suplementares", pergunta: "Dois ângulos cuja soma é 180°" },
+    { imagem: "retas-paralelas", nome: "Retas Paralelas", pergunta: "Retas que nunca se encontram" },
+    { imagem: "retas-perpendiculares", nome: "Retas Perpendiculares", pergunta: "Retas que se cruzam formando ângulos retos" },
+    { imagem: "retas-concorrentes", nome: "Retas Concorrentes", pergunta: "Retas que se cruzam em um único ponto" },
+    { imagem: "segmento-de-reta", nome: "Segmento de Reta", pergunta: "Parte da reta entre dois pontos (tem começo e fim)" },
+    { imagem: "semirreta", nome: "Semirreta", pergunta: "Parte da reta que começa em um ponto e não tem fim" },
+    { imagem: "mediatriz", nome: "Mediatriz", pergunta: "Reta perpendicular a um segmento, passando pelo ponto médio dele" },
+    { imagem: "bissetriz", nome: "Bissetriz", pergunta: "Semirreta que divide um ângulo em duas partes iguais" },
+    { imagem: "mediana", nome: "Mediana", pergunta: "Segmento que liga um vértice ao ponto médio do lado oposto" },
+    { imagem: "altura", nome: "Altura", pergunta: "Segmento que sai de um vértice e é perpendicular ao lado oposto" },
+    { imagem: "diagonal", nome: "Diagonal", pergunta: "Segmento que liga dois vértices não vizinhos de um polígono" },
+    { imagem: "retangulo", nome: "Retângulo", pergunta: "Quadrilátero com 4 ângulos retos e lados vizinhos diferentes" },
+    { imagem: "losango", nome: "Losango", pergunta: "Quadrilátero com 4 lados iguais, sem ângulos retos" },
+    { imagem: "paralelogramo", nome: "Paralelogramo", pergunta: "Quadrilátero com lados opostos paralelos, sem ângulos retos" },
+    { imagem: "trapezio", nome: "Trapézio", pergunta: "Quadrilátero com só um par de lados paralelos" },
+    { imagem: "poligono-nao-convexo", nome: "Polígono Não Convexo", pergunta: "Polígono que tem uma parte \"para dentro\" (um ângulo interno maior que 180°)" },
+    { imagem: "circunferencia", nome: "Circunferência", pergunta: "Linha com todos os pontos à mesma distância do centro" },
+    { imagem: "raio", nome: "Raio", pergunta: "Segmento que liga o centro a um ponto da circunferência" },
+    { imagem: "diametro", nome: "Diâmetro", pergunta: "Corda que passa pelo centro da circunferência" },
+    { imagem: "corda", nome: "Corda", pergunta: "Segmento que liga dois pontos da circunferência" },
+    { imagem: "transferidor", nome: "Transferidor", pergunta: "Instrumento usado para medir ângulos" },
+  ]
+});

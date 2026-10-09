@@ -59,6 +59,7 @@
       if (!sala) throw new Error('Sala não encontrada.');
       for (let l = 0; l < 8; l++) if (sala.jogadores[l] && sala.jogadores[l].id === jogador.id) return { eu: l, config: sala.config };
       if (Sala.jaComecou(sala)) throw new Error('A partida dessa sala já começou.');
+      if (Sala.nomeOcupado(sala.jogadores, jogador.nome, jogador.id)) throw new Error('Já tem um(a) ' + jogador.nome + ' nesta sala — confira se clicou no seu nome.');
       for (let l = 0; l < 8; l++) {
         if (sala.jogadores[l]) continue;
         gravar(chave(codigo, 'j:' + l), { nome: jogador.nome, id: jogador.id, conectado: true, vistoEm: Date.now() });
@@ -101,13 +102,22 @@
           gravar(chave(codigo, 'r:' + n), Object.assign({}, recado, { em: Date.now() }));
         },
         horaServidor: horaServidor,
+        sair: function () { if (!fechada) marcar(false); },
         fechar: function () { fechada = true; raiz.CarteiroLocal.abertas -= 1; ouvintes.delete(olhar); raiz.removeEventListener('pagehide', aoSair); marcar(false); }
       };
     }
 
     async function lerSala(senha, codigo) { return salaDe(codigo); }
 
-    return { verificarSenha, criarSala, entrarNaSala, mudarTime, abrir, lerSala, horaServidor };
+    // Com &nomes=1 no endereço, a senha "teste" tem uma turma de mentira (para testar a lista de nomes).
+    async function lerNomes(senha) {
+      if (!/[?&]nomes=1/.test(location.search) || senha !== 'teste') return null;
+      return { turma: 'Teste', alunos: [
+        { numero: 1, nome: 'Ana Maria Souza' }, { numero: 2, nome: 'BETO CARLOS DE LIMA' }, { numero: 3, nome: 'Caio Silva' },
+        { numero: 4, nome: 'Maria Eduarda Benites dos Santos' }] };
+    }
+
+    return { verificarSenha, criarSala, entrarNaSala, mudarTime, abrir, lerSala, lerNomes, horaServidor };
   }
 
   // abertas: quantas conexões desta aba estão abertas agora (o teste confere que um clique duplo não abre duas).

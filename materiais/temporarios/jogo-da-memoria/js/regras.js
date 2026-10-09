@@ -61,13 +61,21 @@
 
   // O anfitrião prepara a partida (vai no recado 'comecar'): sorteia quais pares do banco entram,
   // embaralha as cartas e a ordem dos times, e congela quem está em cada time.
-  // Carta = parDoBanco * 2 + lado (0 = lado a, 1 = lado b).
+  // Carta = parDoBanco * 2 + lado (0 = lado a, 1 = lado b). Jeito 'perguntas': perguntas antes, respostas depois.
   function prepararPartida(config, jogadores, totalParesBanco, aleatorio) {
     aleatorio = aleatorio || Math.random;
     const escolhidos = embaralhar(Array.from({ length: totalParesBanco }, function (_, i) { return i; }), aleatorio)
       .slice(0, config.pares);
-    const cartas = [];
-    escolhidos.forEach(function (p) { cartas.push(p * 2, p * 2 + 1); });
+    let cartas;
+    if (config.jeito === 'perguntas') {
+      // Dois baralhos: perguntas (lado a) na 1ª metade, respostas (lado b) na 2ª, cada um embaralhado.
+      cartas = embaralhar(escolhidos.map(function (p) { return p * 2; }), aleatorio)
+        .concat(embaralhar(escolhidos.map(function (p) { return p * 2 + 1; }), aleatorio));
+    } else {
+      cartas = [];
+      escolhidos.forEach(function (p) { cartas.push(p * 2, p * 2 + 1); });
+      cartas = embaralhar(cartas, aleatorio);
+    }
     const lugares = lugaresConectados(jogadores);
     let times;
     if (config.modo === 'solo') {
@@ -79,7 +87,7 @@
         if (membros.length) times.push({ id: t, membros: membros });
       }
     }
-    return { cartas: embaralhar(cartas, aleatorio), times: embaralhar(times, aleatorio) };
+    return { cartas: cartas, times: embaralhar(times, aleatorio) };
   }
 
   function novoEstado() {
@@ -142,6 +150,8 @@
       const carta = estado.cartas[i];
       if (r.jogador !== estado.jogador || !carta || carta.situacao !== 'fechada' || estado.abertas.length >= 2) return false;
       if (r.em > prazo(config, estado)) return false;   // chegou depois do fim do tempo
+      // Dois baralhos: a 2ª carta tem que ser do outro baralho.
+      if (config.jeito === 'perguntas' && estado.abertas.length === 1 && estado.cartas[estado.abertas[0]].lado === carta.lado) return false;
       carta.situacao = 'aberta';
       estado.abertas.push(i);
       if (estado.abertas.length < 2) return true;

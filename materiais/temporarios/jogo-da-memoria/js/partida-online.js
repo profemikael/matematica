@@ -129,6 +129,9 @@
     const caixa = $('opcoes-pares');
     caixa.innerHTML = '';
     const tamanhos = b && !b.erro ? b.tamanhos : [];
+    // "Jeito de jogar" só para bancos com perguntas; nos outros, sempre cartas iguais.
+    $('linha-jeito').hidden = !(b && b.perguntas);
+    if ($('linha-jeito').hidden) document.querySelector('input[name=jeito][value=iguais]').checked = true;
     tamanhos.forEach(function (n, i) {
       const l = document.createElement('label');
       l.className = 'opcao';
@@ -177,6 +180,46 @@
     $('capa-banco').textContent = 'Encontre os pares!';
     Tela.mostrar('tela-inicio');
     oferecerSala();
+    carregarNomes();
+  }
+
+  // ---------- Lista de nomes da turma (no Firebase, protegida pela senha) ----------
+  let listaTurma = null;   // [{ numero, completo, curto }] ou null (sem lista: o aluno digita o nome)
+  function chaveNomeEscolhido() { return 'mem-nome-escolhido-' + senha; }
+
+  async function carregarNomes() {
+    let dados = null;
+    try { dados = await carteiro.lerNomes(senha); } catch (e) { dados = null; }
+    listaTurma = Nomes.lista(dados);
+    $('caixa-nomes').hidden = !listaTurma;
+    $('linha-nome').hidden = !!listaTurma;
+    if (!listaTurma) return;   // sem lista: a caixa de digitar fica como está (o aluno pode já ter digitado)
+    $('lista-titulo').textContent = (dados.turma ? 'Turma ' + dados.turma + ' — ' : '') + 'clique no seu nome:';
+    const guardado = ler(chaveNomeEscolhido());
+    $('nome').value = '';
+    const caixa = $('lista-nomes');
+    caixa.innerHTML = '';
+    listaTurma.forEach(function (aluno) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      if (aluno.numero) {
+        const n = document.createElement('span');
+        n.className = 'numero';
+        n.textContent = aluno.numero;
+        b.appendChild(n);
+      }
+      b.appendChild(document.createTextNode(Nomes.formatar(aluno.completo)));
+      b.addEventListener('click', function () { escolherNome(aluno, b); });
+      caixa.appendChild(b);
+      if (guardado === aluno.completo) escolherNome(aluno, b);
+    });
+  }
+
+  function escolherNome(aluno, botao) {
+    $('lista-nomes').querySelectorAll('button').forEach(function (b) { b.classList.toggle('escolhido', b === botao); });
+    $('nome').value = aluno.curto;
+    gravar(chaveNomeEscolhido(), aluno.completo);
+    mostrarErro('inicio-erro');
   }
 
   async function oferecerSala() {
@@ -206,7 +249,10 @@
   });
 
   function conferirNome() {
-    if (!meuNome()) { mostrarErro('inicio-erro', 'Escreva seu nome.'); $('nome').focus(); return false; }
+    if (!meuNome()) {
+      if (listaTurma) { mostrarErro('inicio-erro', 'Clique no seu nome na lista.'); return false; }
+      mostrarErro('inicio-erro', 'Escreva seu nome.'); $('nome').focus(); return false;
+    }
     gravar('mem-nome', meuNome());
     return true;
   }
@@ -238,7 +284,8 @@
       modo: modo,
       times: modo === 'times' ? Number($('qtd-times').value) : 0,
       tempo: Number($('tempo').value),
-      acerto: document.querySelector('input[name=acerto]:checked').value
+      acerto: document.querySelector('input[name=acerto]:checked').value,
+      jeito: banco.perguntas && document.querySelector('input[name=jeito][value=perguntas]').checked ? 'perguntas' : 'iguais'
     };
     mostrarErro('criar-erro', 'Criando a sala...');
     $('btn-criar-confirmar').disabled = true;
@@ -284,7 +331,7 @@
     }
     if (conexao) conexao.fechar();   // nunca duas salas abertas ao mesmo tempo
     conexao = null;
-    sessao = { codigo: codigo, eu: lugar, config: cfg, banco: banco };
+    sessao = { codigo: codigo, eu: lugar, config: cfg, banco: Bancos.doJeito(banco, cfg.jeito) };
     gravarFicha({ senha: senha, codigo: codigo, id: meuId(), nome: meuNome() });
     estado = Regras.novoEstado();
     jogadores = {};
@@ -322,6 +369,12 @@
     tabuleiro = null;
     mostrarInicio();
   }
+  // Saiu da aba para outro site: o Chrome pode CONGELAR a página (cache de voltar/avançar) sem fechar a conexão,
+  // e o Firebase acharia que o aluno continua ali. Então avisamos a saída ao esconder a página e, se ela voltar
+  // do congelamento, recarregamos (a tela inicial oferece "Voltar para a sala").
+  window.addEventListener('pagehide', function () { if (conexao) conexao.sair(); });
+  window.addEventListener('pageshow', function (ev) { if (ev.persisted) location.reload(); });
+
   $('btn-sair-espera').addEventListener('click', sairDaSala);
   $('btn-sair-fim').addEventListener('click', sairDaSala);
 
@@ -346,7 +399,7 @@
     if (r.tipo === 'virar') {
       if (estado.abertas.length === 1 && estado.abertas[0] === r.carta) {
         Sons.tocar('virar');
-        Tabuleiro.ampliar([lado(r.carta)], '', Tabuleiro.coordenada(r.carta, Regras.GRADES[config().pares][0]));
+        Tabuleiro.ampliar([lado(r.carta)], '', tabuleiro ? tabuleiro.coordenada(r.carta) : '');
         timerAmpliacao = setTimeout(Tabuleiro.fecharAmpliacao, MS_AMPLIAR);
         return;
       }
@@ -416,8 +469,13 @@
     return agora() >= estado.inicioVez;
   }
 
+  // Dois baralhos com a 1ª carta virada: o lado (baralho) que não aceita a 2ª carta. Senão null.
+  function ladoTravado() {
+    return config().jeito === 'perguntas' && estado.abertas.length === 1 ? estado.cartas[estado.abertas[0]].lado : null;
+  }
+
   function clicar(i) {
-    if (!possoClicar() || estado.cartas[i].situacao !== 'fechada') return;
+    if (!possoClicar() || estado.cartas[i].situacao !== 'fechada' || estado.cartas[i].lado === ladoTravado()) return;
     cliquePendente = { vez: estado.vez, abertas: estado.abertas.length };
     conexao.enviar({ partida: estado.partida, vez: estado.vez, tipo: 'virar', jogador: eu(), carta: i });
     pintarTabuleiro();
@@ -425,7 +483,7 @@
 
   function pintarTabuleiro() {
     clicavelAntes = possoClicar();
-    tabuleiro.pintar(estado, { clicavel: clicavelAntes, corDoTime: function (id) { return info(id).cor; } });
+    tabuleiro.pintar(estado, { clicavel: clicavelAntes, ladoTravado: ladoTravado(), corDoTime: function (id) { return info(id).cor; } });
   }
 
   function desenharJogo() {
@@ -433,7 +491,7 @@
       if (tabuleiro) tabuleiro.parar();
       Tela.mostrar('tela-jogo');
       tabuleiro = Tabuleiro.criar($('tabuleiro'), config().pares, sessao.banco,
-        estado.cartas.map(function (c) { return c.par * 2 + c.lado; }), clicar);
+        estado.cartas.map(function (c) { return c.par * 2 + c.lado; }), clicar, config().jeito);
       tabuleiroDaPartida = estado.partida;
     }
     pintarTabuleiro();
@@ -451,20 +509,42 @@
   function desenharFaixa() {
     if (estado.fase !== 'jogo') {
       $('faixa-texto').textContent = 'Fim de jogo!';
+      $('faixa-texto').dataset.chave = '';
       $('relogio').textContent = '';
       return;
     }
     const minha = estado.jogador === eu();
     const i = info(estado.timeDaVez);
-    let texto;
-    if (minha) texto = estado.abertas.length === 1 ? 'Sua vez! Vire a segunda carta.' : 'Sua vez! Vire uma carta.';
-    else texto = 'Vez de ' + nome(estado.jogador) + (config().modo === 'times' ? ' (' + i.nome + ')' : '');
-    $('faixa-texto').textContent = texto;
+    const faixa = $('faixa-texto');
+    // Só redesenha o texto quando muda (o passo roda 4 vezes por segundo).
+    const chave = estado.vez + ':' + estado.abertas.length + ':' + nome(estado.jogador) + ':' + minha;
+    if (faixa.dataset.chave !== chave) {
+      faixa.dataset.chave = chave;
+      faixa.textContent = '';
+      if (minha) {
+        faixa.textContent = '⭐ SUA VEZ! ' + (estado.abertas.length === 1 ? 'Vire a segunda carta.' : 'Vire uma carta.');
+      } else {
+        faixa.appendChild(document.createTextNode('Vez de '));
+        const etiqueta = document.createElement('span');
+        etiqueta.className = 'faixa-nome';
+        etiqueta.textContent = nome(estado.jogador);
+        faixa.appendChild(etiqueta);
+        if (config().modo === 'times') faixa.appendChild(document.createTextNode(' ' + i.nome));
+      }
+    }
     $('faixa').classList.toggle('minha-vez', minha);
     $('faixa').style.setProperty('--cor', i.cor);
     const s = restante();
     $('relogio').textContent = s === null ? '' : '⏱ ' + s;
     $('relogio').classList.toggle('pouco', s !== null && s <= 5);
+    // Barra de tempo: fração que falta da vez (cheia durante a pausa; some se for sem limite).
+    const barra = $('barra-tempo');
+    barra.parentNode.hidden = s === null;
+    if (s !== null) {
+      const ms = Regras.prazo(config(), estado) - Math.max(agora(), estado.inicioVez);
+      barra.style.width = Math.max(0, Math.min(100, ms / (config().tempo * 1000) * 100)) + '%';
+      barra.classList.toggle('pouco', s <= 5);
+    }
     if (minha && s !== null && s <= 5 && s > 0 && ultimoTic !== estado.vez + ':' + s) { ultimoTic = estado.vez + ':' + s; Sons.tocar('tic'); }
   }
 

@@ -35,6 +35,16 @@ legend { font-weight: bold; }
 .avisos { margin: 0; padding-left: 18px; color: #92400e; font-size: 13px; }
 .avisos:empty { display: none; }
 .link { background: none; border: none; color: var(--verde); text-decoration: underline; cursor: pointer; align-self: center; font-size: 13px; }
+/* Lista de nomes da turma (clicar no próprio nome) */
+.caixa-nomes { display: flex; flex-direction: column; gap: 6px; }
+.lista-titulo { margin: 0; font-weight: bold; color: var(--verde-esc); }
+.lista-nomes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; max-height: 46vh; overflow-y: auto; padding: 2px; }
+.lista-nomes button { text-align: left; font-size: 15px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--verde); background: #fff; color: var(--tinta); cursor: pointer; }
+.lista-nomes button:hover { background: var(--verde-claro); }
+.lista-nomes button .numero { font-weight: bold; color: var(--verde); margin-right: 6px; }
+.cartao.estreito:has(#caixa-nomes:not([hidden])) { max-width: 900px; }
+.lista-nomes button.escolhido { background: var(--verde); color: #fff; font-weight: bold; outline: 3px solid var(--destaque); }
+.lista-nomes button.escolhido .numero { color: #fff; }
 .sala-salva { background: #fff; border: 2px solid var(--verde); border-radius: 8px; padding: 10px; }
 .sala-salva p { margin: 0 0 8px; }
 .alerta { background: #fee2e2; color: #991b1b; margin: 0; padding: 6px 24px; font-weight: bold; }
@@ -64,14 +74,27 @@ legend { font-weight: bold; }
 .bolinha { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--cor); margin-right: 6px; vertical-align: middle; }
 
 /* Partida */
-.faixa { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--verde-fundo); border-left: 6px solid var(--cor, var(--verde-esc)); border-radius: 8px; padding: 6px 12px; font-size: 18px; font-weight: bold; margin-bottom: 8px; }
-.faixa.minha-vez { background: #fef9c3; }
-.relogio { font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; }
+.faixa { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--verde-fundo); border-left: 10px solid var(--cor, var(--verde-esc)); border-radius: 8px; padding: 6px 14px 11px; font-size: 20px; font-weight: bold; margin-bottom: 8px; }
+/* Na minha vez: faixa amarela forte, pulsando. */
+.faixa.minha-vez { background: #fde047; outline: 3px solid #eab308; animation: pulsar-faixa .9s ease-in-out infinite alternate; }
+@keyframes pulsar-faixa { to { box-shadow: 0 0 0 6px rgba(234, 179, 8, .4); } }
+.faixa-nome { background: var(--cor, var(--verde-esc)); color: #fff; padding: 1px 12px; border-radius: 999px; font-size: 22px; }
+.relogio { font-variant-numeric: tabular-nums; font-size: 28px; line-height: 1.1; background: #fff; border: 2px solid var(--verde-esc); border-radius: 10px; padding: 0 10px; min-width: 3.4em; text-align: center; }
+.relogio:empty { display: none; }
+/* Barra de tempo: diminui conforme os segundos passam. */
+.trilho-tempo { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(0, 0, 0, .08); border-radius: 0 0 8px 0; overflow: hidden; }
+#barra-tempo { height: 100%; width: 100%; background: var(--cor, var(--verde)); transition: width .25s linear; }
+#barra-tempo.pouco { background: #dc2626; }
 .relogio.pouco { color: #dc2626; animation: pulsar .5s ease-in-out infinite alternate; }
 @keyframes pulsar { to { transform: scale(1.15); } }
 .jogo-layout { display: flex; gap: 14px; align-items: flex-start; justify-content: center; }
 
 .tabuleiro { display: inline-grid; gap: 4px; user-select: none; }
+/* Dois baralhos (perguntas e respostas) */
+.tabuleiro.dois-baralhos { display: flex; gap: 24px; align-items: flex-start; }
+.baralho h3 { margin: 0 0 4px; text-align: center; font-size: 15px; color: var(--verde-esc); }
+.baralho .grade { display: inline-grid; gap: 4px; }
+.baralho.perguntas .carta .verso { background: repeating-linear-gradient(45deg, #7c4dcc 0 6px, #5b34a3 6px 12px); border-color: #3f2475; }
 .tabuleiro .rotulo { display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; color: var(--cinza); }
 .carta { width: var(--carta-l); height: var(--carta-a); perspective: 600px; padding: 0; border: none; background: none; cursor: default; }
 .carta .miolo { position: relative; width: 100%; height: 100%; transition: transform .35s; transform-style: preserve-3d; }
@@ -88,16 +111,20 @@ legend { font-weight: bold; }
 .carta-img svg, img.carta-img { width: 100%; height: 100%; object-fit: contain; }
 .carta-sem-desenho { font-size: 2em; color: var(--cinza); }
 .carta-texto { font-size: max(9px, calc(var(--carta-a) * .14)); font-weight: bold; color: var(--verde-esc); text-align: center; line-height: 1.1; }
-.frente:not(:has(.carta-img)) .carta-texto { font-size: max(11px, calc(var(--carta-a) * .2)); }
+.frente:not(:has(.carta-img)) .carta-texto { font-size: max(8px, min(calc(var(--carta-a) * .15), calc(var(--carta-l) * .12))); overflow-wrap: break-word; hyphens: auto; }
 
 .placar { min-width: 220px; max-width: 260px; display: flex; flex-direction: column; gap: 8px; }
 .placar .time { border: 3px solid var(--cor); border-radius: 10px; padding: 6px 10px; background: #fff; }
-.placar .time.na-vez { box-shadow: 0 0 0 3px var(--destaque); }
+.placar .time { transition: opacity .2s, transform .2s; }
+/* Time da vez: borda grossa amarela, fundo amarelo claro, um pouco maior; os outros ficam apagados. */
+.placar .time.na-vez { border: 5px solid #eab308; background: #fef9c3; transform: scale(1.04); box-shadow: 0 0 0 3px rgba(234, 179, 8, .35); }
+.placar:has(.na-vez) .time:not(.na-vez) { opacity: .45; }
+.placar .time.na-vez .time-topo { font-size: 20px; }
 .placar .time-topo { display: flex; justify-content: space-between; font-weight: bold; color: var(--cor); font-size: 16px; }
 .placar .pontos { font-size: 20px; color: var(--tinta); }
 .placar ul { list-style: none; margin: 4px 0 0; padding: 0; font-size: 14px; }
-.placar li.joga { font-weight: bold; }
-.placar li.joga::before { content: '▶ '; color: var(--cor); }
+.placar li.joga { font-weight: bold; font-size: 17px; background: var(--cor); color: #fff; border-radius: 6px; padding: 2px 8px; margin: 2px 0; }
+.placar li.joga::before { content: '▶ '; }
 .placar li.saiu { color: var(--cinza); text-decoration: line-through; }
 
 /* Carta ampliada */

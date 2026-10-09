@@ -18,6 +18,14 @@
     return /^[a-z0-9]{4,30}$/.test(s) ? s : null;
   }
 
+  // Outro Chromebook conectado na sala já usa este nome? (o mesmo aluno voltando não conta)
+  function nomeOcupado(jogadores, nome, id) {
+    const n = String(nome || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    return Object.values(jogadores || {}).some(function (j) {
+      return j && j.conectado && j.id !== id && String(j.nome || '').trim().toLowerCase().replace(/\s+/g, ' ') === n;
+    });
+  }
+
   // A partida já começou se algum recado 'comecar' foi gravado.
   function jaComecou(sala) {
     const recados = sala && sala.recados ? Object.values(sala.recados) : [];
@@ -72,6 +80,7 @@
       const jog = sala.jogadores || {};
       for (let l = 0; l < LUGARES; l++) if (jog[l] && jog[l].id === jogador.id) return { eu: l, config: sala.config };
       if (jaComecou(sala)) throw new Error('A partida dessa sala já começou.');
+      if (nomeOcupado(jog, jogador.nome, jogador.id)) throw new Error('Já tem um(a) ' + jogador.nome + ' nesta sala — confira se clicou no seu nome.');
       for (let l = 0; l < LUGARES; l++) {
         if (jog[l]) continue;
         const r = await refSala(senha, codigo).child('jogadores/' + l).transaction(function (atual) {
@@ -89,7 +98,7 @@
     }
 
     // Abre a sala para jogar. eventos = { aoRecado(recado), aoSincronizado(), aoJogadores(jogadores), aoConexao(ligado) }
-    // Devolve { enviar(recado), horaServidor(), fechar() }.
+    // Devolve { enviar(recado), horaServidor(), sair(), fechar() }.
     function abrir(senha, codigo, eu, jogador, eventos) {
       const sala = refSala(senha, codigo);
       const cadeira = sala.child('jogadores/' + eu);
@@ -131,6 +140,13 @@
       return {
         enviar: function (recado) { ordenador.enviar(recado); },
         horaServidor: horaServidor,
+        // A página está sendo escondida/fechada: marca "saiu" SEM cancelar o aviso automático de desconexão e
+        // desliga a conexão (o servidor também dispara o aviso). Serve para o Chrome que congela a página.
+        sair: function () {
+          if (fechada) return;
+          cadeira.update({ conectado: false, vistoEm: AGORA() });
+          db.goOffline();
+        },
         fechar: function () {
           fechada = true;
           conectado.off('value', aoConectado);
@@ -151,7 +167,18 @@
       return sala;
     }
 
-    return { verificarSenha, criarSala, entrarNaSala, mudarTime, abrir, lerSala, horaServidor };
+    // Lista de nomes da turma (nomes/<senha>), ou null se não houver (ou se o Firebase recusar).
+    async function lerNomes(senha) {
+      try {
+        const snap = await db.ref('nomes/' + senha).once('value');
+        return snap.val();
+      } catch (e) {
+        if (negado(e)) return null;
+        throw e;
+      }
+    }
+
+    return { verificarSenha, criarSala, entrarNaSala, mudarTime, abrir, lerSala, lerNomes, horaServidor };
   }
 
   // Ordenador: garante que todos os computadores apliquem os recados na MESMA ordem.
@@ -215,7 +242,7 @@
     return { chegou: chegou, enviar: enviar };
   }
 
-  const Sala = { criar: criar, criarOrdenador: criarOrdenador, normalizarSenha: normalizarSenha, jaComecou: jaComecou, MS_24H: MS_24H, LUGARES: LUGARES };
+  const Sala = { criar: criar, criarOrdenador: criarOrdenador, normalizarSenha: normalizarSenha, jaComecou: jaComecou, nomeOcupado: nomeOcupado, MS_24H: MS_24H, LUGARES: LUGARES };
   raiz.Sala = Sala;
   if (typeof module !== 'undefined' && module.exports) module.exports = Sala;
 })(typeof window !== 'undefined' ? window : globalThis);

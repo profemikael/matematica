@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T9 MATEMÁTICA • Apostila 03 • Exercícios Interativos</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{background:#1F4E79;color:#fff;text-align:center;padding:8px 12px;flex-shrink:0}
+  header h1{font-size:18px;letter-spacing:.4px}
+  header p{font-size:12px;color:#D6E4F0;margin-top:3px}
+
+  .topo{height:44vh;overflow-y:auto;padding:10px 0;background:#fff;border-bottom:4px solid #1F4E79}
+  .baixo{flex:1;overflow-y:auto;padding:12px 0;background:#f4f6f9}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  h2{color:#1F4E79;font-size:15px;margin-bottom:6px;border-bottom:2px solid #1F4E79;padding-bottom:3px}
+  .formulas{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0}
+  .card{flex:1;min-width:150px;background:#DEEBF7;border:1px solid #9DC3E6;border-radius:5px;padding:6px 8px;text-align:center}
+  .card b{color:#1F4E79;display:block;font-size:12px;margin-bottom:3px}
+  .card span{font-size:14px;font-weight:bold}
+  .exemplo{background:#EFF6FC;border:1px solid #9DC3E6;border-radius:5px;padding:8px 10px;margin-top:7px;font-size:13px;line-height:1.5}
+  .exemplo b{color:#1F4E79}
+  p.txt{font-size:13px;line-height:1.5;margin-bottom:5px}
+
+  .barra{height:9px;background:#dde3ea;border-radius:5px;overflow:hidden;margin-bottom:12px}
+  .barra div{height:100%;background:#1F4E79;width:0;transition:width .4s}
+  .contador{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+
+  .questao{background:#fff;border:1px solid #cfd8e3;border-left:5px solid #1F4E79;border-radius:6px;padding:13px 15px}
+  .questao .num{color:#1F4E79;font-weight:bold;font-size:14px}
+  .questao .enun{font-size:15px;line-height:1.55;margin:5px 0 11px}
+  .campos{display:flex;gap:14px;flex-wrap:wrap}
+  .campo{flex:1;min-width:175px}
+  .campo label{display:block;font-size:13px;color:#1F4E79;font-weight:bold;margin-bottom:4px}
+  .campo input{width:100%;padding:9px 11px;font-size:16px;font-family:Georgia,serif;border:2px solid #9DC3E6;border-radius:5px;background:#fbfdff}
+  .campo input:focus{outline:none;border-color:#1F4E79;background:#fff}
+  .campo input.ok{border-color:#2e7d32;background:#eaf6ea}
+  .campo input.erro{border-color:#c62828;background:#fdeaea}
+
+  .acoes{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{font-family:Georgia,serif;font-size:14px;padding:9px 20px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}
+  .btn-principal{background:#1F4E79;color:#fff}
+  .btn-principal:hover{background:#2b6497}
+  .feedback{font-size:13.5px;padding:8px 11px;border-radius:5px;margin-top:11px;display:none;line-height:1.5}
+  .feedback.certo{display:block;background:#eaf6ea;border:1px solid #2e7d32;color:#1b5e20}
+  .feedback.errado{display:block;background:#fdeaea;border:1px solid #c62828;color:#8e1c1c}
+  .feedback.ajuda{display:block;background:#FFF2CC;border:1px solid #C00000;color:#7a3b00}
+
+  .final{background:#fff;border:2px solid #1F4E79;border-radius:8px;padding:26px;text-align:center}
+  .final h3{color:#1F4E79;font-size:20px;margin-bottom:8px}
+  .final p{font-size:15px;line-height:1.6;margin-bottom:14px}
+  .placar{font-size:15px;color:#1F4E79;font-weight:bold;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>T9 • MATEMÁTICA • APOSTILA 03</h1>
+  <p>Educação Financeira Aplicada &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+</header>
+
+<!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
+<section class="topo"><div class="wrap">
+  <h2>Orçamento, parcelamento e cartão de crédito</h2>
+  <div class="formulas">
+    <div class="card"><b>SALDO</b><span>receitas &minus; despesas</span></div>
+    <div class="card"><b>PESO NA RENDA</b><span>gasto &divide; renda &times; 100</span></div>
+    <div class="card"><b>ACRÉSCIMO</b><span>parcelado &minus; à vista</span></div>
+    <div class="card"><b>JUROS DO ROTATIVO</b><span>saldo devedor &times; taxa</span></div>
+  </div>
+
+  <p class="txt">O <b>saldo</b> do mês é o que sobra da renda depois de pagar as despesas. Para saber quanto um gasto <b>pesa</b> no orçamento, divida pela <b>renda</b>, nunca pelo total das despesas (a moradia não deveria passar de 30%). No parcelamento, a diferença entre o total das parcelas e o preço à vista é o <b>juro embutido</b>, e o percentual é calculado sobre o preço à vista. No cartão, pagar só o mínimo joga o resto para o <b>rotativo</b>, onde os juros incidem sobre o saldo que ficou devendo.</p>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido:</b> fatura de R$ 1.000,00; a pessoa paga só o mínimo de 25% e o resto fica no rotativo a 15% ao mês.<br><b>1º)</b> Mínimo: 1.000 &times; 0,25 = <b>R$ 250,00</b>.<br><b>2º)</b> Saldo no rotativo: 1.000 &minus; 250 = <b>R$ 750,00</b>.<br><b>3º)</b> Juros do mês: 750 &times; 0,15 = <b>R$ 112,50</b>.<br><b>4º)</b> Próxima fatura: 750 + 112,50 = <b>R$ 862,50</b>. Pagou R$ 250,00 e a dívida caiu só R$ 137,50.
+  </div>
+
+  <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais, os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
+  </div>
+</div></section>
+
+<!-- ============ PARTE INTERATIVA ============ -->
+<section class="baixo"><div class="wrap">
+  <div class="contador"><span id="rotulo">Exercício 1 de 5</span><span id="placar">Acertos: 0</span></div>
+  <div class="barra"><div id="progresso"></div></div>
+  <div id="area"></div>
+</div></section>
+
+<script>
+const questoes = [
+ {
+  "enunciado": "A família de Dona Neusa tem renda de <b>R$ 2.900,00</b> por mês. Despesas: aluguel <b>R$ 980,00</b>, alimentação <b>R$ 820,00</b>, transporte <b>R$ 310,00</b>, luz e água <b>R$ 270,00</b> e outros <b>R$ 380,00</b>.",
+  "campos": [
+   {
+    "label": "Total das despesas (R$)",
+    "resp": 2760,
+    "tol": 0.5
+   },
+   {
+    "label": "Saldo do mês (R$)",
+    "resp": 140,
+    "tol": 0.5
+   },
+   {
+    "label": "Peso do aluguel na renda, em % (1 casa decimal)",
+    "resp": 33.8,
+    "tol": 0.06
+   }
+  ],
+  "ajuda": "Despesas: 980 + 820 + 310 + 270 + 380 = R$ 2.760,00. Saldo: 2.900 − 2.760 = R$ 140,00. Aluguel: 980 ÷ 2.900 = 0,338 = 33,8% da renda, acima dos 30% recomendados."
+ },
+ {
+  "enunciado": "Uma TV custa <b>R$ 1.800,00</b> à vista ou <b>10 parcelas de R$ 207,00</b>.",
+  "campos": [
+   {
+    "label": "Total pago no parcelamento (R$)",
+    "resp": 2070,
+    "tol": 0.5
+   },
+   {
+    "label": "Acréscimo em reais",
+    "resp": 270,
+    "tol": 0.5
+   },
+   {
+    "label": "Acréscimo em % do preço à vista",
+    "resp": 15,
+    "tol": 0.06
+   }
+  ],
+  "ajuda": "Total parcelado: 10 × 207 = R$ 2.070,00. Acréscimo: 2.070 − 1.800 = R$ 270,00. Percentual: 270 ÷ 1.800 = 0,15 = 15% a mais que o preço à vista."
+ },
+ {
+  "enunciado": "Seu Jorge quer comprar essa mesma TV <b>à vista (R$ 1.800,00)</b>. Ele já tem <b>R$ 1.350,00</b> guardados e consegue juntar <b>R$ 250,00 por mês</b>.",
+  "campos": [
+   {
+    "label": "Quanto ainda falta (R$)",
+    "resp": 450,
+    "tol": 0.5
+   },
+   {
+    "label": "Meses que ele precisa esperar, no mínimo",
+    "resp": 2,
+    "tol": 0.01
+   },
+   {
+    "label": "Quanto sobra depois da compra (R$)",
+    "resp": 50,
+    "tol": 0.5
+   }
+  ],
+  "ajuda": "Falta: 1.800 − 1.350 = R$ 450,00. Com 1 mês ele junta só R$ 250,00, então precisa de 2 meses (R$ 500,00). Depois da compra sobram 1.350 + 500 − 1.800 = R$ 50,00, e ele ainda economiza os R$ 270,00 do parcelamento."
+ },
+ {
+  "enunciado": "Uma fatura de cartão é de <b>R$ 1.600,00</b>. O titular paga só o <b>mínimo de 15%</b> e o restante vai para o rotativo, a <b>12% ao mês</b>.",
+  "campos": [
+   {
+    "label": "Pagamento mínimo (R$)",
+    "resp": 240,
+    "tol": 0.01
+   },
+   {
+    "label": "Saldo que vai para o rotativo (R$)",
+    "resp": 1360,
+    "tol": 0.01
+   },
+   {
+    "label": "Juros do mês (R$)",
+    "resp": 163.2,
+    "tol": 0.01
+   },
+   {
+    "label": "Dívida na próxima fatura (R$)",
+    "resp": 1523.2,
+    "tol": 0.01
+   }
+  ],
+  "ajuda": "Mínimo: 1.600 × 0,15 = R$ 240,00. Rotativo: 1.600 − 240 = R$ 1.360,00. Juros: 1.360 × 0,12 = R$ 163,20. Próxima fatura: 1.360 + 163,20 = R$ 1.523,20. Pagou R$ 240,00 e a dívida caiu só R$ 76,80."
+ },
+ {
+  "enunciado": "<b>DESAFIO:</b> um celular é vendido por <b>R$ 900,00</b> à vista ou em <b>5 parcelas iguais de R$ 198,00</b>.",
+  "campos": [
+   {
+    "label": "Total pago no parcelamento (R$)",
+    "resp": 990,
+    "tol": 0.5
+   },
+   {
+    "label": "Acréscimo em % do preço à vista",
+    "resp": 10,
+    "tol": 0.06
+   },
+   {
+    "label": "Meses guardando R$ 198,00 para comprar à vista",
+    "resp": 5,
+    "tol": 0.01
+   }
+  ],
+  "ajuda": "Total: 5 × 198 = R$ 990,00. Acréscimo: 990 − 900 = R$ 90,00, e 90 ÷ 900 = 10%. Guardando R$ 198,00 por mês: em 4 meses são R$ 792,00 (não chega), em 5 meses R$ 990,00. Ou seja, no mesmo prazo das parcelas ele compra à vista e ainda sobram R$ 90,00."
+ }
+];
+const MSG_FINAL = "Você acertou todos os exercícios sem precisar recomeçar. Excelente domínio do orçamento, do parcelamento e dos juros do cartão!";
+
+let atual = 0, acertos = 0, tentativas = 0;
+
+function normaliza(txt){
+  let t = String(txt).trim().replace(/[^0-9.,\-]/g,'');
+  if(t.indexOf(',')>=0 && t.indexOf('.')>=0) t = t.replace(/\./g,'').replace(',','.');
+  else if(t.indexOf(',')>=0) t = t.replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g,'');
+  return t==='' ? NaN : parseFloat(t);
+}
+
+function render(){
+  const q = questoes[atual];
+  document.getElementById('rotulo').textContent = `Exercício ${atual+1} de ${questoes.length}`;
+  document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  document.getElementById('progresso').style.width = (atual/questoes.length*100) + '%';
+
+  let html = `<div class="questao">
+    <div class="num">Exercício ${atual+1}</div>
+    <div class="enun">${q.enunciado}</div>
+    <div class="campos">`;
+  q.campos.forEach((c,i)=>{
+    html += `<div class="campo">
+      <label>${c.label}</label>
+      <input type="text" id="in${i}" autocomplete="off" placeholder="digite o número">
+    </div>`;
+  });
+  html += `</div>
+    <div class="acoes">
+      <button class="btn-principal" onclick="verificar()">Verificar resposta</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  </div>`;
+  document.getElementById('area').innerHTML = html;
+  tentativas = 0;
+  document.getElementById('in0').focus();
+
+  q.campos.forEach((c,i)=>{
+    document.getElementById('in'+i).addEventListener('keydown', e=>{
+      if(e.key==='Enter') verificar();
+    });
+  });
+}
+
+function verificar(){
+  const q = questoes[atual];
+  const fb = document.getElementById('fb');
+  let todosCertos = true, algumVazio = false;
+
+  q.campos.forEach((c,i)=>{
+    const el = document.getElementById('in'+i);
+    const val = normaliza(el.value);
+    el.classList.remove('ok','erro');
+    if(isNaN(val)){ algumVazio = true; todosCertos = false; return; }
+    if(Math.abs(val - c.resp) <= c.tol){ el.classList.add('ok'); }
+    else { el.classList.add('erro'); todosCertos = false; }
+  });
+
+  if(algumVazio){
+    fb.className = 'feedback errado';
+    fb.innerHTML = 'Preencha <b>todos</b> os campos com números antes de verificar.';
+    return;
+  }
+
+  if(todosCertos){
+    acertos++;
+    fb.className = 'feedback certo';
+    fb.innerHTML = '<b>Correto!</b> ' + q.ajuda + '<br><br><button class="btn-principal" onclick="proxima()">Próximo exercício →</button>';
+    document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  } else {
+    tentativas++;
+    fb.className = 'feedback errado';
+    if(tentativas >= 3){
+      fb.innerHTML = '<b>Ainda não.</b> Confira os campos em vermelho e revise as fórmulas na parte de cima da tela.';
+    } else {
+      fb.innerHTML = '<b>Ainda não.</b> Os campos em <span style="color:#2e7d32">verde</span> estão certos; revise os que ficaram em <span style="color:#c62828">vermelho</span> e tente de novo.';
+    }
+  }
+}
+
+function proxima(){
+  atual++;
+  if(atual >= questoes.length){ final(); } else { render(); }
+}
+
+function final(){
+  document.getElementById('progresso').style.width = '100%';
+  document.getElementById('rotulo').textContent = 'Atividade concluída';
+  document.getElementById('placar').textContent = `Acertos: ${acertos} de ${questoes.length}`;
+  let msg = acertos === questoes.length
+    ? MSG_FINAL
+    : 'Bom trabalho! Vale revisar os exercícios em que você precisou de ajuda antes da próxima aula.';
+  document.getElementById('area').innerHTML = `<div class="final">
+    <h3>Atividade concluída!</h3>
+    <div class="placar">Você acertou ${acertos} de ${questoes.length} exercícios.</div>
+    <p>${msg}</p>
+    <button class="btn-principal" onclick="reiniciar()">Refazer a atividade</button>
+  </div>`;
+}
+
+function reiniciar(){ atual = 0; acertos = 0; render(); }
+
+render();
+</script>
+</body>
+</html>

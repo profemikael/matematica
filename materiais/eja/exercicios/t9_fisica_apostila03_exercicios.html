@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T9 FÍSICA • Apostila 03 • Exercícios Interativos</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{background:#1F4E79;color:#fff;text-align:center;padding:8px 12px;flex-shrink:0}
+  header h1{font-size:18px;letter-spacing:.4px}
+  header p{font-size:12px;color:#D6E4F0;margin-top:3px}
+
+  .topo{height:44vh;overflow-y:auto;padding:10px 0;background:#fff;border-bottom:4px solid #1F4E79}
+  .baixo{flex:1;overflow-y:auto;padding:12px 0;background:#f4f6f9}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  h2{color:#1F4E79;font-size:15px;margin-bottom:6px;border-bottom:2px solid #1F4E79;padding-bottom:3px}
+  .formulas{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0}
+  .card{flex:1;min-width:150px;background:#DEEBF7;border:1px solid #9DC3E6;border-radius:5px;padding:6px 8px;text-align:center}
+  .card b{color:#1F4E79;display:block;font-size:12px;margin-bottom:3px}
+  .card span{font-size:14px;font-weight:bold}
+  .exemplo{background:#EFF6FC;border:1px solid #9DC3E6;border-radius:5px;padding:8px 10px;margin-top:7px;font-size:13px;line-height:1.5}
+  .exemplo b{color:#1F4E79}
+  p.txt{font-size:13px;line-height:1.5;margin-bottom:5px}
+
+  .barra{height:9px;background:#dde3ea;border-radius:5px;overflow:hidden;margin-bottom:12px}
+  .barra div{height:100%;background:#1F4E79;width:0;transition:width .4s}
+  .contador{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+
+  .questao{background:#fff;border:1px solid #cfd8e3;border-left:5px solid #1F4E79;border-radius:6px;padding:13px 15px}
+  .questao .num{color:#1F4E79;font-weight:bold;font-size:14px}
+  .questao .enun{font-size:15px;line-height:1.55;margin:5px 0 11px}
+  .campos{display:flex;gap:14px;flex-wrap:wrap}
+  .campo{flex:1;min-width:175px}
+  .campo label{display:block;font-size:13px;color:#1F4E79;font-weight:bold;margin-bottom:4px}
+  .campo input{width:100%;padding:9px 11px;font-size:16px;font-family:Georgia,serif;border:2px solid #9DC3E6;border-radius:5px;background:#fbfdff}
+  .campo input:focus{outline:none;border-color:#1F4E79;background:#fff}
+  .campo input.ok{border-color:#2e7d32;background:#eaf6ea}
+  .campo input.erro{border-color:#c62828;background:#fdeaea}
+
+  .acoes{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{font-family:Georgia,serif;font-size:14px;padding:9px 20px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}
+  .btn-principal{background:#1F4E79;color:#fff}
+  .btn-principal:hover{background:#2b6497}
+  .feedback{font-size:13.5px;padding:8px 11px;border-radius:5px;margin-top:11px;display:none;line-height:1.5}
+  .feedback.certo{display:block;background:#eaf6ea;border:1px solid #2e7d32;color:#1b5e20}
+  .feedback.errado{display:block;background:#fdeaea;border:1px solid #c62828;color:#8e1c1c}
+  .feedback.ajuda{display:block;background:#FFF2CC;border:1px solid #C00000;color:#7a3b00}
+
+  .final{background:#fff;border:2px solid #1F4E79;border-radius:8px;padding:26px;text-align:center}
+  .final h3{color:#1F4E79;font-size:20px;margin-bottom:8px}
+  .final p{font-size:15px;line-height:1.6;margin-bottom:14px}
+  .placar{font-size:15px;color:#1F4E79;font-weight:bold;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>T9 • FÍSICA • APOSTILA 03</h1>
+  <p>Circuitos Elétricos e Segurança &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+</header>
+
+<!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
+<section class="topo"><div class="wrap">
+  <h2>Fórmulas e dados</h2>
+  <div class="formulas">
+    <div class="card"><b>CORRENTE</b><span>i = P &divide; U</span></div>
+    <div class="card"><b>CORRENTE TOTAL</b><span>some as correntes</span></div>
+    <div class="card"><b>EM SÉRIE</b><span>queimou um, apaga tudo</span></div>
+    <div class="card"><b>EM PARALELO</b><span>mesma tensão para todos</span></div>
+  </div>
+
+  <p class="txt">As casas são ligadas em <b>paralelo</b>: cada aparelho tem seu caminho e recebe a mesma tensão da rede (127 V ou 220 V). Em compensação, quanto mais aparelhos ligados juntos, maior a <b>corrente total</b> no fio. O <b>disjuntor</b> desliga o circuito quando essa corrente passa do valor que o fio suporta: ele protege a fiação, não o aparelho. Atenção à tensão de cada questão: 127 V ou 220 V mudam bastante a corrente.</p>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido:</b> numa tomada de 127 V, com disjuntor de 20 A, são ligados juntos um micro-ondas de 1.200 W e um ferro de 1.000 W. O disjuntor desarma?<br><b>1º)</b> Micro-ondas: 1.200 &divide; 127 &asymp; <b>9,4 A</b>.<br><b>2º)</b> Ferro: 1.000 &divide; 127 &asymp; <b>7,9 A</b>.<br><b>3º)</b> Total: 9,4 + 7,9 = <b>17,3 A</b>, menor que 20 A. Não desarma, mas sobra pouca folga para ligar mais coisas.
+  </div>
+
+  <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais, os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
+  </div>
+</div></section>
+
+<!-- ============ PARTE INTERATIVA ============ -->
+<section class="baixo"><div class="wrap">
+  <div class="contador"><span id="rotulo">Exercício 1 de 5</span><span id="placar">Acertos: 0</span></div>
+  <div class="barra"><div id="progresso"></div></div>
+  <div id="area"></div>
+</div></section>
+
+<script>
+const questoes = [
+ {
+  "enunciado": "Um pisca-pisca antigo tem <b>20 lâmpadas ligadas em série</b>. Na sala, há <b>6 lâmpadas ligadas em paralelo</b> numa rede de <b>127 V</b>. Queima uma lâmpada do pisca-pisca e uma da sala.",
+  "campos": [
+   {
+    "label": "Lâmpadas do pisca-pisca que continuam acesas",
+    "resp": 0,
+    "tol": 0.01
+   },
+   {
+    "label": "Lâmpadas da sala que continuam acesas",
+    "resp": 5,
+    "tol": 0.01
+   },
+   {
+    "label": "Tensão que cada lâmpada da sala recebe (V)",
+    "resp": 127,
+    "tol": 0.5
+   }
+  ],
+  "ajuda": "Em série o caminho é um só: interrompido, todas as 20 apagam (0 acesas). Em paralelo cada lâmpada tem seu caminho, então 5 continuam acesas, e todas recebem os mesmos 127 V da rede."
+ },
+ {
+  "enunciado": "Numa casa com tomadas de <b>127 V</b> há uma <b>air fryer de 1.500 W</b>, uma <b>geladeira de 254 W</b> e um <b>secador de cabelo de 1.905 W</b>.",
+  "campos": [
+   {
+    "label": "Corrente da air fryer (A, 1 casa decimal)",
+    "resp": 11.8,
+    "tol": 0.06
+   },
+   {
+    "label": "Corrente da geladeira (A)",
+    "resp": 2,
+    "tol": 0.05
+   },
+   {
+    "label": "Corrente do secador (A)",
+    "resp": 15,
+    "tol": 0.05
+   }
+  ],
+  "ajuda": "i = P ÷ U. Air fryer: 1.500 ÷ 127 ≈ 11,8 A. Geladeira: 254 ÷ 127 = 2 A. Secador: 1.905 ÷ 127 = 15 A."
+ },
+ {
+  "enunciado": "Numa tomada de <b>127 V</b>, protegida por disjuntor de <b>20 A</b>, estão ligados um <b>micro-ondas de 1.270 W</b> e um <b>ferro de 1.016 W</b>. Depois ligam também uma <b>cafeteira de 635 W</b>.",
+  "campos": [
+   {
+    "label": "Corrente do micro-ondas + ferro (A)",
+    "resp": 18,
+    "tol": 0.05
+   },
+   {
+    "label": "Corrente total com a cafeteira (A)",
+    "resp": 23,
+    "tol": 0.05
+   },
+   {
+    "label": "Quantos ampères passam do limite do disjuntor",
+    "resp": 3,
+    "tol": 0.05
+   }
+  ],
+  "ajuda": "Micro-ondas: 1.270 ÷ 127 = 10 A. Ferro: 1.016 ÷ 127 = 8 A. Juntos: 18 A, abaixo de 20 A. Cafeteira: 635 ÷ 127 = 5 A, total 23 A: passa 3 A do limite e o disjuntor desarma."
+ },
+ {
+  "enunciado": "Um <b>chuveiro de 6.600 W</b> é ligado em <b>220 V</b> num circuito exclusivo. Na loja há disjuntores de <b>20 A, 25 A e 32 A</b>.",
+  "campos": [
+   {
+    "label": "Corrente do chuveiro (A)",
+    "resp": 30,
+    "tol": 0.05
+   },
+   {
+    "label": "Disjuntor que deve ser instalado (A)",
+    "resp": 32,
+    "tol": 0.01
+   },
+   {
+    "label": "Corrente se o chuveiro de mesma potência fosse de 127 V (A, 1 casa decimal)",
+    "resp": 52.0,
+    "tol": 0.06
+   }
+  ],
+  "ajuda": "Corrente: 6.600 ÷ 220 = 30 A. O disjuntor certo é o de 32 A, o menor valor acima de 30 A (o de 20 A ou 25 A desarmaria sempre). Em 127 V: 6.600 ÷ 127 ≈ 52,0 A, quase o dobro, por isso chuveiro potente costuma ser 220 V."
+ },
+ {
+  "enunciado": "<b>DESAFIO:</b> o circuito da cozinha é de <b>127 V</b>, com disjuntor de <b>25 A</b>. Estão ligados juntos uma <b>geladeira de 254 W</b>, um <b>micro-ondas de 1.524 W</b> e uma <b>air fryer de 1.397 W</b>.",
+  "campos": [
+   {
+    "label": "Corrente total (A)",
+    "resp": 25,
+    "tol": 0.05
+   },
+   {
+    "label": "Ampères que ainda cabem até o limite do disjuntor",
+    "resp": 0,
+    "tol": 0.05
+   },
+   {
+    "label": "Corrente total se ligarem também um liquidificador de 381 W (A)",
+    "resp": 28,
+    "tol": 0.05
+   }
+  ],
+  "ajuda": "Geladeira 2 A, micro-ondas 12 A, air fryer 11 A: total 25 A, exatamente o limite (sobra 0). Liquidificador: 381 ÷ 127 = 3 A, total 28 A, e o disjuntor desarma. Trocar por um disjuntor maior não resolve: o certo é dividir os aparelhos em mais circuitos."
+ }
+];
+const MSG_FINAL = "Você acertou todos os exercícios sem precisar recomeçar. Excelente domínio de corrente, disjuntor e ligações em série e paralelo!";
+
+let atual = 0, acertos = 0, tentativas = 0;
+
+function normaliza(txt){
+  let t = String(txt).trim().replace(/[^0-9.,\-]/g,'');
+  if(t.indexOf(',')>=0 && t.indexOf('.')>=0) t = t.replace(/\./g,'').replace(',','.');
+  else if(t.indexOf(',')>=0) t = t.replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g,'');
+  return t==='' ? NaN : parseFloat(t);
+}
+
+function render(){
+  const q = questoes[atual];
+  document.getElementById('rotulo').textContent = `Exercício ${atual+1} de ${questoes.length}`;
+  document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  document.getElementById('progresso').style.width = (atual/questoes.length*100) + '%';
+
+  let html = `<div class="questao">
+    <div class="num">Exercício ${atual+1}</div>
+    <div class="enun">${q.enunciado}</div>
+    <div class="campos">`;
+  q.campos.forEach((c,i)=>{
+    html += `<div class="campo">
+      <label>${c.label}</label>
+      <input type="text" id="in${i}" autocomplete="off" placeholder="digite o número">
+    </div>`;
+  });
+  html += `</div>
+    <div class="acoes">
+      <button class="btn-principal" onclick="verificar()">Verificar resposta</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  </div>`;
+  document.getElementById('area').innerHTML = html;
+  tentativas = 0;
+  document.getElementById('in0').focus();
+
+  q.campos.forEach((c,i)=>{
+    document.getElementById('in'+i).addEventListener('keydown', e=>{
+      if(e.key==='Enter') verificar();
+    });
+  });
+}
+
+function verificar(){
+  const q = questoes[atual];
+  const fb = document.getElementById('fb');
+  let todosCertos = true, algumVazio = false;
+
+  q.campos.forEach((c,i)=>{
+    const el = document.getElementById('in'+i);
+    const val = normaliza(el.value);
+    el.classList.remove('ok','erro');
+    if(isNaN(val)){ algumVazio = true; todosCertos = false; return; }
+    if(Math.abs(val - c.resp) <= c.tol){ el.classList.add('ok'); }
+    else { el.classList.add('erro'); todosCertos = false; }
+  });
+
+  if(algumVazio){
+    fb.className = 'feedback errado';
+    fb.innerHTML = 'Preencha <b>todos</b> os campos com números antes de verificar.';
+    return;
+  }
+
+  if(todosCertos){
+    acertos++;
+    fb.className = 'feedback certo';
+    fb.innerHTML = '<b>Correto!</b> ' + q.ajuda + '<br><br><button class="btn-principal" onclick="proxima()">Próximo exercício →</button>';
+    document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  } else {
+    tentativas++;
+    fb.className = 'feedback errado';
+    if(tentativas >= 3){
+      fb.innerHTML = '<b>Ainda não.</b> Confira os campos em vermelho e revise as fórmulas na parte de cima da tela.';
+    } else {
+      fb.innerHTML = '<b>Ainda não.</b> Os campos em <span style="color:#2e7d32">verde</span> estão certos; revise os que ficaram em <span style="color:#c62828">vermelho</span> e tente de novo.';
+    }
+  }
+}
+
+function proxima(){
+  atual++;
+  if(atual >= questoes.length){ final(); } else { render(); }
+}
+
+function final(){
+  document.getElementById('progresso').style.width = '100%';
+  document.getElementById('rotulo').textContent = 'Atividade concluída';
+  document.getElementById('placar').textContent = `Acertos: ${acertos} de ${questoes.length}`;
+  let msg = acertos === questoes.length
+    ? MSG_FINAL
+    : 'Bom trabalho! Vale revisar os exercícios em que você precisou de ajuda antes da próxima aula.';
+  document.getElementById('area').innerHTML = `<div class="final">
+    <h3>Atividade concluída!</h3>
+    <div class="placar">Você acertou ${acertos} de ${questoes.length} exercícios.</div>
+    <p>${msg}</p>
+    <button class="btn-principal" onclick="reiniciar()">Refazer a atividade</button>
+  </div>`;
+}
+
+function reiniciar(){ atual = 0; acertos = 0; render(); }
+
+render();
+</script>
+</body>
+</html>

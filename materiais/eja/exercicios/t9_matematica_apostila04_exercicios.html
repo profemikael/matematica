@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T9 MATEMÁTICA • Apostila 04 • Exercícios Interativos</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:#f4f6f9;color:#222;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{background:#1F4E79;color:#fff;text-align:center;padding:8px 12px;flex-shrink:0}
+  header h1{font-size:18px;letter-spacing:.4px}
+  header p{font-size:12px;color:#D6E4F0;margin-top:3px}
+
+  .topo{height:44vh;overflow-y:auto;padding:10px 0;background:#fff;border-bottom:4px solid #1F4E79}
+  .baixo{flex:1;overflow-y:auto;padding:12px 0;background:#f4f6f9}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  h2{color:#1F4E79;font-size:15px;margin-bottom:6px;border-bottom:2px solid #1F4E79;padding-bottom:3px}
+  .formulas{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0}
+  .card{flex:1;min-width:150px;background:#DEEBF7;border:1px solid #9DC3E6;border-radius:5px;padding:6px 8px;text-align:center}
+  .card b{color:#1F4E79;display:block;font-size:12px;margin-bottom:3px}
+  .card span{font-size:14px;font-weight:bold}
+  .exemplo{background:#EFF6FC;border:1px solid #9DC3E6;border-radius:5px;padding:8px 10px;margin-top:7px;font-size:13px;line-height:1.5}
+  .exemplo b{color:#1F4E79}
+  p.txt{font-size:13px;line-height:1.5;margin-bottom:5px}
+
+  .barra{height:9px;background:#dde3ea;border-radius:5px;overflow:hidden;margin-bottom:12px}
+  .barra div{height:100%;background:#1F4E79;width:0;transition:width .4s}
+  .contador{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+
+  .questao{background:#fff;border:1px solid #cfd8e3;border-left:5px solid #1F4E79;border-radius:6px;padding:13px 15px}
+  .questao .num{color:#1F4E79;font-weight:bold;font-size:14px}
+  .questao .enun{font-size:15px;line-height:1.55;margin:5px 0 11px}
+  .campos{display:flex;gap:14px;flex-wrap:wrap}
+  .campo{flex:1;min-width:175px}
+  .campo label{display:block;font-size:13px;color:#1F4E79;font-weight:bold;margin-bottom:4px}
+  .campo input{width:100%;padding:9px 11px;font-size:16px;font-family:Georgia,serif;border:2px solid #9DC3E6;border-radius:5px;background:#fbfdff}
+  .campo input:focus{outline:none;border-color:#1F4E79;background:#fff}
+  .campo input.ok{border-color:#2e7d32;background:#eaf6ea}
+  .campo input.erro{border-color:#c62828;background:#fdeaea}
+
+  .acoes{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{font-family:Georgia,serif;font-size:14px;padding:9px 20px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}
+  .btn-principal{background:#1F4E79;color:#fff}
+  .btn-principal:hover{background:#2b6497}
+  .feedback{font-size:13.5px;padding:8px 11px;border-radius:5px;margin-top:11px;display:none;line-height:1.5}
+  .feedback.certo{display:block;background:#eaf6ea;border:1px solid #2e7d32;color:#1b5e20}
+  .feedback.errado{display:block;background:#fdeaea;border:1px solid #c62828;color:#8e1c1c}
+  .feedback.ajuda{display:block;background:#FFF2CC;border:1px solid #C00000;color:#7a3b00}
+
+  .final{background:#fff;border:2px solid #1F4E79;border-radius:8px;padding:26px;text-align:center}
+  .final h3{color:#1F4E79;font-size:20px;margin-bottom:8px}
+  .final p{font-size:15px;line-height:1.6;margin-bottom:14px}
+  .placar{font-size:15px;color:#1F4E79;font-weight:bold;margin-bottom:14px}
+
+  .btn-formulas{display:none}
+  @media (max-width:700px){
+    body{height:auto;min-height:100vh;overflow:auto;display:block}
+    header{position:sticky;top:0;z-index:20;padding:8px 10px}
+    header h1{font-size:16px}
+    header p{font-size:11px}
+    .btn-formulas{display:inline-block;margin-top:7px;background:#fff;color:#1F4E79;font-size:15px;padding:9px 16px;border-radius:20px}
+    .topo{display:none;position:fixed;left:0;right:0;top:var(--alt-header,80px);height:auto;max-height:72vh;z-index:15;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+    .topo.aberto{display:block}
+    .wrap{padding:0 12px}
+    .card{min-width:calc(50% - 4px)}
+    .baixo{padding:12px 0 45vh}
+    .questao{padding:12px}
+    .questao .enun{font-size:17px}
+    .campo{min-width:100%}
+    .campo label{font-size:15px}
+    .campo input{font-size:20px;padding:13px 12px;min-height:52px}
+    .acoes button,.feedback button,.final button{width:100%;font-size:17px;padding:14px}
+    .feedback{font-size:15px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>T9 • MATEMÁTICA • APOSTILA 04</h1>
+  <p>Leitura Crítica de Dados e Pesquisa &nbsp;•&nbsp; Exercícios Interativos &nbsp;•&nbsp; Prof. Mikael Maronez</p>
+  <button class="btn-formulas" id="btnFormulas" type="button" onclick="alternaFormulas()">📘 Ver fórmulas e exemplo</button>
+</header>
+
+<!-- ============ PARTE FIXA: FÓRMULAS E EXEMPLO ============ -->
+<section class="topo" id="topo"><div class="wrap">
+  <h2>Pesquisas, gráficos e índices</h2>
+  <div class="formulas">
+    <div class="card"><b>DA AMOSTRA À POPULAÇÃO</b><span>mesma porcentagem</span></div>
+    <div class="card"><b>% OUVIDA</b><span>amostra &divide; população &times; 100</span></div>
+    <div class="card"><b>MARGEM DE ERRO</b><span>resultado &plusmn; margem</span></div>
+    <div class="card"><b>VARIAÇÃO %</b><span>(novo &minus; antigo) &divide; antigo &times; 100</span></div>
+  </div>
+
+  <p class="txt">Uma pesquisa ouve só uma parte das pessoas, a <b>amostra</b>, para tirar conclusões sobre o todo, a <b>população</b>. Se a amostra é representativa, a mesma porcentagem vale para a população. Desconfie de gráficos com o <b>eixo cortado</b>: eles fazem diferenças pequenas parecerem enormes. Em pesquisa eleitoral, o resultado real está num intervalo: resultado menos a margem até resultado mais a margem. Se os intervalos de dois candidatos se encostam ou se cruzam, é <b>empate técnico</b>.</p>
+
+  <div class="exemplo">
+    <b>Exemplo resolvido:</b> Candidato A com 45% e Candidato B com 50%, margem de erro de 3 pontos.<br><b>1º)</b> A: de 45 &minus; 3 = <b>42%</b> até 45 + 3 = <b>48%</b>.<br><b>2º)</b> B: de 50 &minus; 3 = <b>47%</b> até 50 + 3 = <b>53%</b>.<br><b>3º)</b> Os intervalos se cruzam entre 47% e 48%: é <b>empate técnico</b>. Dizer que B "está na frente" força a conclusão.
+  </div>
+
+  <div class="exemplo" style="background:#FFF2CC;border-color:#C00000">
+    <b>Como responder:</b> digite apenas os NÚMEROS (sem a unidade). Use vírgula ou ponto para decimais, os dois funcionam. Quando a questão tiver mais de um campo, só passa para a próxima quando TODOS estiverem corretos.
+  </div>
+</div></section>
+
+<!-- ============ PARTE INTERATIVA ============ -->
+<section class="baixo"><div class="wrap">
+  <div class="contador"><span id="rotulo">Exercício 1 de 5</span><span id="placar">Acertos: 0</span></div>
+  <div class="barra"><div id="progresso"></div></div>
+  <div id="area"></div>
+</div></section>
+
+<script>
+const questoes = [
+ {
+  "enunciado": "Uma pesquisa ouviu <b>1.500 moradores</b> de uma cidade com <b>60.000 habitantes</b>. Na amostra, <b>42%</b> disseram trabalhar por conta própria.",
+  "campos": [
+   {
+    "label": "Pessoas da amostra que deram essa resposta",
+    "resp": 630,
+    "tol": 0.5
+   },
+   {
+    "label": "Habitantes da cidade que trabalhariam por conta própria",
+    "resp": 25200,
+    "tol": 0.5
+   },
+   {
+    "label": "Porcentagem da população que foi ouvida (%)",
+    "resp": 2.5,
+    "tol": 0.06
+   }
+  ],
+  "ajuda": "Amostra: 42% de 1.500 = 0,42 × 1.500 = 630 pessoas. Mantida a proporção: 0,42 × 60.000 = 25.200 habitantes. Ouvidos: 1.500 ÷ 60.000 = 0,025 = 2,5% da população."
+ },
+ {
+  "enunciado": "Um gráfico de barras mostra o Candidato A com <b>46%</b> e o Candidato B com <b>50%</b>, mas o eixo vertical <b>começa em 45%</b>, e não em zero.",
+  "campos": [
+   {
+    "label": "Diferença real entre os dois, em pontos percentuais",
+    "resp": 4,
+    "tol": 0.05
+   },
+   {
+    "label": "No gráfico cortado, a barra de B parece quantas vezes a de A?",
+    "resp": 5,
+    "tol": 0.05
+   },
+   {
+    "label": "Com o eixo começando em zero, B é quantas vezes A? (1 casa decimal)",
+    "resp": 1.1,
+    "tol": 0.06
+   }
+  ],
+  "ajuda": "Diferença real: 50 − 46 = 4 pontos. No gráfico cortado, a barra de A aparece com 46 − 45 = 1 e a de B com 50 − 45 = 5: B parece 5 vezes maior. Com eixo em zero: 50 ÷ 46 ≈ 1,1, quase do mesmo tamanho."
+ },
+ {
+  "enunciado": "Uma pesquisa aponta o Candidato X com <b>44%</b> e o Candidato Y com <b>39%</b>, com margem de erro de <b>3 pontos percentuais</b>.",
+  "campos": [
+   {
+    "label": "Menor valor possível de X (%)",
+    "resp": 41,
+    "tol": 0.05
+   },
+   {
+    "label": "Maior valor possível de Y (%)",
+    "resp": 42,
+    "tol": 0.05
+   },
+   {
+    "label": "Tamanho da parte em que os intervalos se cruzam (pontos)",
+    "resp": 1,
+    "tol": 0.05
+   }
+  ],
+  "ajuda": "X vai de 41% a 47% e Y vai de 36% a 42%. Os intervalos se cruzam entre 41% e 42%, 1 ponto: é empate técnico, então não dá para afirmar que X está vencendo."
+ },
+ {
+  "enunciado": "Uma manchete diz: <b>\"Candidato dispara e abre vantagem\"</b>. No texto, ele passou de <b>45%</b> para <b>47%</b>, com margem de erro de <b>3 pontos</b>.",
+  "campos": [
+   {
+    "label": "Crescimento divulgado, em pontos percentuais",
+    "resp": 2,
+    "tol": 0.05
+   },
+   {
+    "label": "Maior valor possível na 1ª pesquisa (%)",
+    "resp": 48,
+    "tol": 0.05
+   },
+   {
+    "label": "Menor valor possível na 2ª pesquisa (%)",
+    "resp": 44,
+    "tol": 0.05
+   }
+  ],
+  "ajuda": "Cresceu 47 − 45 = 2 pontos, menos que a margem. Na 1ª pesquisa ele podia ter até 48%; na 2ª, podia ter só 44%. Como 44% é menor que 48%, o crescimento pode nem ter acontecido: \"dispara\" é exagero. Manchete honesta: \"Candidato oscila de 45% para 47%, dentro da margem de erro\"."
+ },
+ {
+  "enunciado": "<b>DESAFIO:</b> o pacote de arroz de 5 kg passou de <b>R$ 24,00</b> para <b>R$ 27,60</b> em um ano. A inflação oficial do período foi de <b>4,5%</b>.",
+  "campos": [
+   {
+    "label": "Aumento em reais",
+    "resp": 3.6,
+    "tol": 0.01
+   },
+   {
+    "label": "Aumento em porcentagem (%)",
+    "resp": 15,
+    "tol": 0.06
+   },
+   {
+    "label": "Quantos pontos percentuais o arroz subiu acima da inflação",
+    "resp": 10.5,
+    "tol": 0.06
+   }
+  ],
+  "ajuda": "Aumento: 27,60 − 24,00 = R$ 3,60. Em porcentagem: 3,60 ÷ 24,00 = 0,15 = 15%. Acima da inflação: 15 − 4,5 = 10,5 pontos. Para uma família que consome muito arroz, a inflação sentida é bem maior que a oficial, porque a inflação é uma média."
+ }
+];
+const MSG_FINAL = "Você acertou todos os exercícios sem precisar recomeçar. Excelente leitura crítica de pesquisas, gráficos e índices!";
+
+function celular(){ return window.matchMedia('(max-width:700px)').matches; }
+function ajustaTopo(){ const h=document.querySelector('header'); document.documentElement.style.setProperty('--alt-header', h.offsetHeight+'px'); }
+function alternaFormulas(){
+  const t=document.getElementById('topo'), b=document.getElementById('btnFormulas');
+  ajustaTopo(); t.classList.toggle('aberto'); t.scrollTop=0;
+  b.textContent = t.classList.contains('aberto') ? '✕ Fechar fórmulas' : '📘 Ver fórmulas e exemplo';
+}
+window.addEventListener('resize', ajustaTopo);
+document.addEventListener('focusin', function(e){
+  if(celular() && e.target.tagName==='INPUT'){
+    const t=document.getElementById('topo'); if(t.classList.contains('aberto')) alternaFormulas();
+    setTimeout(function(){ e.target.scrollIntoView({block:'center', behavior:'smooth'}); }, 350);
+  }
+});
+let atual = 0, acertos = 0, tentativas = 0;
+
+function normaliza(txt){
+  let t = String(txt).trim().replace(/[^0-9.,\-]/g,'');
+  if(t.indexOf(',')>=0 && t.indexOf('.')>=0) t = t.replace(/\./g,'').replace(',','.');
+  else if(t.indexOf(',')>=0) t = t.replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g,'');
+  return t==='' ? NaN : parseFloat(t);
+}
+
+function render(){
+  const q = questoes[atual];
+  document.getElementById('rotulo').textContent = `Exercício ${atual+1} de ${questoes.length}`;
+  document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  document.getElementById('progresso').style.width = (atual/questoes.length*100) + '%';
+
+  let html = `<div class="questao">
+    <div class="num">Exercício ${atual+1}</div>
+    <div class="enun">${q.enunciado}</div>
+    <div class="campos">`;
+  q.campos.forEach((c,i)=>{
+    html += `<div class="campo">
+      <label>${c.label}</label>
+      <input type="text" id="in${i}" autocomplete="off" placeholder="digite o número" inputmode="decimal" enterkeyhint="${i<q.campos.length-1?'next':'done'}">
+    </div>`;
+  });
+  html += `</div>
+    <div class="acoes">
+      <button class="btn-principal" onclick="verificar()">Verificar resposta</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  </div>`;
+  document.getElementById('area').innerHTML = html;
+  tentativas = 0;
+  if(!celular()) document.getElementById('in0').focus();
+  else window.scrollTo(0,0);
+
+  q.campos.forEach((c,i)=>{
+    document.getElementById('in'+i).addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); const prox=document.getElementById('in'+(i+1)); if(prox) prox.focus(); else verificar(); }
+    });
+  });
+}
+
+function verificar(){
+  const q = questoes[atual];
+  const fb = document.getElementById('fb');
+  let todosCertos = true, algumVazio = false;
+
+  q.campos.forEach((c,i)=>{
+    const el = document.getElementById('in'+i);
+    const val = normaliza(el.value);
+    el.classList.remove('ok','erro');
+    if(isNaN(val)){ algumVazio = true; todosCertos = false; return; }
+    if(Math.abs(val - c.resp) <= c.tol){ el.classList.add('ok'); }
+    else { el.classList.add('erro'); todosCertos = false; }
+  });
+
+  if(celular()) setTimeout(function(){ fb.scrollIntoView({block:'center', behavior:'smooth'}); }, 50);
+  if(algumVazio){
+    fb.className = 'feedback errado';
+    fb.innerHTML = 'Preencha <b>todos</b> os campos com números antes de verificar.';
+    return;
+  }
+
+  if(todosCertos){
+    acertos++;
+    fb.className = 'feedback certo';
+    if(celular() && document.activeElement) document.activeElement.blur();
+    fb.innerHTML = '<b>Correto!</b> ' + q.ajuda + '<br><br><button class="btn-principal" onclick="proxima()">Próximo exercício →</button>';
+    document.getElementById('placar').textContent = `Acertos: ${acertos}`;
+  } else {
+    tentativas++;
+    fb.className = 'feedback errado';
+    if(tentativas >= 3){
+      fb.innerHTML = '<b>Ainda não.</b> Confira os campos em vermelho e revise as fórmulas na parte de cima da tela.';
+    } else {
+      fb.innerHTML = '<b>Ainda não.</b> Os campos em <span style="color:#2e7d32">verde</span> estão certos; revise os que ficaram em <span style="color:#c62828">vermelho</span> e tente de novo.';
+    }
+  }
+}
+
+function proxima(){
+  window.scrollTo(0,0);
+  atual++;
+  if(atual >= questoes.length){ final(); } else { render(); }
+}
+
+function final(){
+  document.getElementById('progresso').style.width = '100%';
+  document.getElementById('rotulo').textContent = 'Atividade concluída';
+  document.getElementById('placar').textContent = `Acertos: ${acertos} de ${questoes.length}`;
+  let msg = acertos === questoes.length
+    ? MSG_FINAL
+    : 'Bom trabalho! Vale revisar os exercícios em que você precisou de ajuda antes da próxima aula.';
+  document.getElementById('area').innerHTML = `<div class="final">
+    <h3>Atividade concluída!</h3>
+    <div class="placar">Você acertou ${acertos} de ${questoes.length} exercícios.</div>
+    <p>${msg}</p>
+    <button class="btn-principal" onclick="reiniciar()">Refazer a atividade</button>
+  </div>`;
+}
+
+function reiniciar(){ atual = 0; acertos = 0; render(); }
+
+render();
+</script>
+</body>
+</html>

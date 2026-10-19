@@ -3,9 +3,11 @@
 var BANCOS = [
   "astronomia-terra.js",
   "geometria.js",
+  "plano-cartesiano.js",
 ];
 // Arquivos de desenhos (pasta desenhos/) que os bancos usam.
 var DESENHOS = [
   "astronomia.js",
   "geometria.js",
+  "plano-cartesiano.js",
 ];

@@ -348,6 +348,17 @@
     .material-icon.html-mat { background: #e8f5e9; color: #2e7d32; }
     .material-icon.html-fis { background: #fff3e0; color: #e65100; }
     .material-icon.html-cie { background: #e0f2f1; color: #00695c; }
+    .material-icon.cat-aula      { background: #e3f2fd; color: #1565c0; }
+    .material-icon.cat-cal       { background: #f3e5f5; color: #8e24aa; }
+    .material-icon.cat-cruz      { background: #e0f7fa; color: #00838f; }
+    .material-icon.cat-caca      { background: #fce4ec; color: #d81b60; }
+    .material-icon.cat-mem       { background: #ede7f6; color: #5e35b1; }
+    .material-icon.cat-video     { background: #ffebee; color: #c62828; }
+    .material-icon.cat-exerc     { background: #fff3e0; color: #ef6c00; }
+    .material-icon.cat-apostila  { background: #efebe9; color: #6d4c41; }
+    .material-icon.cat-adaptado  { background: #f1f8e9; color: #558b2f; }
+    .material-icon.cat-aviso     { background: #fff8e1; color: #e65100; }
+    .material-icon.cat-ferram    { background: #eceff1; color: #455a64; }
     .material-icon.jogo  { background: #e3f2fd; color: #0d47a1; }
     .material-card.jogo-card {
       border-color: #1565c0;
@@ -1601,6 +1612,22 @@
     if (g === 'temporarios') return 'Temporário';
     return g.replace('ano', '.º Ano').replace('-cie', ' Ciências').replace('-mat', ' Matemática');
   }
+  /* Ícone pelo tipo de atividade, descoberto pelo título */
+  function categoriaIcone(m, grade) {
+    const t = m.titulo.toLowerCase();
+    if (grade.startsWith('eja-exc')) return m.tipo === 'html-fis' ? 'fa-atom html-fis' : 'fa-calculator html-mat';
+    if (t.includes('calendário'))        return 'fa-calendar-days cat-cal';
+    if (t.includes('aviso'))             return 'fa-triangle-exclamation cat-aviso';
+    if (t.includes('palavras cruzadas')) return 'fa-table-cells cat-cruz';
+    if (t.includes('caça-palavras'))     return 'fa-magnifying-glass cat-caca';
+    if (t.includes('jogo da memória'))   return 'fa-clone cat-mem';
+    if (t.includes('vídeo') || /youtu/.test(m.link)) return 'fa-circle-play cat-video';
+    if (t.includes('piloto') || t.includes('adaptado')) return 'fa-puzzle-piece cat-adaptado';
+    if (t.includes('sorteador'))         return 'fa-dice cat-ferram';
+    if (t.includes('exercício') || t.includes('tema de casa') || t.includes('atividade extra')) return 'fa-pencil cat-exerc';
+    if (t.includes('apostila'))          return 'fa-book-open cat-apostila';
+    return 'fa-chalkboard-user cat-aula';
+  }
   function renderMateriais() {
     ['6ano-mat','6ano-cie','7ano','8ano-mat','8ano-cie','9ano',
      'eja-mat-t7','eja-mat-t8','eja-mat-t9',
@@ -1646,8 +1673,7 @@
               </a></div>`;
             return;
           }
-          const iconMap = {pdf:'fa-file-pdf pdf',doc:'fa-file-word doc',img:'fa-image img',link:'fa-link link',html:'fa-display html','html-mat':'fa-calculator html-mat','html-fis':'fa-atom html-fis','html-cie':'fa-flask html-cie'};
-          const [icon, cls] = (iconMap[m.tipo]||'fa-file link').split(' ');
+          const [icon, cls] = categoriaIcone(m, grade).split(' ');
           const tipoLabel = {pdf:'PDF',doc:'Word',img:'Imagem',link:'Link',html:'Interativo','html-mat':'Interativo','html-fis':'Interativo','html-cie':'Interativo'}[m.tipo]||'Arquivo';
           const metaLine = isTemp ? `${tipoLabel} · Avulso`
                          : isEja  ? `${tipoLabel} · EJA`

@@ -1296,18 +1296,23 @@
       link: "materiais/8ano/ciencias/3t_aula04_clima_tempo_impressao.pdf", data: "19/10/2026" },
     { id: 65, grade: "6ano-cie", trimestre: 2, tipo: "html-cie",
       titulo: "Aula 01 – Apresentação 2º Trimestre (Interativa)",
+      descricao: "Resumo do 2º trimestre para a avaliação e o simulado: seres vivos e a célula, organização do corpo humano e sistema nervoso, e movimento.",
       link: "materiais/6ano/ciencias/aula01_apresentacao_2t.html", data: "18/08/2026" },
     { id: 107, grade: "6ano-cie", trimestre: 3, tipo: "html-cie",
       titulo: "00 – Calendário – 3º Trimestre (Ciências 6º Ano)",
+      descricao: "Datas das aulas, simulados, prova e trabalhos do 3º trimestre: a luz e a visão, a forma e os movimentos da Terra, as camadas e as rochas.",
       link: "materiais/6ano/ciencias/3t_00_calendario.html", data: "07/09/2026" },
     { id: 86, grade: "6ano-cie", trimestre: 3, tipo: "pdf",
       titulo: "01 – Aula – Introdução ao 3º Trimestre",
+      descricao: "Como percebemos o mundo pela visão: o caminho da luz pela córnea, pupila, íris, cristalino e retina até o cérebro, e os defeitos da visão.",
       link: "materiais/6ano/ciencias/introducao_3trimestre.pdf", data: "07/09/2026" },
     { id: 94, grade: "6ano-cie", trimestre: 3, tipo: "pdf",
       titulo: "02 – Aula – A Luz e a Visão: Lentes",
+      descricao: "Refração da luz, lentes convergente e divergente e como os óculos corrigem a miopia, a hipermetropia e o astigmatismo.",
       link: "materiais/6ano/ciencias/3t_aula02_lentes.pdf", data: "15/09/2026" },
     { id: 95, grade: "6ano-cie", trimestre: 3, tipo: "link",
       titulo: "02 – Vídeo – Miopia, Hipermetropia e Astigmatismo (YouTube)",
+      descricao: "Vídeo de apoio à aula 02 sobre os três problemas de visão mais comuns e como eles são corrigidos.",
       link: "https://youtu.be/JVjve3z-rVc?si=gNRqCjBwBTXfDyBu", data: "15/09/2026" },
     { id: 96, grade: "6ano-cie", trimestre: 3, tipo: "html-cie",
       titulo: "02 – Palavras Cruzadas – A Luz e as Lentes (Interativo)",
@@ -1315,6 +1320,7 @@
       link: "materiais/6ano/ciencias/3t_aula02_cruzadas_lentes.html", data: "15/09/2026" },
     { id: 108, grade: "6ano-cie", trimestre: 3, tipo: "html-cie",
       titulo: "03 – Aula – A Luz e a Visão: A Catarata",
+      descricao: "A catarata: quando o cristalino perde a transparência e a luz não passa bem. Revisão da íris e da pupila, com exercícios para o caderno.",
       link: "materiais/6ano/ciencias/3t_aula03_catarata.html", data: "22/09/2026" },
     { id: 125, grade: "6ano-cie", trimestre: 3, tipo: "html-cie",
       titulo: "03 – Jogo da Memória – Catarata e a Visão (Interativo)",
@@ -1326,6 +1332,7 @@
       link: "materiais/6ano/ciencias/3t_cruzadas_22set_catarata_visao.html", data: "22/09/2026" },
     { id: 131, grade: "6ano-cie", trimestre: 3, tipo: "pdf",
       titulo: "04 – Aula – A Terra É Esférica",
+      descricao: "Como sabemos que a Terra é esférica: Eratóstenes, o navio no horizonte, a volta ao mundo de Magalhães, os fusos horários e as constelações.",
       link: "materiais/6ano/ciencias/3t_aula04_terra_esferica.pdf", data: "06/10/2026" },
     { id: 132, grade: "6ano-cie", trimestre: 3, tipo: "html-cie",
       titulo: "04 – Palavras Cruzadas – A Terra é Esférica (Interativo)",
@@ -1333,6 +1340,7 @@
       link: "materiais/6ano/ciencias/3t_cruzadas04_terra_esferica.html", data: "06/10/2026" },
     { id: 159, grade: "6ano-cie", trimestre: 3, tipo: "html-cie",
       titulo: "05 – Aula – Movimentos da Terra",
+      descricao: "Rotação (dia e noite) e translação da Terra, a inclinação do eixo e por que as estações do ano são invertidas entre os hemisférios.",
       link: "materiais/6ano/ciencias/3t_aula05_movimentos_terra.html", data: "20/10/2026" },
     { id: 54, grade: "9ano", trimestre: 3, tipo: "pdf",
       titulo: "Aula de Artes – Grafite e Arte Urbana (Slides Interativos)",
@@ -1591,7 +1599,7 @@
     if (g.startsWith('eja-fis')) return 'EJA – Física';
     if (g === 'eja') return 'EJA';
     if (g === 'temporarios') return 'Temporário';
-    return g.replace('ano', '.º Ano');
+    return g.replace('ano', '.º Ano').replace('-cie', ' Ciências').replace('-mat', ' Matemática');
   }
   function renderMateriais() {
     ['6ano-mat','6ano-cie','7ano','8ano-mat','8ano-cie','9ano',

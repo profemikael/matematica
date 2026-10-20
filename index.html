@@ -788,6 +788,9 @@
       <button class="grade-tab" data-grade="temporarios" role="tab" onclick="switchGrade('temporarios', this)">
         <span class="tab-icon">🗂️</span>Temporários
       </button>
+      <button class="grade-tab" id="tab-adaptados" data-grade="adaptados" role="tab" style="display:none" onclick="switchGrade('adaptados', this)">
+        <span class="tab-icon">🧩</span>Adaptados
+      </button>
     </div>
 
     <!-- ── 6.º ANO ── -->
@@ -867,6 +870,14 @@
       <div class="materials-grid" id="grid-temporarios"></div>
     </div>
 
+    <!-- ── ADAPTADOS (aba oculta: 2 cliques na foto do Euler) ── -->
+    <div class="grade-panel" id="panel-adaptados">
+      <div class="grade-panel-header">
+        <h3><span class="dot" style="background:#ad1457"></span> Materiais Adaptados</h3>
+      </div>
+      <div class="materials-grid" id="grid-adaptados"></div>
+    </div>
+
   </div>
 </section>
 
@@ -940,7 +951,7 @@
 
       <div class="math-card">
         <div class="math-photo">
-          <img src="imagens/matematicos/euler.jpg" alt="Leonhard Euler" loading="lazy" />
+          <img src="imagens/matematicos/euler.jpg" alt="Leonhard Euler" loading="lazy" id="euler-foto" />
         </div>
         <span class="math-badge">Análise</span>
         <h4>Leonhard Euler</h4>
@@ -1343,7 +1354,11 @@
     { id: 133, grade: "temporarios", trimestre: 3, tipo: "jogo",
       titulo: "Jogo da Memória",
       descricao: "Encontre os pares de cartas para vencer! Jogo online de memória para 2 alunos, em tempo real. Precisa de senha de turma (peça ao professor).",
-      link: "materiais/temporarios/jogo-da-memoria/index.html", data: "06/10/2026" },    { id: 40, grade: "eja-mat-t7", trimestre: 3, tipo: "pdf",
+      link: "materiais/temporarios/jogo-da-memoria/index.html", data: "06/10/2026" },
+    { id: 153, grade: "adaptados", trimestre: 3, tipo: "html-mat",
+      titulo: "Continhas de Mais e de Menos (Interativo)",
+      link: "materiais/adaptacao/continhas_mais_e_menos.html", data: "20/10/2026" },
+    { id: 40, grade: "eja-mat-t7", trimestre: 3, tipo: "pdf",
       titulo: "Apostila 01 – Proporcionalidade e Regra de Três",
       link: "materiais/eja/matematica/apostila01_proporcionalidade_t7.pdf", data: "04/08/2026" },
     { id: 41, grade: "eja-mat-t8", trimestre: 3, tipo: "pdf",
@@ -1568,7 +1583,7 @@
      'eja-mat-t7','eja-mat-t8','eja-mat-t9',
      'eja-fis-t7','eja-fis-t8','eja-fis-t9',
      'eja-exc-t7','eja-exc-t8','eja-exc-t9',
-     'temporarios'].forEach(grade => {
+     'temporarios','adaptados'].forEach(grade => {
       const grid = document.getElementById('grid-' + grade);
       if (!grid) return;
       const items = MATERIAIS.filter(m => m.grade === grade);
@@ -1580,7 +1595,7 @@
         </div>`;
         return;
       }
-      const isTemp = grade === 'temporarios';
+      const isTemp = grade === 'temporarios' || grade === 'adaptados';
       const isEja  = grade.startsWith('eja-');
       const byTri = {};
       items.forEach(m => { (byTri[m.trimestre] = byTri[m.trimestre]||[]).push(m); });
@@ -1712,6 +1727,24 @@
     document.getElementById('panel-' + grade).classList.add('active');
     btn.classList.add('active');
   }
+
+  /* ── Aba oculta "Adaptados": 2 toques/cliques na foto do Euler ── */
+  (function () {
+    const foto = document.getElementById('euler-foto');
+    let ultimo = 0;
+    foto.addEventListener('click', () => {
+      const agora = Date.now();
+      if (agora - ultimo < 450) {
+        const tab = document.getElementById('tab-adaptados');
+        tab.style.display = '';
+        switchGrade('adaptados', tab);
+        document.getElementById('aulas').scrollIntoView({ behavior: 'smooth' });
+        ultimo = 0;
+      } else {
+        ultimo = agora;
+      }
+    });
+  })();
 
   /* ── Video filter ── */
   function filterVideos(cat, btn) {

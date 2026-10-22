@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 07 — Área do Círculo — 8º Ano</title>
+<style>
+  @page { size: A4; margin: 13mm 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color:#1F2937; margin:0; background:#F3F4F6; }
+  .folha { max-width: 860px; margin: 0 auto; background:#fff; padding: 0 0 26px; }
+  header.capa { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #3B82F6 100%);
+    color:#fff; padding: 22px 30px 18px; }
+  header.capa .linha { font-size: 11.5px; letter-spacing:.12em; text-transform:uppercase; opacity:.85; }
+  header.capa h1 { margin: 5px 0 3px; font-size: 25px; line-height:1.2; }
+  header.capa h2 { margin: 0; font-size: 14px; font-weight: normal; opacity:.92; }
+  .tags { margin-top: 11px; }
+  .tag { display:inline-block; background: rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.45);
+         color:#fff; font-size: 11px; padding: 3px 9px; border-radius: 999px; margin: 0 5px 5px 0; }
+  .conteudo { padding: 0 30px; }
+  h3.sec { font-size: 16px; color:#1E3A8A; margin: 18px 0 8px; padding-bottom: 5px; border-bottom: 2px solid #DBEAFE; }
+  h3.sec span.num { display:inline-block; background:#1E3A8A; color:#fff; width:24px; height:24px; line-height:24px;
+    text-align:center; border-radius:6px; font-size:13px; margin-right:7px; }
+  p { font-size: 13.5px; line-height: 1.55; margin: 7px 0; }
+  .formula { background:#1E3A8A; color:#fff; font-size: 15px; text-align:center; padding: 8px 12px;
+             border-radius: 7px; margin: 9px 0; font-weight: bold; }
+  .exemplo { background:#F8FAFC; border:1px solid #CBD5E1; border-radius:7px; padding: 10px 14px; margin: 9px 0; }
+  .exemplo .rot { font-size: 10.5px; font-weight:bold; color:#2563EB; text-transform:uppercase; letter-spacing:.1em; }
+  .exemplo p { margin: 5px 0; font-size: 13px; }
+  .fig { display:flex; gap: 20px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
+  .fig .txt { flex:1; min-width: 250px; }
+  .geo { height:auto; max-width:100%; }
+  .geo text.vlab { font-size: 12px; fill:#1E3A8A; font-weight:bold; }
+  .geo text.med  { font-size: 11.5px; fill:#4B5563; }
+  .aviso { border-left:4px solid #E67E22; background:#FEF7EE; border-radius:0 8px 8px 0; padding:9px 14px; margin:9px 0; font-size:13px; }
+  .aviso b { color:#B9651A; }
+  .selo { display:inline-block; font-size: 10.5px; font-weight:bold; text-transform:uppercase; letter-spacing:.08em;
+          padding: 3px 9px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; }
+  .basico { background:#DCFCE7; color:#166534; border:1px solid #86EFAC; }
+  .medio  { background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; }
+  .dificil{ background:#EDE9FE; color:#5B21B6; border:1px solid #C4B5FD; }
+  .parte { background:#1E3A8A; color:#fff; padding: 8px 14px; border-radius:6px; font-size:14px;
+           font-weight:bold; margin: 20px 0 10px; }
+  .ex { margin: 12px 0; padding-left: 2px; }
+  .ex .enun { font-size: 13.5px; line-height:1.6; }
+  .ex .enun b.n { color:#1E3A8A; }
+  .ex .sub { font-size: 13px; margin: 3px 0 0 18px; }
+  .lin { border:none; border-top:1px dashed #CBD5E1; margin: 9px 0; }
+  footer.conexao { margin: 22px 30px 0; background:#FFF7ED; border:1px solid #FDBA74; border-radius:9px; padding: 11px 16px; }
+  footer.conexao h4 { margin:0 0 5px; font-size: 13.5px; color:#9A3412; }
+  footer.conexao p { font-size: 12.5px; margin: 0; color:#7C2D12; }
+  .assin { text-align:right; font-size: 12px; color:#6B7280; margin: 16px 30px 0; }
+  @media print { body { background:#fff; } .folha { max-width:none; } .ex,.exemplo,.fig,.aviso { page-break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="folha">
+
+<header class="capa">
+  <div class="linha">Matemática · 8º Ano · 3º Trimestre · Aula 07</div>
+  <h1>Área do Círculo e Comprimento da Circunferência</h1>
+  <h2>Raio, diâmetro, o número π e as duas fórmulas do círculo</h2>
+  <div class="tags">
+    <span class="tag">EF08MA19 — Área de círculos e comprimento de circunferências</span>
+    <span class="tag">EF08MA09 — Equações do tipo ax² = b</span>
+  </div>
+</header>
+
+<div class="conteudo">
+
+<h3 class="sec"><span class="num">1</span>Circunferência, círculo, raio e diâmetro</h3>
+<div class="fig">
+  <div class="txt">
+    <p>A <b>circunferência</b> é só a linha, a borda. O <b>círculo</b> é a região inteira, a borda mais tudo o que está dentro dela.</p>
+    <p>O <b>raio</b> vai do centro até a borda. O <b>diâmetro</b> atravessa o círculo passando pelo centro, por isso vale dois raios.</p>
+    <div class="formula">diâmetro = 2 × raio</div>
+  </div>
+  <div>
+<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" class="geo" style="width:195px">
+<circle cx="90" cy="80" r="62" fill="#EFF6FF" stroke="#2563EB" stroke-width="2.6"/>
+<line x1="28" y1="80" x2="152" y2="80" stroke="#DC2626" stroke-width="2"/>
+<line x1="90" y1="80" x2="134" y2="36" stroke="#166534" stroke-width="2"/>
+<circle cx="90" cy="80" r="3.5" fill="#1E3A8A"/>
+<text x="78" y="96" class="vlab">O</text>
+<text x="114" y="56" class="med" fill="#166534">raio</text>
+<text x="40" y="74" class="med" fill="#DC2626">diâmetro</text>
+<text x="150" y="30" class="med" fill="#2563EB">circunferência</text>
+<text x="56" y="120" class="med">círculo</text>
+</svg>
+  </div>
+</div>
+
+<h3 class="sec"><span class="num">2</span>O número π e o comprimento da circunferência</h3>
+<p>Em qualquer circunferência, dividindo o comprimento da borda pelo diâmetro, o resultado é sempre o mesmo número, um pouco maior que 3. Esse número se chama <b>pi</b> e se escreve <b>π</b>. Ele vale aproximadamente 3,14, mas nas contas vamos mantê-lo como π, que é o valor exato.</p>
+<div class="formula">comprimento da circunferência: C = 2 × π × r</div>
+<div class="exemplo">
+  <div class="rot">Exemplo</div>
+  <p>Uma circunferência tem raio 5 cm. C = 2 × π × 5 = <b>10π cm</b>.</p>
+</div>
+
+<h3 class="sec"><span class="num">3</span>Área do círculo</h3>
+<p>Cortando o círculo em muitas fatias finas e encaixando umas nas outras, forma-se quase um retângulo. A base dele é metade da borda, π × r, e a altura é o raio. Por isso a área é π × r × r.</p>
+<div class="formula">área do círculo: A = π × r²</div>
+<div class="exemplo">
+  <div class="rot">Exemplo</div>
+  <p>Um círculo tem raio 5 cm. A = π × 5² = π × 25 = <b>25π cm²</b>.</p>
+</div>
+<div class="aviso"><b>Dois erros que mais aparecem:</b> usar o diâmetro no lugar do raio, e confundir r² com 2r. Com raio 5, r² é 25, e não 10. Se o problema der o diâmetro, divida por 2 antes de tudo.</div>
+
+<h3 class="sec"><span class="num">4</span>Descobrir o raio</h3>
+<p>Quando o problema dá o comprimento ou a área, a fórmula vira equação. Na área aparece r², e aí se usa o que vimos em ax² = b: isola o r² e procura o número que, multiplicado por ele mesmo, dá o resultado.</p>
+<div class="exemplo">
+  <div class="rot">Exemplo</div>
+  <p>Comprimento 18π cm: 2 × π × r = 18π → 2r = 18 → <b>r = 9 cm</b>.</p>
+  <p>Área 49π cm²: π × r² = 49π → r² = 49 → <b>r = 7 cm</b>, porque 7 × 7 = 49.</p>
+</div>
+
+<div class="parte">PARTE A — Usar as fórmulas</div>
+<p style="font-size:13px;color:#4B5563;">Deixe as respostas com π.</p>
+
+<div class="ex">
+  <div class="enun"><b class="n">1.</b> Um círculo tem raio 6 cm. Calcule o diâmetro, o comprimento da circunferência e a área. <span class="selo basico">Básico</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">2.</b> Um círculo tem diâmetro 20 cm. Calcule o raio, o comprimento da circunferência e a área. <span class="selo basico">Básico</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">3.</b> Escreva se cada item pede a <b>circunferência</b> ou o <b>círculo</b>. <span class="selo basico">Básico</span></div>
+  <div class="sub">a) A fita que contorna um bolo redondo. &nbsp; b) O papel para forrar o fundo de uma forma redonda. &nbsp; c) O aro de uma bicicleta.</div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">4.</b> Uma pizza grande tem raio 20 cm e uma média tem raio 15 cm. Quanto a grande tem de área a mais que a média? <span class="selo medio">Médio</span></div>
+</div>
+
+<div class="parte">PARTE B — Descobrir o raio</div>
+
+<div class="ex">
+  <div class="enun"><b class="n">5.</b> Uma circunferência tem comprimento 24π cm. Quanto mede o raio? <span class="selo basico">Básico</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">6.</b> Um círculo tem área 64π cm². Quanto mede o raio? <span class="selo medio">Médio</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">7.</b> Um círculo tem área 81π cm². Quanto mede o diâmetro? <span class="selo medio">Médio</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">8.</b> O raio de uma circunferência é (x + 3) cm e o comprimento é 20π cm. Determine x. <span class="selo medio">Médio</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">9.</b> O raio de um círculo é 2x cm e a área é 36π cm². Determine x. <span class="selo dificil">Difícil</span></div>
+</div>
+<hr class="lin">
+<div class="ex">
+  <div class="enun"><b class="n">10.</b> Um círculo tem raio 3 cm. Se o raio dobrar para 6 cm, o que acontece com o comprimento da circunferência? E com a área? Calcule e compare. <span class="selo dificil">Difícil</span></div>
+</div>
+
+</div><!-- /conteudo -->
+
+<footer class="conexao">
+  <h4>Conexão com a Arte e a Arquitetura</h4>
+  <p>Rosáceas, vitrais, praças circulares e embalagens cilíndricas dependem dessas duas medidas: o comprimento diz quanto material vai na borda, como o rótulo de uma lata; a área diz quanto material cobre a superfície, como o piso de uma praça ou o vidro de um vitral.</p>
+</footer>
+
+<div class="assin">Prof. Mikael</div>
+
+</div>
+</body>
+</html>

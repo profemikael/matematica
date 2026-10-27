@@ -313,13 +313,26 @@ function terminar(){
   $("fimTexto").textContent=`${est.nome}, você acertou todas as ${est.total} contas das 3 páginas!`;
   window.scrollTo({top:0});
   const resultado=`Completou as 3 páginas (${est.total} contas) · ${est.erros} tentativa(s) errada(s)`;
-  $("fimEnvio").textContent="Enviando para o professor...";
-  const dados=new URLSearchParams();
-  dados.append(CAMPOS.nome,est.nome); dados.append(CAMPOS.turma,est.turma);
-  dados.append(CAMPOS.atividade,ATIVIDADE); dados.append(CAMPOS.resultado,resultado);
-  fetch(FORM,{method:"POST",mode:"no-cors",body:dados})
-    .then(()=>{$("fimEnvio").textContent="Resultado enviado para o professor. ✔";})
-    .catch(()=>{$("fimEnvio").textContent="Não deu para enviar agora. Mostre esta tela para o professor.";});
+  enviaForm(resultado);
+}
+/* Envio por formulário oculto (mesmo método dos passatempos): leva o login Google do aluno e tem link de reserva */
+function enviaForm(resultado){
+  const envio=$("fimEnvio"); envio.textContent="Enviando para o professor...";
+  let frame=$("gfIframe");
+  if(!frame){ frame=document.createElement("iframe"); frame.id="gfIframe"; frame.name="gfIframe"; frame.style.display="none"; document.body.appendChild(frame); }
+  const f=document.createElement("form");
+  f.action=FORM; f.method="POST"; f.target="gfIframe"; f.style.display="none";
+  const add=(k,v)=>{ const i=document.createElement("input"); i.type="hidden"; i.name=k; i.value=v; f.appendChild(i); };
+  add(CAMPOS.nome,est.nome); add(CAMPOS.turma,est.turma); add(CAMPOS.atividade,ATIVIDADE); add(CAMPOS.resultado,resultado);
+  document.body.appendChild(f);
+  let respondeu=false;
+  frame.onload=()=>{ if(respondeu) return; respondeu=true; envio.textContent="Resultado enviado para o professor ✔"; f.remove(); };
+  setTimeout(()=>{
+    if(respondeu) return; respondeu=true;
+    const url=FORM.replace("/formResponse","/viewform")+"?usp=pp_url&"+CAMPOS.nome+"="+encodeURIComponent(est.nome)+"&"+CAMPOS.turma+"="+encodeURIComponent(est.turma)+"&"+CAMPOS.atividade+"="+encodeURIComponent(ATIVIDADE)+"&"+CAMPOS.resultado+"="+encodeURIComponent(resultado);
+    envio.innerHTML='O envio automático não funcionou. <a href="'+url+'" target="_blank" rel="noopener">Clique aqui para confirmar</a> (abre já preenchido, é só clicar em Enviar).';
+  },8000);
+  f.submit();
 }
 $("btnDeNovo").addEventListener("click",()=>{ est.erros=0; est.total=0; abrePagina(0); });
 

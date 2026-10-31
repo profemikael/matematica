@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volume e Capacidade · Interativo · 8º Ano</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color:#1F2937; margin:0; background:#EEF2F7; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 0 40px; }
+  header.capa { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #3B82F6 100%); color:#fff; padding: 20px 26px 16px; }
+  header.capa .linha { font-size: 11.5px; letter-spacing:.12em; text-transform:uppercase; opacity:.85; }
+  header.capa h1 { margin: 5px 0 2px; font-size: 24px; }
+  header.capa h2 { margin: 0; font-size: 14px; font-weight: normal; opacity:.92; }
+  .card { background:#fff; margin: 16px 16px 0; border-radius: 12px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(30,58,138,.08); }
+  h3 { color:#1E3A8A; margin: 0 0 10px; font-size: 19px; }
+  p { font-size: 15px; line-height: 1.55; margin: 8px 0; }
+  label { display:block; font-weight:bold; font-size:14px; color:#1E3A8A; margin: 14px 0 5px; }
+  select, input[type=text] { width:100%; font-size:16px; padding: 10px 12px; border:2px solid #CBD5E1; border-radius:8px; background:#fff; }
+  select:focus, input:focus { outline:none; border-color:#2563EB; }
+  button { font-size:16px; font-weight:bold; border:none; border-radius:9px; padding: 12px 20px; cursor:pointer; }
+  .btn { background:#1E3A8A; color:#fff; }
+  .btn:disabled { background:#94A3B8; cursor:not-allowed; }
+  .btn.verde { background:#166534; }
+  .btn.claro { background:#E2E8F0; color:#1E3A8A; }
+  .linha-btn { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  a.link { color:#2563EB; font-size:14px; cursor:pointer; text-decoration:underline; display:inline-block; margin-top:8px; }
+
+  /* sugestões de nome */
+  .auto { position:relative; }
+  .sugestoes { position:absolute; left:0; right:0; top:100%; background:#fff; border:2px solid #2563EB; border-top:none; border-radius:0 0 8px 8px; z-index:5; max-height:260px; overflow-y:auto; }
+  .sugestoes div { padding:10px 12px; font-size:15.5px; cursor:pointer; border-top:1px solid #E5E7EB; }
+  .sugestoes div:hover, .sugestoes div.ativa { background:#EFF6FF; color:#1E3A8A; }
+  .sugestoes .vazio { color:#64748B; cursor:default; }
+  .escolhido { display:flex; align-items:center; justify-content:space-between; gap:10px; background:#F0FDF4; border:2px solid #86EFAC; border-radius:8px; padding:10px 12px; font-size:16px; color:#166534; font-weight:bold; }
+  .escolhido a { font-weight:normal; font-size:14px; color:#166534; text-decoration:underline; cursor:pointer; }
+
+  .faixa { border-radius:10px; padding:10px 14px; font-size:14.5px; margin-bottom:14px; }
+  .faixa.vermelha { border:3px solid #C0392B; background:#FDF1F0; color:#7F1D1D; }
+  .faixa.vermelha b { color:#C0392B; }
+  .faixa.azul { border:3px solid #1E3A8A; background:#EFF6FF; color:#1E3A8A; }
+  .etiqueta { font-size:12.5px; color:#64748B; font-weight:bold; letter-spacing:.07em; text-transform:uppercase; margin-bottom:4px; }
+  .formula { background:#1E3A8A; color:#fff; text-align:center; font-weight:bold; font-size:16px; padding:10px 12px; border-radius:8px; margin:10px 0; }
+  .item { border-left:4px solid #2563EB; background:#F2F7FC; border-radius:0 8px 8px 0; padding:9px 13px; margin:9px 0; font-size:15px; line-height:1.5; }
+  .item b { color:#1E3A8A; }
+  .exemplo { background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:9px 13px; margin:9px 0; font-size:14.5px; line-height:1.55; }
+  .exemplo .rot { font-size:11px; font-weight:bold; color:#2563EB; letter-spacing:.1em; text-transform:uppercase; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:15px; }
+  th { background:#1E3A8A; color:#fff; padding:8px 10px; text-align:left; }
+  td { border-bottom:1px solid #E5E7EB; padding:8px 10px; }
+  tr:nth-child(even) td { background:#F8FAFC; }
+
+  .progresso { display:flex; gap:4px; margin: 0 0 14px; }
+  .progresso span { flex:1; height:9px; border-radius:5px; background:#E2E8F0; }
+  .progresso span.c { background:#FCA5A5; }
+  .progresso span.ok { background:#16A34A; }
+  .progresso span.atual { background:#2563EB; }
+
+  .copiar { border:3px solid #D97706; background:#FFFBEB; border-radius:12px; padding:16px 18px 10px; margin: 4px 0 6px; }
+  .copiar-tt { display:inline-block; background:#D97706; color:#fff; font-weight:bold; font-size:13px; letter-spacing:.06em; padding:5px 12px; border-radius:999px; margin-bottom:10px; }
+  .copiar h3 { margin-top:2px; }
+  .copiar .item { background:#fff; }
+  .senha.so-responder { border:2px dashed #94A3B8; background:#F8FAFC; }
+  .senha.so-responder .tt { color:#475569; }
+  .senha .sub-tt { font-size:13px; color:#64748B; margin:-2px 0 4px; }
+  .senha { margin-top:18px; border:2px dashed #2563EB; border-radius:10px; padding:14px 16px; background:#FAFCFF; }
+  .senha .tt { font-size:13px; font-weight:bold; color:#2563EB; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; }
+  .enun { font-size:17px; line-height:1.6; margin: 6px 0 12px; }
+  .enun b { color:#1E3A8A; background:#EFF6FF; padding:0 4px; border-radius:4px; }
+  .resp-linha { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .resp-linha input { flex:1; min-width:140px; font-size:20px; text-align:center; }
+  .unid { font-size:17px; font-weight:bold; color:#1E3A8A; }
+  .msg { margin-top:14px; padding:11px 14px; border-radius:9px; font-size:15px; display:none; }
+  .msg.erro { display:block; background:#FEF2F2; border:2px solid #FCA5A5; color:#991B1B; }
+  .msg.certo { display:block; background:#F0FDF4; border:2px solid #86EFAC; color:#166534; }
+  .dica { display:none; margin-top:10px; background:#FEF7EE; border-left:4px solid #E67E22; border-radius:0 8px 8px 0; padding:9px 13px; font-size:14.5px; color:#7C2D12; }
+  .dica b { color:#B9651A; }
+  .seu { font-size:12.5px; color:#64748B; margin-top:12px; }
+  .final { text-align:center; }
+  .final .grande { font-size:54px; line-height:1; color:#16A34A; margin:6px 0; }
+  .final .dados { display:inline-block; text-align:left; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:10px; padding:12px 18px; margin:12px 0; font-size:15.5px; line-height:1.8; }
+  .envio { font-size:14px; margin-top:6px; }
+  .envio.ok { color:#166534; } .envio.falha { color:#991B1B; }
+  .oculto { display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="capa">
+  <div class="linha">Matemática · 8º Ano · Aula 08 · Interativo</div>
+  <h1>Volume e Capacidade</h1>
+  <h2>Bloco retangular, cubo, litro, dm³ e m³</h2>
+</header>
+
+<!-- ============ IDENTIFICAÇÃO ============ -->
+<section id="tela-id" class="card">
+  <h3>Antes de começar</h3>
+  <p>Escolha a sua turma e o seu nome. Quando você terminar, o resultado vai direto para o professor.</p>
+  <label for="turma">Turma</label>
+  <select id="turma">
+    <option value="">Escolha a turma</option>
+    <option value="8A MAT">8º A</option>
+    <option value="8B MAT">8º B</option>
+  </select>
+
+  <div id="bloco-nome" class="oculto">
+    <label for="busca">Seu nome</label>
+    <div class="auto" id="caixa-busca">
+      <input type="text" id="busca" autocomplete="off" placeholder="Digite as primeiras letras do seu nome">
+      <div class="sugestoes oculto" id="sugestoes"></div>
+    </div>
+    <div class="escolhido oculto" id="escolhido"><span id="escolhido-nome"></span><a id="trocar">trocar</a></div>
+    <a class="link" id="nao-esta">Meu nome não está na lista</a>
+  </div>
+
+  <div id="bloco-livre" class="oculto">
+    <label for="nome-livre">Digite seu nome completo</label>
+    <input type="text" id="nome-livre" autocomplete="off">
+    <a class="link" id="voltar-lista">Voltar para a lista de nomes</a>
+  </div>
+
+  <div id="aviso-continuar" class="oculto" style="margin-top:16px;">
+    <div class="item">Você já tinha começado esta atividade neste Chromebook. Pode continuar de onde parou, com os mesmos números.</div>
+  </div>
+  <div class="linha-btn">
+    <button class="btn" id="btn-comecar" disabled>Começar</button>
+    <button class="btn claro oculto" id="btn-continuar">Continuar de onde parei</button>
+  </div>
+</section>
+
+<!-- ============ ETAPAS (conteúdo, aviso e exercícios) ============ -->
+<section id="tela-etapa" class="card oculto">
+  <div class="progresso" id="progresso"></div>
+  <div class="etiqueta" id="etiqueta"></div>
+  <div id="faixa"></div>
+  <div id="conteudo"></div>
+
+  <div id="area-pergunta">
+    <div class="senha" id="caixa-senha">
+      <div class="tt" id="pergunta-tt"></div>
+      <div class="sub-tt" id="pergunta-sub"></div>
+      <div class="enun" id="enun"></div>
+      <div class="resp-linha">
+        <input type="text" id="resp" inputmode="decimal" autocomplete="off" placeholder="sua resposta">
+        <span class="unid" id="unid"></span>
+      </div>
+      <div class="linha-btn">
+        <button class="btn" id="btn-conferir">Conferir</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="dica" id="dica"></div>
+      <div class="seu" id="seu"></div>
+    </div>
+  </div>
+
+  <div class="linha-btn">
+    <button class="btn verde oculto" id="btn-avancar">Continuar</button>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section id="tela-fim" class="card final oculto">
+  <div class="grande">✔</div>
+  <h3>Atividade concluída!</h3>
+  <div class="dados" id="fim-dados"></div>
+  <div class="envio" id="fim-envio">Enviando resultado ao professor…</div>
+  <div class="linha-btn" style="justify-content:center;"><button class="btn claro oculto" id="btn-reenviar">Tentar enviar de novo</button></div>
+  <p style="font-size:14px;color:#64748B;">Mostre esta tela e o caderno ao professor.</p>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var CHAVE = 'icaro8_aula08_volume_v3';
+  var ATIVIDADE = '8º Ano · Aula 08 · Volume e Capacidade (interativo)';
+  var FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSd0cya9DeEyUh4d1lMecTy3W5P5zJR-uEUeYryzR0U8wyIyTw/formResponse';
+  var CAMPOS = { nome:'entry.92939802', turma:'entry.1767871945', atividade:'entry.495326704', resultado:'entry.664553886' };
+
+  var LISTAS = {
+    '8A MAT': ['Alice dos Santos Hofmam','Débora Kiszewski da Silva de Azevedo','Eloisa Marques Soares','Felipe Wienke da Costa','Gabriel das Chagas Tuni','Gabriele Fernandes de Gois','Guilherme Klengues Ponte','Guilherme Vinicius Matoso Carvalho','Isaac Viana Nunes','Isabella Matheus Marques','Jean Ferreira Cypriano','João Victor Ilha Bertollo','Julia Frigi dos Santos','Olivia Vaz Macedo','Pedro Costa Castro','Pietra Pereira Fraga','Pietro Raphael Soares Correa','Sofia de Abreu Ramos','Sophia Aparecida Mendes','Vinicius Americo Muller','Yago Garcia Alves','Yasmin Kosty Vesely'],
+    '8B MAT': ['Alessandro Freitas Medeiros Filho','Alexandre dos Santos Garcia','Alice Manuela Goulart','Antônio Flores Appel','Arthur Salton','Arthur Villar Reis','Athyla Samuel Silveira de Oliveira','Brenda Sofia Rocha Fernandes','Eduardo Rodrigues Braga','Ethyel Richerd Sosa Fraga','Felipe Gabriel Flores dos Santos','Giovanna Silva Dorneles','Isaias Weber Dias','Jonnas de Araújo Fassini','Kevin Pereira de Andrade','Leonardo Bião Weissheimer','Letícia Eifler da Costa','Maria Eduarda Antonelo de Paula','Matheus dos Santos Bernardes','Pedro Henrique Nascente de Souza','Pedro Magalhães Cimirro','Rodrigo de Paula Borges']
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function rint(min,max){ return min + Math.floor(Math.random()*(max-min+1)); }
+  function fmt(n){ return n.toLocaleString('pt-BR'); }
+  function norm(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+
+  // ================= CONTEÚDO EM BLOCOS =================
+  var BLOCOS = [
+    { titulo:'O que é volume',
+      html:'<div class="item"><b>Volume</b> é o espaço que um objeto ocupa, ou quanto cabe dentro dele. Mede-se em <b>cm³</b>, <b>dm³</b> ou <b>m³</b>.</div>'+
+           '<div class="item">Um <b>centímetro cúbico</b> (1 cm³) é um cubinho de 1 cm de aresta. Medir o volume de uma caixa é contar quantos desses cubinhos cabem dentro dela.</div>'+
+           '<div style="text-align:center;margin:10px 0;"><svg viewBox="0 0 210 150" xmlns="http://www.w3.org/2000/svg" style="width:260px;max-width:100%;height:auto;"><polygon points="30,60 130,60 130,130 30,130" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/><polygon points="30,60 70,30 170,30 130,60" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/><polygon points="130,60 170,30 170,100 130,130" fill="#BFDBFE" stroke="#2563EB" stroke-width="2"/><g stroke="#93C5FD" stroke-width="1"><line x1="55" y1="60" x2="55" y2="130"/><line x1="80" y1="60" x2="80" y2="130"/><line x1="105" y1="60" x2="105" y2="130"/><line x1="30" y1="95" x2="130" y2="95"/><line x1="140" y1="52.5" x2="140" y2="122.5"/><line x1="150" y1="45" x2="150" y2="115"/><line x1="160" y1="37.5" x2="160" y2="107.5"/><line x1="130" y1="95" x2="170" y2="65"/><line x1="55" y1="60" x2="95" y2="30"/><line x1="80" y1="60" x2="120" y2="30"/><line x1="105" y1="60" x2="145" y2="30"/><line x1="40" y1="52.5" x2="140" y2="52.5"/><line x1="50" y1="45" x2="150" y2="45"/><line x1="60" y1="37.5" x2="160" y2="37.5"/></g><text x="62" y="146" font-size="11.5" fill="#4B5563">comprimento</text><text x="174" y="72" font-size="11.5" fill="#4B5563">altura</text><text x="2" y="44" font-size="11.5" fill="#4B5563">largura</text></svg></div>' },
+    { titulo:'Volume do bloco retangular e do cubo',
+      html:'<div class="formula">Bloco retangular: V = comprimento × largura × altura</div>'+
+           '<div class="formula">Cubo: V = aresta × aresta × aresta</div>'+
+           '<div class="item">As três medidas precisam estar <b>na mesma unidade</b> antes de multiplicar.</div>'+
+           '<div class="exemplo"><div class="rot">Exemplo</div>Caixa de 20 cm × 15 cm × 10 cm: V = 20 × 15 × 10 = <b>3 000 cm³</b>.</div>' },
+    { titulo:'Capacidade: litro, dm³ e m³',
+      html:'<div class="item"><b>Capacidade</b> é o volume que cabe dentro de um recipiente, medido em litros.</div>'+
+           '<div class="formula">1 dm³ = 1 litro</div>'+
+           '<table><tr><th>Volume</th><th>Capacidade</th></tr><tr><td>1 cm³</td><td>1 mL</td></tr><tr><td>1 dm³</td><td>1 L = 1 000 mL</td></tr><tr><td>1 m³</td><td>1 000 L</td></tr></table>' },
+    { titulo:'O atalho dos litros e como achar a altura',
+      html:'<div class="item"><b>Atalho:</b> se as medidas estão em cm e são múltiplas de 10, divida cada uma por 10 (vira dm) e multiplique. O resultado já sai em litros.</div>'+
+           '<div class="exemplo"><div class="rot">Exemplo</div>Aquário de 50 cm × 30 cm × 40 cm → 5 dm × 3 dm × 4 dm = 60 dm³ = <b>60 litros</b>.</div>'+
+           '<div class="formula">altura = volume ÷ (comprimento × largura)</div>'+
+           '<div class="exemplo"><div class="rot">Exemplo</div>Caixa de 240 cm³ com base de 8 cm por 5 cm → altura = 240 ÷ 40 = <b>6 cm</b>.</div>' }
+  ];
+
+  function faixa(min,max,passo){ var a=[]; for(var v=min; v<=max+1e-9; v+=passo) a.push(R(v)); return a; }
+  function R(x){ return Math.round(x*1000)/1000; }
+
+  function gerarSenhas(){
+    var s=[], a,b,c,n;
+    a=pick([2,3,4]); b=pick([2,3,4,5]); c=pick([1,2,3]);
+    s.push({t:'Uma caixinha tem <b>'+a+' cm</b> de comprimento, <b>'+b+' cm</b> de largura e <b>'+c+' cm</b> de altura. Quantos cubinhos de 1 cm³ cabem nela?', r:a*b*c, u:'cubinhos',
+      d:'Conte quantos cubinhos cabem numa camada (comprimento × largura) e multiplique pelo número de camadas.'});
+    a=rint(2,6);
+    s.push({t:'Qual é o volume de um cubo com aresta de <b>'+a+' cm</b>?', r:a*a*a, u:'cm³',
+      d:'Multiplique a aresta por ela mesma três vezes.'});
+    n=rint(2,12);
+    s.push({t:'<b>'+n+' dm³</b> correspondem a quantos mililitros?', r:1000*n, u:'mL',
+      d:'Cada 1 dm³ vale 1 litro, e cada litro tem 1 000 mL.'});
+    a=pick([10,20,30,40]); b=pick([10,20,30]); c=pick([10,20]);
+    s.push({t:'Uma caixa mede <b>'+a+' cm</b> × <b>'+b+' cm</b> × <b>'+c+' cm</b>. Quantos litros ela comporta?', r:a*b*c/1000, u:'L',
+      d:'Use o atalho: divida cada medida por 10 e multiplique.'});
+    return s;
+  }
+
+  // ================= EXERCÍCIOS (números sorteados por aluno) =================
+  function gerarExercicios(){
+    var q=[], a,b,c,n,v,k,x,s,h;
+    a=rint(3,15); b=rint(3,15); c=rint(3,15);
+    q.push({t:'Uma caixa tem <b>'+a+' cm</b> de comprimento, <b>'+b+' cm</b> de largura e <b>'+c+' cm</b> de altura. Qual é o volume?', r:a*b*c, u:'cm³',
+      d:'Multiplique as três medidas: comprimento × largura × altura.'});
+    a=rint(3,15);
+    q.push({t:'Um cubo tem aresta de <b>'+a+' cm</b>. Qual é o volume?', r:a*a*a, u:'cm³',
+      d:'No cubo, multiplique a aresta por ela mesma três vezes.'});
+    n=pick(faixa(1.5,12.5,0.5));
+    q.push({t:'<b>'+fmt(n)+' m³</b> correspondem a quantos litros?', r:R(1000*n), u:'L',
+      d:'Cada 1 m³ vale 1 000 litros. Multiplique por 1 000.'});
+    n=pick(faixa(1.5,20,0.5));
+    q.push({t:'<b>'+fmt(R(n*1000))+' cm³</b> correspondem a quantos litros?', r:n, u:'L',
+      d:'Cada 1 litro tem 1 000 cm³. Divida por 1 000. A resposta pode ter vírgula.'});
+    a=pick([30,40,50,60,70,80,90,100,110,120]); b=pick([20,30,40,50]); c=pick([30,40,50,60]);
+    q.push({t:'Um aquário mede <b>'+a+' cm</b> × <b>'+b+' cm</b> × <b>'+c+' cm</b>. Quantos litros de água ele comporta?', r:a*b*c/1000, u:'L',
+      d:'Use o atalho: divida cada medida por 10 para passar a dm e multiplique. O resultado já sai em litros.'});
+    a=pick([1,1.5,2,2.5,3]); b=pick([1,1.2,1.5,2]); c=pick([1,1.5,2]);
+    q.push({t:'Uma caixa d\'água tem <b>'+fmt(a)+' m</b> de comprimento, <b>'+fmt(b)+' m</b> de largura e <b>'+fmt(c)+' m</b> de altura. Quantos litros ela comporta?', r:R(1000*a*b*c), u:'L',
+      d:'Multiplique as três medidas para ter o volume em m³. Depois multiplique por 1 000, porque cada 1 m³ vale 1 000 litros.'});
+    a=pick([4,5,6,8,10,12,15]); b=pick([2,3,4,5,6,8]); k=rint(3,18);
+    q.push({t:'Uma caixa tem base de <b>'+a+' cm</b> por <b>'+b+' cm</b> e volume de <b>'+fmt(a*b*k)+' cm³</b>. Qual é a altura?', r:k, u:'cm',
+      d:'Multiplique as duas medidas da base e divida o volume por esse resultado.'});
+    a=rint(2,12);
+    q.push({t:'Um cubo tem volume de <b>'+fmt(a*a*a)+' cm³</b>. Quanto mede a aresta?', r:a, u:'cm',
+      d:'Procure o número que, multiplicado três vezes por ele mesmo, dá esse volume. Comece testando: 5 × 5 × 5 = 125, 10 × 10 × 10 = 1 000.'});
+    a=rint(2,6); b=rint(2,6); k=rint(1,6); x=rint(2,12); h=2*x+k; v=a*b*h;
+    q.push({t:'Uma caixa tem <b>'+a+' cm</b> de comprimento, <b>'+b+' cm</b> de largura e <b>(2x + '+k+') cm</b> de altura. O volume é <b>'+fmt(v)+' cm³</b>. Qual é o valor de x?', r:x, u:'',
+      d:'Primeiro descubra a altura dividindo o volume por '+a+' × '+b+'. Depois resolva 2x + '+k+' = altura: tire '+k+' e divida por 2.'});
+    a=pick([10,20,30,40]); b=pick([10,20,30,40]); c=pick([10,20,30,40]); s=pick([200,250,500]);
+    q.push({t:'Um recipiente mede <b>'+a+' cm</b> × <b>'+b+' cm</b> × <b>'+c+' cm</b>. Quantos copos de <b>'+s+' mL</b> é possível encher com ele cheio?', r:a*b*c/s, u:'copos',
+      d:'Calcule o volume em cm³. Cada cm³ vale 1 mL. Depois divida pelo tamanho do copo.'});
+    return q;
+  }
+
+  // Etapas: 0..3 blocos de conteúdo · 4 aviso da lista · 5..14 exercícios
+  var NB=4, NE=10, P_AVISO=4, TOTAL=NB+1+NE;
+
+  var E=null;
+  function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(E)); }catch(e){} }
+  function carregar(){ try{ var s=localStorage.getItem(CHAVE); return s?JSON.parse(s):null; }catch(e){ return null; } }
+  function mostrar(id){ ['tela-id','tela-etapa','tela-fim'].forEach(function(t){ $(t).classList.toggle('oculto', t!==id); }); window.scrollTo(0,0); }
+
+  // ================= IDENTIFICAÇÃO COM SUGESTÕES =================
+  var escolhido='', modoLivre=false, ativa=-1;
+
+  function atualizarBotao(){
+    var ok = $('turma').value && (modoLivre ? $('nome-livre').value.trim().length>2 : !!escolhido);
+    $('btn-comecar').disabled=!ok;
+  }
+  function limparEscolha(){
+    escolhido=''; $('escolhido').classList.add('oculto'); $('caixa-busca').classList.remove('oculto');
+    $('busca').value=''; $('sugestoes').classList.add('oculto'); atualizarBotao();
+  }
+  function escolher(nome){
+    escolhido=nome; $('escolhido-nome').textContent=nome;
+    $('escolhido').classList.remove('oculto'); $('caixa-busca').classList.add('oculto');
+    $('sugestoes').classList.add('oculto'); atualizarBotao();
+  }
+  function sugerir(){
+    var q=norm($('busca').value.trim()), box=$('sugestoes'); box.innerHTML=''; ativa=-1;
+    if(!q){ box.classList.add('oculto'); return; }
+    var lista=LISTAS[$('turma').value]||[];
+    var achados=lista.filter(function(n){ return (' '+norm(n)).indexOf(' '+q)>=0; }).slice(0,8);
+    if(!achados.length){ var d=document.createElement('div'); d.className='vazio'; d.textContent='Nenhum nome encontrado. Confira a turma ou use "Meu nome não está na lista".'; box.appendChild(d); }
+    achados.forEach(function(n){ var d=document.createElement('div'); d.textContent=n; d.addEventListener('mousedown',function(e){ e.preventDefault(); escolher(n); }); box.appendChild(d); });
+    box.classList.remove('oculto');
+  }
+  $('turma').addEventListener('change', function(){
+    modoLivre=false; $('bloco-livre').classList.add('oculto');
+    $('bloco-nome').classList.toggle('oculto', !this.value);
+    limparEscolha(); if(this.value) $('busca').focus();
+  });
+  $('busca').addEventListener('input', function(){ escolhido=''; atualizarBotao(); sugerir(); });
+  $('busca').addEventListener('keydown', function(e){
+    var itens=$('sugestoes').querySelectorAll('div:not(.vazio)');
+    if(e.key==='ArrowDown' && itens.length){ ativa=Math.min(ativa+1,itens.length-1); e.preventDefault(); }
+    else if(e.key==='ArrowUp' && itens.length){ ativa=Math.max(ativa-1,0); e.preventDefault(); }
+    else if(e.key==='Enter' && ativa>=0 && itens[ativa]){ escolher(itens[ativa].textContent); e.preventDefault(); return; }
+    else return;
+    itens.forEach(function(d,i){ d.classList.toggle('ativa', i===ativa); });
+  });
+  $('busca').addEventListener('blur', function(){ setTimeout(function(){ $('sugestoes').classList.add('oculto'); },150); });
+  $('busca').addEventListener('focus', function(){ if(this.value.trim()) sugerir(); });
+  $('trocar').addEventListener('click', function(){ limparEscolha(); $('busca').focus(); });
+  $('nao-esta').addEventListener('click', function(){ modoLivre=true; $('bloco-nome').classList.add('oculto'); $('bloco-livre').classList.remove('oculto'); $('nome-livre').focus(); atualizarBotao(); });
+  $('voltar-lista').addEventListener('click', function(){ modoLivre=false; $('bloco-livre').classList.add('oculto'); $('bloco-nome').classList.remove('oculto'); limparEscolha(); });
+  $('nome-livre').addEventListener('input', atualizarBotao);
+
+  $('btn-comecar').addEventListener('click', function(){
+    E={ turma:$('turma').value, nome: modoLivre ? $('nome-livre').value.trim() : escolhido,
+        bs:gerarSenhas(), q:gerarExercicios(), p:0, erros:0, tent:0, resolvido:false, enviado:false };
+    salvar(); abrirEtapa();
+  });
+  $('btn-continuar').addEventListener('click', function(){ if(E.p>=TOTAL) finalizar(); else abrirEtapa(); });
+
+  // ================= ETAPAS =================
+  function desenharProgresso(){
+    var pr=$('progresso'); pr.innerHTML='';
+    for(var k=0;k<TOTAL;k++){
+      if(k===P_AVISO) continue;
+      var s=document.createElement('span');
+      if(k<E.p) s.className='ok'; else if(k===E.p) s.className='atual'; else if(k<NB) s.className='c';
+      pr.appendChild(s);
+    }
+  }
+  function abrirEtapa(){
+    mostrar('tela-etapa'); desenharProgresso();
+    var p=E.p, q=null;
+    $('msg').className='msg'; $('msg').textContent='';
+    $('btn-avancar').classList.add('oculto');
+    if(p<NB){
+      var b=BLOCOS[p]; q=E.bs[p];
+      $('etiqueta').textContent='Conteúdo · bloco '+(p+1)+' de '+NB;
+      $('faixa').innerHTML='';
+      $('conteudo').innerHTML='<div class="copiar"><div class="copiar-tt">✎ COPIE ESTE QUADRO NO CADERNO · VALE VISTO</div><h3>'+b.titulo+'</h3>'+b.html+'</div>';
+      $('caixa-senha').classList.add('so-responder');
+      $('pergunta-tt').textContent='Senha para liberar o próximo bloco';
+      $('pergunta-sub').textContent='Esta parte não precisa copiar. É só responder para seguir.';
+      $('seu').textContent='';
+      $('btn-avancar').textContent = p<NB-1 ? 'Próximo bloco' : 'Ir para a lista de exercícios';
+    } else if(p===P_AVISO){
+      $('etiqueta').textContent='Lista de exercícios';
+      $('faixa').innerHTML='';
+      $('conteudo').innerHTML='<h3>Agora, a lista de exercícios</h3>'+
+        '<div class="faixa vermelha" style="font-size:16px;line-height:1.6;"><b>Todos os cálculos devem estar no caderno.</b> Vale visto: sem a conta no caderno, a questão não conta.</div>'+
+        '<div class="faixa azul" style="font-size:15px;line-height:1.6;">Copiar o enunciado das questões é <b>opcional</b>. Se você quiser um caderno mais completo, pode copiar. O obrigatório são os cálculos.</div>'+
+        '<p>São 10 questões. Você só avança quando acertar. Os números foram sorteados só para você.</p>';
+      $('area-pergunta').classList.add('oculto');
+      $('btn-avancar').textContent='Começar os exercícios'; $('btn-avancar').classList.remove('oculto');
+      return;
+    } else {
+      var i=p-NB-1; q=E.q[i];
+      $('etiqueta').textContent='Exercício '+(i+1)+' de '+NE;
+      $('faixa').innerHTML='<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Faça o cálculo no caderno.</b> Vale visto.</div>';
+      $('conteudo').innerHTML='';
+      $('caixa-senha').classList.remove('so-responder');
+      $('pergunta-tt').textContent='Questão '+(i+1);
+      $('pergunta-sub').textContent='Faça o cálculo no caderno antes de responder.';
+      $('seu').textContent='Os números desta questão foram sorteados só para você. A resposta do colega não serve aqui.';
+      $('btn-avancar').textContent = i<NE-1 ? 'Próxima questão' : 'Concluir';
+    }
+    $('area-pergunta').classList.remove('oculto');
+    $('enun').innerHTML=q.t; $('unid').textContent=q.u;
+    $('resp').value='';
+    $('dica').innerHTML='<b>Dica:</b> '+q.d;
+    if(E.resolvido){
+      $('resp').value=String(q.r).replace('.',','); $('resp').disabled=true; $('btn-conferir').classList.add('oculto');
+      $('msg').className='msg certo'; $('msg').textContent='Certo!'; $('dica').style.display='none';
+      $('btn-avancar').classList.remove('oculto');
+    } else {
+      $('resp').disabled=false; $('btn-conferir').classList.remove('oculto');
+      $('dica').style.display = E.tent>=2 ? 'block' : 'none';
+      if(p>=NB) $('resp').focus();
+    }
+  }
+  function perguntaAtual(){ return E.p<NB ? E.bs[E.p] : E.q[E.p-NB-1]; }
+  function lerNumero(txt){
+    var t=String(txt).replace(/\s/g,'');
+    if(t.indexOf(',')>=0) t=t.replace(/\./g,'').replace(',', '.');
+    else if(/^\d{1,3}(\.\d{3})+$/.test(t)) t=t.replace(/\./g,'');
+    var m=t.match(/^-?\d+(\.\d+)?/); return m?parseFloat(m[0]):NaN;
+  }
+  function conferir(){
+    var q=perguntaAtual(), v=lerNumero($('resp').value);
+    if(isNaN(v)){ $('msg').className='msg erro'; $('msg').textContent='Digite um número.'; return; }
+    if(Math.abs(v-q.r)<1e-9){
+      E.resolvido=true; salvar();
+      $('msg').className='msg certo'; $('msg').textContent='Certo! '+fmt(q.r)+(q.u?' '+q.u:'')+'.';
+      $('resp').disabled=true; $('dica').style.display='none';
+      $('btn-conferir').classList.add('oculto'); $('btn-avancar').classList.remove('oculto'); $('btn-avancar').focus();
+    } else {
+      E.erros++; E.tent++; salvar();
+      $('msg').className='msg erro';
+      $('msg').textContent = E.tent>=2 ? 'Ainda não. Leia a dica abaixo e refaça a conta no caderno.' : 'Ainda não. Confira a conta no caderno e tente de novo.';
+      if(E.tent>=2) $('dica').style.display='block';
+      $('resp').select();
+    }
+  }
+  $('btn-conferir').addEventListener('click', conferir);
+  $('resp').addEventListener('keydown', function(e){
+    if(e.key!=='Enter') return;
+    if(!$('btn-avancar').classList.contains('oculto')) avancar(); else conferir();
+  });
+  function avancar(){
+    E.p++; E.tent=0; E.resolvido=false; salvar();
+    if(E.p>=TOTAL) finalizar(); else abrirEtapa();
+  }
+  $('btn-avancar').addEventListener('click', avancar);
+
+  // ================= FINAL E ENVIO =================
+  function resultadoTexto(){ return 'Conteúdo 4/4 · Exercícios 10/10 · '+E.erros+(E.erros===1?' tentativa errada':' tentativas erradas'); }
+  function finalizar(){
+    mostrar('tela-fim');
+    var agora=new Date();
+    $('fim-dados').innerHTML='<b>Nome:</b> '+E.nome+'<br><b>Turma:</b> '+E.turma.replace(' MAT','')+'<br><b>Resultado:</b> '+resultadoTexto()+'<br><b>Data:</b> '+agora.toLocaleDateString('pt-BR')+' '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    if(E.enviado){ $('fim-envio').className='envio ok'; $('fim-envio').textContent='Resultado já enviado ao professor.'; }
+    else enviar();
+  }
+  function enviarPorFormulario(d, pronto){
+    var nomeFrame='envio_'+Date.now();
+    var ifr=document.createElement('iframe'); ifr.name=nomeFrame; ifr.style.display='none';
+    var f=document.createElement('form'); f.method='POST'; f.action=FORM; f.target=nomeFrame; f.style.display='none';
+    d.forEach(function(v,k){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v; f.appendChild(i); });
+    var feito=false; function fim(ok){ if(feito) return; feito=true; pronto(ok); }
+    ifr.addEventListener('load', function(){ fim(true); });
+    setTimeout(function(){ fim(true); }, 4000);
+    document.body.appendChild(ifr); document.body.appendChild(f);
+    try{ f.submit(); }catch(e){ fim(false); }
+  }
+  function enviar(){
+    $('btn-reenviar').classList.add('oculto');
+    $('fim-envio').className='envio'; $('fim-envio').textContent='Enviando resultado ao professor…';
+    var d=new URLSearchParams();
+    d.append(CAMPOS.nome,E.nome); d.append(CAMPOS.turma,E.turma); d.append(CAMPOS.atividade,ATIVIDADE); d.append(CAMPOS.resultado,resultadoTexto());
+    function ok(){ E.enviado=true; salvar(); $('fim-envio').className='envio ok'; $('fim-envio').textContent='Resultado enviado ao professor.'; }
+    function falha(){ $('fim-envio').className='envio falha'; $('fim-envio').textContent='Não foi possível enviar agora. Verifique a internet e tente de novo.'; $('btn-reenviar').classList.remove('oculto'); }
+    fetch(FORM,{method:'POST',mode:'no-cors',body:d}).then(ok).catch(function(){
+      enviarPorFormulario(d, function(sucesso){ if(sucesso) ok(); else falha(); });
+    });
+  }
+  $('btn-reenviar').addEventListener('click', enviar);
+
+  // ================= RETOMAR =================
+  var salvo=carregar();
+  if(salvo && salvo.q && salvo.nome){
+    E=salvo;
+    $('aviso-continuar').classList.remove('oculto');
+    $('btn-continuar').classList.remove('oculto');
+    $('btn-continuar').textContent='Continuar como '+salvo.nome.split(' ')[0];
+  }
+})();
+</script>
+</body>
+</html>

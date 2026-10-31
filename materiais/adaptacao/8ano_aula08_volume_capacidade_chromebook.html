@@ -154,9 +154,11 @@
     </div>
   </div>
 
-  <div class="linha-btn">
+  <div class="linha-btn" style="justify-content:space-between;">
+    <button class="btn claro oculto" id="btn-voltar">← Voltar</button>
     <button class="btn verde oculto" id="btn-avancar">Continuar</button>
   </div>
+  <div class="seu" id="aviso-revisao" style="display:none;">Você está revendo uma etapa que já respondeu. Use "Avançar" para voltar até onde parou.</div>
 </section>
 
 <!-- ============ FINAL ============ -->
@@ -270,7 +272,7 @@
   // Etapas: 0..3 blocos de conteúdo · 4 aviso da lista · 5..14 exercícios
   var NB=4, NE=10, P_AVISO=4, TOTAL=NB+1+NE;
 
-  var E=null;
+  var E=null, ver=0;
   function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(E)); }catch(e){} }
   function carregar(){ try{ var s=localStorage.getItem(CHAVE); return s?JSON.parse(s):null; }catch(e){ return null; } }
   function mostrar(id){ ['tela-id','tela-etapa','tela-fim'].forEach(function(t){ $(t).classList.toggle('oculto', t!==id); }); window.scrollTo(0,0); }
@@ -334,13 +336,17 @@
     for(var k=0;k<TOTAL;k++){
       if(k===P_AVISO) continue;
       var s=document.createElement('span');
-      if(k<E.p) s.className='ok'; else if(k===E.p) s.className='atual'; else if(k<NB) s.className='c';
+      if(k===ver) s.className='atual'; else if(k<E.p) s.className='ok'; else if(k<NB) s.className='c';
       pr.appendChild(s);
     }
   }
-  function abrirEtapa(){
+  function abrirEtapa(idx){
+    ver = (typeof idx==='number') ? idx : E.p;
+    var revisao = ver < E.p;
     mostrar('tela-etapa'); desenharProgresso();
-    var p=E.p, q=null;
+    var p=ver, q=null;
+    $('btn-voltar').classList.toggle('oculto', ver===0);
+    $('aviso-revisao').style.display = revisao ? 'block' : 'none';
     $('msg').className='msg'; $('msg').textContent='';
     $('btn-avancar').classList.add('oculto');
     if(p<NB){
@@ -361,7 +367,7 @@
         '<div class="faixa azul" style="font-size:15px;line-height:1.6;">Copiar o enunciado das questões é <b>opcional</b>. Se você quiser um caderno mais completo, pode copiar. O obrigatório são os cálculos.</div>'+
         '<p>São 10 questões. Você só avança quando acertar. Os números foram sorteados só para você.</p>';
       $('area-pergunta').classList.add('oculto');
-      $('btn-avancar').textContent='Começar os exercícios'; $('btn-avancar').classList.remove('oculto');
+      $('btn-avancar').textContent= revisao ? 'Avançar' : 'Começar os exercícios'; $('btn-avancar').classList.remove('oculto');
       return;
     } else {
       var i=p-NB-1; q=E.q[i];
@@ -378,8 +384,9 @@
     $('enun').innerHTML=q.t; $('unid').textContent=q.u;
     $('resp').value='';
     $('dica').innerHTML='<b>Dica:</b> '+q.d;
-    if(E.resolvido){
-      $('resp').value=String(q.r).replace('.',','); $('resp').disabled=true; $('btn-conferir').classList.add('oculto');
+    if(revisao || E.resolvido){
+      if(revisao) $('btn-avancar').textContent='Avançar';
+      $('resp').value=fmt(q.r); $('resp').disabled=true; $('btn-conferir').classList.add('oculto');
       $('msg').className='msg certo'; $('msg').textContent='Certo!'; $('dica').style.display='none';
       $('btn-avancar').classList.remove('oculto');
     } else {
@@ -414,13 +421,14 @@
   $('btn-conferir').addEventListener('click', conferir);
   $('resp').addEventListener('keydown', function(e){
     if(e.key!=='Enter') return;
-    if(!$('btn-avancar').classList.contains('oculto')) avancar(); else conferir();
+    if(!$('btn-avancar').classList.contains('oculto')) $('btn-avancar').click(); else conferir();
   });
   function avancar(){
     E.p++; E.tent=0; E.resolvido=false; salvar();
-    if(E.p>=TOTAL) finalizar(); else abrirEtapa();
+    if(E.p>=TOTAL) finalizar(); else abrirEtapa(E.p);
   }
-  $('btn-avancar').addEventListener('click', avancar);
+  $('btn-avancar').addEventListener('click', function(){ if(ver<E.p) abrirEtapa(ver+1); else avancar(); });
+  $('btn-voltar').addEventListener('click', function(){ if(ver>0) abrirEtapa(ver-1); });
 
   // ================= FINAL E ENVIO =================
   function resultadoTexto(){ return 'Conteúdo 4/4 · Exercícios 10/10 · '+E.erros+(E.erros===1?' tentativa errada':' tentativas erradas'); }

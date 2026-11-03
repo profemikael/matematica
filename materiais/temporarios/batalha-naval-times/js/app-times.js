@@ -39,6 +39,7 @@
   let ultimaChaveFase = null, rodadaRespondida = 0;
   let alvoSel = null, mira = null, poderSel = 'normal', trocarSel = null, verticalSel = false;
   let moverNavioSel = null, moverOri = 'h';
+  let radares = {};   // alvo (id do time) -> [{ casas, tem, poder, rodada }] dos radares do MEU time
 
   function eu() { return { id: meuId(), nome: ($('nome').value || ler(CHAVE_NOME) || 'Aluno').trim().slice(0, 20) || 'Aluno' }; }
   function meuTime() { const j = jogadores[meuId()]; return j && j.time ? j.time : 0; }
@@ -146,6 +147,7 @@
       publico = p;
       if (p.fase === 'fim') mostrarFim(); else { if ($('tela-batalha').hidden) Tela.mostrar('tela-batalha'); renderBatalha(); }
     });
+    try { radares = JSON.parse(sessionStorage.getItem('bnt-radares-' + codigo)) || {}; } catch (e) { radares = {}; }
     $('sala-codigo').textContent = codigo;
     $('btn-iniciar').hidden = !souAnfitriao;
     Tela.mostrar('tela-sala');
@@ -212,7 +214,7 @@
     if (anfitriao) { anfitriao.encerrar(); anfitriao = null; }
     if (conexao) { conexao.fechar(); conexao = null; }
     apagar(CHAVE_FICHA);
-    jogadores = {}; naviosSala = {}; publico = null; souAnfitriao = false; ultimaChaveFase = null; mira = null;
+    jogadores = {}; naviosSala = {}; radares = {}; publico = null; souAnfitriao = false; ultimaChaveFase = null; mira = null;
     mostrarInicio();
   }
 
@@ -332,7 +334,7 @@
 
     $('bat-pergunta').hidden = !(p.fase === 'pergunta' && meu && meu.vivo);
     $('bat-ataque').hidden = !(p.fase === 'ataque' && meu && meu.vivo);
-    if (mudou && p.fase === 'pergunta') montarPergunta();
+    if (mudou && p.fase === 'pergunta') { montarPergunta(); $('radar-aviso').hidden = true; }
     if (p.fase === 'ataque') montarAtaque();
 
     let msg = '';
@@ -491,8 +493,8 @@
       tabMeu = Tela.criarTabuleiro($('bat-meu'), { aoClicar: aoClicarMeu });
       tabAlvo = Tela.criarTabuleiro($('bat-alvo'), {
         aoClicar: aoClicarAlvo,
-        aoPassar: function (l, c) { if (ataquePossivel() && poderSel !== 'mover') tabAlvo.pintar(opAlvo(previaDe(l, c))); },
-        aoSair: function () { tabAlvo.pintar(opAlvo(null)); }
+        aoPassar: function (l, c) { if (ataquePossivel() && poderSel !== 'mover') pintarAlvo(opAlvo(previaDe(l, c))); },
+        aoSair: function () { pintarAlvo(opAlvo(null)); }
       });
     }
     const meu = t ? p.times[t] : null;
@@ -502,7 +504,7 @@
                     clicavel: function () { return moverAtivo; }, mirada: mira && mira.mover ? Regras.chave(mira.l, mira.c) : undefined });
     const adv = alvoParaMostrar();
     $('bat-titulo-alvo').textContent = adv ? 'Mar do ' + nomeTime(adv) : 'Mar do adversário';
-    tabAlvo.pintar(opAlvo(null));
+    pintarAlvo(opAlvo(null));
   }
 
   function alvoParaMostrar() {
@@ -549,12 +551,39 @@
       ultimoEventoRodada = publico.rodada;
       const ev = publico.eventos || [];
       const meuRadar = ev.find(function (e) { return e.radar && e.atacante === meuTime(); });
-      if (meuRadar) { Sons.tocar(meuRadar.tem ? 'radarTem' : 'radarNada'); mostrarRadar(meuRadar); }
+      if (meuRadar) { Sons.tocar(meuRadar.tem ? 'radarTem' : 'radarNada'); guardarRadar(meuRadar); mostrarRadar(meuRadar); renderTabuleiros(); }
       else Sons.tocar(ev.some(function (e) { return e.afundou; }) ? 'afundou' : ev.some(function (e) { return e.acertos && e.acertos.length; }) ? 'explosao' : ev.length ? 'agua' : 'errado');
     }
   }
 
   let radarTimer = null;
+  function guardarRadar(e) {
+    radares[e.alvo] = (radares[e.alvo] || []).concat([{ casas: e.casas, tem: e.tem, poder: e.poder, rodada: publico.rodada }]);
+    try { sessionStorage.setItem('bnt-radares-' + codigo, JSON.stringify(radares)); } catch (x) { /* sem armazenamento */ }
+  }
+
+  // Deixa as casas dos radares já usados coloridas no mar do adversário e mostra a faixa com o último resultado.
+  function marcarRadares() {
+    const adv = alvoParaMostrar();
+    const lista = adv ? radares[adv] || [] : [];
+    lista.forEach(function (r) {
+      r.casas.forEach(function (ch) {
+        const p = ch.split(',').map(Number);
+        const b = $('bat-alvo').querySelector('button[aria-label="' + Regras.nomeCasa(p[0], p[1]) + '"]');
+        if (b) { b.classList.remove('radar-tem', 'radar-nao'); b.classList.add(r.tem ? 'radar-tem' : 'radar-nao'); }
+      });
+    });
+    const msg = $('bat-radar-msg');
+    if (lista.length === 0) { msg.hidden = true; return; }
+    const u = lista[lista.length - 1];
+    const a = u.casas[0].split(',').map(Number), z = u.casas[u.casas.length - 1].split(',').map(Number);
+    msg.className = 'radar-msg ' + (u.tem ? 'tem' : 'nao');
+    msg.textContent = '📡 ' + ROTULO_PODER[u.poder] + ' no ' + nomeTime(adv) + ' (' + Regras.nomeCasa(a[0], a[1]) + ' a ' + Regras.nomeCasa(z[0], z[1]) + '): ' + (u.tem ? 'HÁ NAVIO na área' : 'NÃO HÁ NAVIO na área');
+    msg.hidden = false;
+  }
+
+  function pintarAlvo(op) { tabAlvo.pintar(op); marcarRadares(); }
+
   function mostrarRadar(e) {
     const caixa = $('radar-caixa');
     caixa.className = 'radar-caixa ' + (e.tem ? 'tem' : 'nao');
@@ -563,7 +592,7 @@
     $('radar-sub').textContent = ROTULO_PODER[e.poder] + ' no ' + nomeTime(e.alvo) + ' (de ' + Regras.nomeCasa(ch[0], ch[1]) + ' até ' + Regras.nomeCasa(fim[0], fim[1]) + ')';
     $('radar-aviso').hidden = false;
     clearTimeout(radarTimer);
-    radarTimer = setTimeout(function () { $('radar-aviso').hidden = true; }, 4000);
+    radarTimer = setTimeout(function () { $('radar-aviso').hidden = true; }, 8000);
   }
   $('radar-aviso').addEventListener('click', function () { clearTimeout(radarTimer); $('radar-aviso').hidden = true; });
 

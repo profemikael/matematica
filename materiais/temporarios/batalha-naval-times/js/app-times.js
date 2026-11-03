@@ -272,7 +272,7 @@
   }
 
   $('btn-iniciar').addEventListener('click', async function () {
-    if (!podeIniciar()) return;
+    if (!podeIniciar() || anfitriao) return;
     await carregarBancos();
     const banco = bancos.find(function (b) { return b.arquivo === config.banco; });
     if (!banco || banco.erro) { $('sala-erro').textContent = 'O banco de perguntas não pôde ser carregado.'; return; }

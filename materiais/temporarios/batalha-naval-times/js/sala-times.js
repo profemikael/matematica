@@ -1,7 +1,7 @@
 // Sala dos times: o "carteiro" do Firebase. Cria/entra na sala, escolhe time (máximo 8 alunos), presença,
 // e entrega respostas, ataques, navios e o estado público. Implementa a "conexão" que o Anfitrião usa.
 // Usa o SDK "compat" do Firebase (scripts clássicos carregados no index.html).
-// Caminho: turmas/<senha>/salas-times/<código>. Estado público e estado do anfitrião são gravados como TEXTO (JSON),
+// Caminho: times/<senha>/salas/<código> (um bloco próprio nas regras, como o jogo da memória). Estado público e estado do anfitrião são gravados como TEXTO (JSON),
 // porque o Firebase apaga objetos e listas vazios.
 (function (raiz) {
   'use strict';
@@ -18,7 +18,7 @@
     let desvio = 0;
     db.ref('.info/serverTimeOffset').on('value', function (s) { desvio = s.val() || 0; });
     function horaServidor() { return Date.now() + desvio; }
-    function refSala(senha, codigo) { return db.ref('turmas/' + senha + '/salas-times/' + codigo); }
+    function refSala(senha, codigo) { return db.ref('times/' + senha + '/salas/' + codigo); }
 
     async function verificarSenha(senha) {
       try { await refSala(senha, '0000').child('criadaEm').once('value'); return true; }

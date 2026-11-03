@@ -1,47 +1,71 @@
 # Regras do Firebase para o Batalha Naval em Times
 
-O jogo em times grava num caminho **só dele**: `turmas/<senha>/salas-times/<código>`. O jogo atual usa `turmas/<senha>/salas/...` e não é afetado.
-
-> **Atenção:** o arquivo de regras do jogo atual (`firebase/regras.json`) **não está no repositório**, então eu não consegui ver o que ele permite hoje. Por isso o trecho abaixo é para ser **juntado** às regras que já estão no console. **Não apague nada do que já existe.**
+O jogo em times grava num caminho **só dele**: `times/<senha>/salas/<código>`, como o jogo da memória faz com `memoria/...`. Os jogos que já existem (`turmas`, `memoria`, `nomes`) **não são afetados**.
 
 ## Passo a passo
 
 1. Abra **https://console.firebase.google.com** → seu projeto → **Realtime Database** → aba **Regras**.
-2. Procure, dentro de `"turmas"` → `"$senha"`, o item `"salas"`.
-3. Logo **depois** do bloco `"salas": { ... }` (no mesmo nível, separado por vírgula), cole o bloco `"salas-times"` abaixo.
-4. A linha `".read"`/`".write"` do bloco usa a mesma verificação de senha que o seu `"salas"` já faz. **Se o seu `"salas"` usa uma condição diferente da que está abaixo, copie a condição dele** e use no lugar.
-5. Clique em **Publicar**.
+2. Procure a linha que começa com `"nomes": {` (fica perto do final, logo depois do bloco `"memoria"`).
+3. Coloque o cursor **no começo dessa linha** e cole o bloco abaixo **inteiro**. Ele já termina com vírgula, então o `"nomes"` continua certo logo depois.
+4. Clique em **Publicar**.
 
 ## Bloco para colar
 
-```json
-"salas-times": {
-  "$codigo": {
-    ".read": "root.child('config/senhas/' + $senha).exists()",
-    ".write": "root.child('config/senhas/' + $senha).exists()",
-    ".validate": "$codigo.matches(/^[0-9]{4}$/)",
-    "jogadores": {
-      "$uid": {
-        ".validate": "newData.parent().numChildren() <= 8"
-      }
-    },
-    "respostas": {
-      "$rodada": {
-        "$uid": {
-          ".validate": "newData.hasChildren(['texto', 'em']) && newData.child('texto').isString() && newData.child('texto').val().length <= 200"
+```
+    "times": {
+      "$senha": {
+        "salas": {
+          "$codigo": {
+            ".read": "$codigo.matches(/^[0-9]{4}$/) && root.child('config/senhas').child($senha).val() === true",
+            ".write": "$codigo.matches(/^[0-9]{4}$/) && root.child('config/senhas').child($senha).val() === true && (!data.exists() || data.child('criadaEm').val() < now - 86400000)",
+            ".validate": "newData.hasChildren(['criadaEm', 'config', 'anfitriao'])",
+            "criadaEm": {
+              ".validate": "newData.isNumber() && newData.val() <= now"
+            },
+            "config": {
+              ".validate": "newData.hasChildren(['banco', 'modo', 'segundos'])"
+            },
+            "jogadores": {
+              ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()",
+              "$uid": {
+                ".validate": "newData.hasChildren(['nome', 'conectado']) && newData.parent().numChildren() <= 8",
+                "time": {
+                  ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4"
+                }
+              }
+            },
+            "navios": {
+              ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()"
+            },
+            "respostas": {
+              ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()",
+              "$rodada": {
+                "$uid": {
+                  ".validate": "newData.hasChildren(['texto', 'em']) && newData.child('texto').isString() && newData.child('texto').val().length <= 200"
+                }
+              }
+            },
+            "ataques": {
+              ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()"
+            },
+            "publico": {
+              ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()",
+              ".validate": "newData.isString() && newData.val().length < 60000"
+            },
+            "estadoAnfitriao": {
+              ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()",
+              ".validate": "newData.isString() && newData.val().length < 100000"
+            }
+          }
         }
       }
     },
-    "publico": { ".validate": "newData.isString() && newData.val().length < 60000" },
-    "estadoAnfitriao": { ".validate": "newData.isString() && newData.val().length < 100000" }
-  }
-}
 ```
 
 ## O que essas regras garantem
 
-- Só entra quem sabe a senha da turma (a mesma do jogo atual).
-- O código da sala tem 4 números.
+- Só entra quem sabe a senha da turma (a mesma dos outros jogos).
+- O código da sala tem 4 números, e uma sala só pode ser recriada com o mesmo código depois de 24 horas.
 - Cada sala aceita no máximo **8 jogadores**.
 - Respostas têm formato e tamanho limitados.
 

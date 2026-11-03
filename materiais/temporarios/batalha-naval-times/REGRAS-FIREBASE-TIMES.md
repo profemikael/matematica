@@ -28,7 +28,7 @@ O jogo em times grava num caminho **só dele**: `times/<senha>/salas/<código>`,
             "jogadores": {
               ".write": "root.child('config/senhas').child($senha).val() === true && root.child('times').child($senha).child('salas').child($codigo).child('criadaEm').exists()",
               "$uid": {
-                ".validate": "newData.hasChildren(['nome', 'conectado']) && newData.parent().numChildren() <= 8",
+                ".validate": "newData.hasChildren(['nome', 'conectado'])",
                 "time": {
                   ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4"
                 }
@@ -66,7 +66,7 @@ O jogo em times grava num caminho **só dele**: `times/<senha>/salas/<código>`,
 
 - Só entra quem sabe a senha da turma (a mesma dos outros jogos).
 - O código da sala tem 4 números, e uma sala só pode ser recriada com o mesmo código depois de 24 horas.
-- Cada sala aceita no máximo **8 jogadores**.
+- O limite de **8 jogadores** por sala é aplicado pelo próprio jogo (as regras do Firebase não conseguem contar filhos).
 - Respostas têm formato e tamanho limitados.
 
 ## O que elas **não** garantem (de propósito)

@@ -1,0 +1,22 @@
+/* Ajustes do jogo em times, por cima de ../batalha-naval/css/estilo.css */
+.centro-botoes { justify-content: center; margin: 8px 0; }
+.sala-times { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 12px 0; }
+.time-col { background: var(--azul-fundo); border-top: 6px solid var(--cor-time, #2563EB); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.time-col h3 { margin: 0; color: var(--azul-esc); }
+.time-col ul { margin: 0; padding-left: 18px; min-height: 2.4em; }
+.time-col .pronto { font-size: 13px; color: #166534; font-weight: bold; }
+.time-col .nao-pronto { font-size: 13px; color: #92400E; }
+.time-col select { font-size: 13px; margin-left: 6px; }
+.eu { font-weight: bold; }
+.off { opacity: .5; }
+.conta-times { max-width: 720px; margin: 10px auto; text-align: center; }
+.conta-times .conta-pergunta { font-size: 30px; }
+.conta-times input[type=text], .conta-times input:not([type]) { font-size: 22px; padding: 6px 10px; width: 10em; max-width: 100%; }
+.tabuleiros-times { --casa: min(30px, calc((100vw - 80px) / 22)); margin-top: 8px; }
+.tabuleiros-times h3 { margin: 4px 0; color: var(--azul-esc); text-align: center; }
+.eventos { margin: 8px auto; max-width: 720px; padding-left: 18px; }
+.placar-times td, .placar-times th { padding: 4px 10px; text-align: center; }
+.placar-times tr.fora td { opacity: .45; text-decoration: line-through; }
+.poderes-times { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
+.botao.ativo { background: var(--azul-esc); color: #fff; }
+.opcoes-times { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }

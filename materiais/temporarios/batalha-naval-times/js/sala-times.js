@@ -43,7 +43,7 @@
           if (!negado(e)) throw e;   // código ocupado: tenta outro
         }
       }
-      throw new Error('Não foi possível criar a sala. Tente de novo.');
+      throw new Error('Não foi possível criar a sala. Se continuar assim, as regras do Firebase do jogo em times ainda não foram coladas (veja REGRAS-FIREBASE-TIMES.md).');
     }
 
     // Entra na sala (ou volta para a própria vaga). Erros com mensagem em português para o aluno.

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batalha Naval em Times</title>
+<link rel="stylesheet" href="../batalha-naval/css/estilo.css?v=2026-10-05-painel">
+<link rel="stylesheet" href="css/times.css?v=2026-11-03">
+</head>
+<body>
+<main class="folha">
+  <header class="capa">
+    <div class="linha">Prof. Mikael · Matemática · Jogo online em times (até 8 alunos)</div>
+    <h1><span id="ancora">⚓</span> Batalha Naval em Times</h1>
+    <h2>Todo o time acerta a conta para atacar!</h2>
+    <button id="btn-som" class="btn-som" type="button" title="Ligar/desligar o som">🔊</button>
+  </header>
+
+  <p id="sem-conexao" class="alerta" hidden>⚠ Sem conexão — tentando reconectar...</p>
+
+  <!-- 0. Carregando -->
+  <section id="tela-carregando" class="tela">
+    <p id="carregando-texto" class="centro">Carregando...</p>
+  </section>
+
+  <!-- 1. Senha da turma -->
+  <section id="tela-senha" class="tela" hidden>
+    <form id="form-senha" class="cartao estreito">
+      <label>Senha da turma <input id="senha" maxlength="30" autocomplete="off" placeholder="peça ao professor"></label>
+      <p id="senha-erro" class="erro"></p>
+      <button class="botao principal" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- 2. Início -->
+  <section id="tela-inicio" class="tela" hidden>
+    <div class="cartao estreito">
+      <label>Seu nome <input id="nome" maxlength="20" autocomplete="off" placeholder="Seu nome"></label>
+      <div class="linha-botoes">
+        <button id="btn-criar" class="botao principal" type="button">Criar sala</button>
+        <button id="btn-entrar" class="botao principal" type="button">Entrar na sala</button>
+      </div>
+      <p id="inicio-erro" class="erro"></p>
+      <ul id="avisos-bancos" class="avisos"></ul>
+      <button id="btn-trocar-senha" class="link" type="button">trocar senha da turma</button>
+    </div>
+  </section>
+
+  <!-- 3a. Criar sala -->
+  <section id="tela-criar" class="tela" hidden>
+    <form id="form-criar" class="cartao estreito">
+      <label>Banco de perguntas <select id="banco"></select></label>
+      <label>Tempo para responder e para atacar
+        <select id="segundos"></select>
+      </label>
+      <fieldset>
+        <legend>Afundar navio</legend>
+        <label class="opcao"><input type="radio" name="modo" value="classico" checked> Clássico – acertar todas as casas</label>
+        <label class="opcao"><input type="radio" name="modo" value="rapido"> Rápido – um tiro afunda</label>
+      </fieldset>
+      <fieldset>
+        <legend>Tipo de tiro</legend>
+        <label class="opcao"><input type="radio" name="tiro" value="normal" checked> Normal – um tiro por vez</label>
+        <label class="opcao"><input type="radio" name="tiro" value="turbo"> Turbo – sequência de acertos do time dá tiro duplo, em cruz e em X</label>
+      </fieldset>
+      <div id="linha-limiares" hidden>
+        <label>Sequência para o tiro duplo <input id="limiar-duplo" type="number" min="1" max="20" value="3"></label>
+        <label>Sequência para cruz e X <input id="limiar-cruz" type="number" min="1" max="20" value="6"></label>
+      </div>
+      <fieldset>
+        <legend>Quem precisa acertar a pergunta</legend>
+        <label class="opcao"><input type="radio" name="resposta" value="todos" checked> Todos do time precisam acertar</label>
+        <label class="opcao"><input type="radio" name="resposta" value="primeiro"> Vale a resposta de quem responder primeiro</label>
+      </fieldset>
+      <p id="criar-erro" class="erro"></p>
+      <div class="linha-botoes">
+        <button class="botao principal" type="submit">Criar</button>
+        <button class="botao btn-voltar-inicio" type="button">Voltar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3b. Entrar na sala -->
+  <section id="tela-entrar" class="tela" hidden>
+    <form id="form-entrar" class="cartao estreito">
+      <label>Código da sala <input id="codigo" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="0000"></label>
+      <p id="entrar-erro" class="erro"></p>
+      <div class="linha-botoes">
+        <button class="botao principal" type="submit">Entrar</button>
+        <button class="botao btn-voltar-inicio" type="button">Voltar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 4. Sala de espera: escolher o time -->
+  <section id="tela-sala" class="tela" hidden>
+    <p class="codigo-grande centro">SALA <span id="sala-codigo"></span></p>
+    <p id="sala-contagem" class="centro"></p>
+    <div id="sala-times" class="sala-times"></div>
+    <p id="sala-erro" class="erro centro"></p>
+    <div class="linha-botoes centro-botoes">
+      <button id="btn-posicionar" class="botao principal" type="button" hidden>⚓ Posicionar os navios do meu time</button>
+      <button id="btn-iniciar" class="botao principal" type="button" hidden>▶ Iniciar partida</button>
+      <button id="btn-sair-sala" class="botao" type="button">Sair da sala</button>
+    </div>
+  </section>
+
+  <!-- 5. Posicionar os navios do time -->
+  <section id="tela-posicionar" class="tela" hidden>
+    <h2 id="pos-titulo" class="titulo-tela"></h2>
+    <p class="status-colega">Os navios são do time: qualquer colega pode mexer. Quando estiver bom, marque “Pronto”.</p>
+    <div class="pos-layout">
+      <div id="pos-tabuleiro"></div>
+      <aside class="cartao pos-lado">
+        <p>1. Escolha um navio · 2. Clique no mar</p>
+        <div id="pos-navios" class="lista-navios"></div>
+        <button id="btn-girar" class="botao" type="button">↻ Girar — <span id="pos-orientacao">deitado</span></button>
+        <button id="btn-aleatorio" class="botao" type="button">🎲 Sortear</button>
+        <button id="btn-limpar" class="botao" type="button">🧹 Limpar</button>
+        <p id="pos-dica" class="dica"></p>
+        <button id="btn-pronto" class="botao principal" type="button" disabled>✔ Pronto</button>
+        <button id="btn-pos-voltar" class="botao" type="button">Voltar para a sala</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 6. Batalha -->
+  <section id="tela-batalha" class="tela" hidden>
+    <div class="barra">
+      <span id="bat-rodada"></span>
+      <span id="bat-fase"></span>
+      <span id="bat-tempo"></span>
+    </div>
+    <p id="bat-pausa" class="alerta" hidden>⏸ Partida pausada pelo professor</p>
+    <div id="bat-pergunta" class="cartao conta-times" hidden></div>
+    <div id="bat-ataque" class="cartao conta-times" hidden></div>
+    <p id="bat-mensagem" class="mensagem"></p>
+    <div class="tabuleiros tabuleiros-times">
+      <div><h3 id="bat-titulo-meu">Meu mar</h3><div id="bat-meu"></div></div>
+      <div><h3 id="bat-titulo-alvo">Mar do adversário</h3><div id="bat-alvo"></div></div>
+    </div>
+    <ul id="bat-eventos" class="eventos"></ul>
+    <table class="placar placar-times"><thead><tr><th>Time</th><th>Alunos</th><th>Navios</th><th>Sequência</th><th>Arsenal</th></tr></thead><tbody id="bat-placar"></tbody></table>
+    <div id="bat-anfitriao" class="linha-botoes centro-botoes" hidden>
+      <button id="btn-pausar" class="botao" type="button">⏸ Pausar</button>
+      <button id="btn-retomar" class="botao" type="button" hidden>▶ Retomar</button>
+      <button id="btn-encerrar" class="botao" type="button">⏹ Encerrar partida</button>
+    </div>
+  </section>
+
+  <!-- 7. Fim -->
+  <section id="tela-fim" class="tela" hidden>
+    <div class="fim cartao">
+      <h2 id="fim-titulo"></h2>
+      <p id="fim-texto"></p>
+      <table class="placar placar-times"><thead><tr><th>Time</th><th>Navios restantes</th></tr></thead><tbody id="fim-placar"></tbody></table>
+      <div class="acoes-fim"><button id="btn-fim-sair" class="botao principal" type="button">Voltar ao início</button></div>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../batalha-naval/js/firebase-config.js"></script>
+<script src="../batalha-naval/bancos/lista.js"></script>
+<script src="../batalha-naval/js/regras.js"></script>
+<script src="../batalha-naval/js/perguntas.js"></script>
+<script src="../batalha-naval/js/sala.js"></script>
+<script src="../batalha-naval/js/navios-svg.js"></script>
+<script src="../batalha-naval/js/sons.js"></script>
+<script src="../batalha-naval/js/tela.js"></script>
+<script src="js/juiz-times.js"></script>
+<script src="js/anfitriao.js"></script>
+<script src="js/sala-times.js"></script>
+<script src="js/app-times.js"></script>
+</body>
+</html>

@@ -34,7 +34,8 @@
   let senha = null, codigo = null, conexao = null, config = null, souAnfitriao = false, anfitriao = null;
   let jogadores = {}, naviosSala = {}, publico = null, bancos = [];
   let relogioTela = null;
-  let tabPos = null, tabMeu = null, tabAlvo = null;
+  let tabPos = null;
+  let tabs = {};   // id do time -> tabuleiro desenhado (os 4 mares ficam na tela ao mesmo tempo)
   let navioSel = null, orientacaoSel = 'h';
   let ultimaChaveFase = null, rodadaRespondida = 0;
   let alvoSel = null, mira = null, poderSel = 'normal', trocarSel = null, verticalSel = false;
@@ -392,11 +393,6 @@
     });
   }
 
-  function adversarios() {
-    const t = meuTime();
-    return Object.keys(publico.times).map(Number).filter(function (id) { return id !== t && publico.times[id].vivo; });
-  }
-
   function montarAtaque() {
     const caixa = $('bat-ataque');
     limpar(caixa);
@@ -407,16 +403,7 @@
       caixa.appendChild(criarEl('p', '✔ Seu time acertou! Quem escolhe o alvo agora: ' + (j ? j.nome : 'um colega'), 'feedback'));
       return;
     }
-    caixa.appendChild(criarEl('p', poderSel === 'mover' ? 'Sua vez! Escolha um navio e clique no SEU mar para movê-lo.' : 'Sua vez de escolher! Clique no mar do adversário.', 'feedback'));
-    const advs = adversarios();
-    if (!alvoSel || advs.indexOf(alvoSel) < 0) alvoSel = advs[0] || null;
-    const linha = criarEl('div', null, 'poderes-times');
-    advs.forEach(function (id) {
-      const b = criarEl('button', nomeTime(id), 'botao' + (alvoSel === id ? ' ativo' : '')); b.type = 'button';
-      b.addEventListener('click', function () { alvoSel = id; mira = null; montarAtaque(); renderTabuleiros(); });
-      linha.appendChild(b);
-    });
-    if (poderSel !== 'mover') caixa.appendChild(linha);
+    caixa.appendChild(criarEl('p', poderSel === 'mover' ? 'Sua vez! Escolha um navio e clique no SEU mar para movê-lo.' : 'Sua vez de escolher! Clique no mar do adversário que quer atacar.', 'feedback'));
     if (config.tiro === 'turbo') {
       const poderes = criarEl('div', null, 'poderes-times');
       const opcoesPoder = [{ p: 'normal', rotulo: ROTULO_PODER.normal, trocar: null }];
@@ -455,15 +442,18 @@
     else if (mira) caixa.appendChild(criarEl('p', 'Alvo marcado: ' + Regras.nomeCasa(mira.l, mira.c) + ' no ' + nomeTime(mira.alvo) + '. Pode mudar até o tempo acabar.', 'mensagem'));
   }
 
-  function aoClicarAlvo(l, c) {
-    if (!publico || publico.fase !== 'ataque' || publico.pausada) return;
-    const t = meuTime(), meu = t ? publico.times[t] : null;
-    if (!meu || !meu.vivo || meu.acertou !== true || meu.vezDe !== meuId() || !alvoSel || poderSel === 'mover') return;
-    if (publico.times[alvoSel].tiros[Regras.chave(l, c)] && !ehRadar()) return;
-    mira = { alvo: alvoSel, l: l, c: c };
-    const ataque = { alvo: alvoSel, l: l, c: c, poder: poderSel, vertical: verticalSel };
+  // Clicar no próprio mar só serve para mover navio; clicar no mar de outro time escolhe o alvo do ataque.
+  function aoClicarMar(t, l, c) {
+    if (t === meuTime()) { aoClicarMeu(l, c); return; }
+    if (!ataquePossivel() || poderSel === 'mover') return;
+    const dados = publico.times[t];
+    if (!dados || !dados.vivo) return;
+    if (dados.tiros[Regras.chave(l, c)] && !ehRadar()) return;
+    alvoSel = t;
+    mira = { alvo: t, l: l, c: c };
+    const ataque = { alvo: t, l: l, c: c, poder: poderSel, vertical: verticalSel };
     if (trocarSel) ataque.trocar = trocarSel;
-    conexao.enviarAtaque(publico.rodada, t, ataque);
+    conexao.enviarAtaque(publico.rodada, meuTime(), ataque);
     montarAtaque();
     renderTabuleiros();
   }
@@ -487,43 +477,47 @@
     return { casas: casas, valida: true, radar: ehRadar() };
   }
 
-  function renderTabuleiros() {
-    const p = publico, t = meuTime();
-    if (!tabMeu) {
-      tabMeu = Tela.criarTabuleiro($('bat-meu'), { aoClicar: aoClicarMeu });
-      tabAlvo = Tela.criarTabuleiro($('bat-alvo'), {
-        aoClicar: aoClicarAlvo,
-        aoPassar: function (l, c) { if (ataquePossivel() && poderSel !== 'mover') pintarAlvo(opAlvo(previaDe(l, c))); },
-        aoSair: function () { pintarAlvo(opAlvo(null)); }
-      });
-    }
-    const meu = t ? p.times[t] : null;
-    $('bat-titulo-meu').textContent = meu ? 'Meu mar (' + nomeTime(t) + ')' : 'Meu mar';
-    const moverAtivo = ataquePossivel() && poderSel === 'mover';
-    tabMeu.pintar({ navios: t && naviosSala[t] ? naviosSala[t].navios : {}, tiros: meu ? meu.tiros : {}, afundadas: meu ? meu.afundadas : [],
-                    clicavel: function () { return moverAtivo; }, mirada: mira && mira.mover ? Regras.chave(mira.l, mira.c) : undefined });
-    const adv = alvoParaMostrar();
-    $('bat-titulo-alvo').textContent = adv ? 'Mar do ' + nomeTime(adv) : 'Mar do adversário';
-    pintarAlvo(opAlvo(null));
-  }
-
-  function alvoParaMostrar() {
-    const advs = adversarios();
-    if (alvoSel && advs.indexOf(alvoSel) >= 0) return alvoSel;
-    return advs[0] || null;
-  }
   function ataquePossivel() {
     const t = meuTime(), meu = t && publico ? publico.times[t] : null;
     return !!(publico && publico.fase === 'ataque' && meu && meu.vivo && meu.acertou === true && meu.vezDe === meuId() && !publico.pausada);
   }
-  function opAlvo(previa) {
-    const adv = alvoParaMostrar();
-    const dados = adv ? publico.times[adv] : null;
-    const op = { tiros: dados ? dados.tiros : {}, afundadas: dados ? dados.afundadas : [],
-                 clicavel: function (l, c) { return ataquePossivel() && poderSel !== 'mover' && !!dados && (ehRadar() || !dados.tiros[Regras.chave(l, c)]); } };
+
+  // Como pintar o mar do time t: o meu mostra meus navios; os outros só os tiros que já levaram.
+  function opMar(t, previa) {
+    const dados = publico.times[t];
+    if (t === meuTime()) {
+      const moverAtivo = ataquePossivel() && poderSel === 'mover';
+      return { navios: naviosSala[t] ? naviosSala[t].navios : {}, tiros: dados.tiros, afundadas: dados.afundadas,
+               clicavel: function () { return moverAtivo; }, mirada: mira && mira.mover ? Regras.chave(mira.l, mira.c) : undefined };
+    }
+    const op = { tiros: dados.tiros, afundadas: dados.afundadas,
+                 clicavel: function (l, c) { return ataquePossivel() && poderSel !== 'mover' && dados.vivo && (ehRadar() || !dados.tiros[Regras.chave(l, c)]); } };
     if (previa) op.previa = previa;
-    if (mira && !mira.mover && mira.alvo === adv) op.mirada = Regras.chave(mira.l, mira.c);
+    if (mira && !mira.mover && mira.alvo === t) op.mirada = Regras.chave(mira.l, mira.c);
     return op;
+  }
+
+  function pintarMar(t, previa) { tabs[t].pintar(opMar(t, previa)); marcarRadares(t); }
+
+  function renderTabuleiros() {
+    const meuT = meuTime();
+    [1, 2, 3, 4].forEach(function (t) {
+      const dados = publico.times[t];
+      $('mar-' + t).hidden = !dados;
+      if (!dados) return;
+      if (!tabs[t]) {
+        tabs[t] = Tela.criarTabuleiro($('mar-tab-' + t), {
+          aoClicar: function (l, c) { aoClicarMar(t, l, c); },
+          aoPassar: function (l, c) { if (t !== meuTime() && ataquePossivel() && poderSel !== 'mover') pintarMar(t, previaDe(l, c)); },
+          aoSair: function () { if (publico && publico.times[t]) pintarMar(t, null); }
+        });
+      }
+      $('mar-titulo-' + t).textContent = (t === meuT ? 'Meu mar — ' : 'Mar do ') + nomeTime(t) + (dados.vivo ? '' : ' (eliminado)');
+      $('mar-' + t).classList.toggle('meu-mar', t === meuT);
+      $('mar-' + t).classList.toggle('eliminado', !dados.vivo);
+      pintarMar(t, null);
+    });
+    faixaRadar();
   }
 
   let ultimoEventoRodada = 0;
@@ -562,27 +556,30 @@
     try { sessionStorage.setItem('bnt-radares-' + codigo, JSON.stringify(radares)); } catch (x) { /* sem armazenamento */ }
   }
 
-  // Deixa as casas dos radares já usados coloridas no mar do adversário e mostra a faixa com o último resultado.
-  function marcarRadares() {
-    const adv = alvoParaMostrar();
-    const lista = adv ? radares[adv] || [] : [];
-    lista.forEach(function (r) {
+  // Deixa as casas dos radares já usados coloridas no mar de cada adversário.
+  function marcarRadares(t) {
+    (radares[t] || []).forEach(function (r) {
       r.casas.forEach(function (ch) {
         const p = ch.split(',').map(Number);
-        const b = $('bat-alvo').querySelector('button[aria-label="' + Regras.nomeCasa(p[0], p[1]) + '"]');
+        const b = $('mar-tab-' + t).querySelector('button[aria-label="' + Regras.nomeCasa(p[0], p[1]) + '"]');
         if (b) { b.classList.remove('radar-tem', 'radar-nao'); b.classList.add(r.tem ? 'radar-tem' : 'radar-nao'); }
       });
     });
-    const msg = $('bat-radar-msg');
-    if (lista.length === 0) { msg.hidden = true; return; }
-    const u = lista[lista.length - 1];
-    const a = u.casas[0].split(',').map(Number), z = u.casas[u.casas.length - 1].split(',').map(Number);
-    msg.className = 'radar-msg ' + (u.tem ? 'tem' : 'nao');
-    msg.textContent = '📡 ' + ROTULO_PODER[u.poder] + ' no ' + nomeTime(adv) + ' (' + Regras.nomeCasa(a[0], a[1]) + ' a ' + Regras.nomeCasa(z[0], z[1]) + '): ' + (u.tem ? 'HÁ NAVIO na área' : 'NÃO HÁ NAVIO na área');
-    msg.hidden = false;
   }
 
-  function pintarAlvo(op) { tabAlvo.pintar(op); marcarRadares(); }
+  // Faixa fixa com o resultado do último radar do meu time (em qualquer adversário).
+  function faixaRadar() {
+    const msg = $('bat-radar-msg');
+    let ultimo = null, alvo = null;
+    Object.keys(radares).forEach(function (t) {
+      (radares[t] || []).forEach(function (r) { if (!ultimo || r.rodada >= ultimo.rodada) { ultimo = r; alvo = Number(t); } });
+    });
+    if (!ultimo) { msg.hidden = true; return; }
+    const a = ultimo.casas[0].split(',').map(Number), z = ultimo.casas[ultimo.casas.length - 1].split(',').map(Number);
+    msg.className = 'radar-msg ' + (ultimo.tem ? 'tem' : 'nao');
+    msg.textContent = '📡 ' + ROTULO_PODER[ultimo.poder] + ' no ' + nomeTime(alvo) + ' (' + Regras.nomeCasa(a[0], a[1]) + ' a ' + Regras.nomeCasa(z[0], z[1]) + '): ' + (ultimo.tem ? 'HÁ NAVIO na área' : 'NÃO HÁ NAVIO na área');
+    msg.hidden = false;
+  }
 
   function mostrarRadar(e) {
     const caixa = $('radar-caixa');

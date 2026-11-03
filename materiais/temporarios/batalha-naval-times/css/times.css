@@ -20,3 +20,12 @@
 .poderes-times { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
 .botao.ativo { background: var(--azul-esc); color: #fff; }
 .opcoes-times { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+
+.radar-aviso { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; background: rgba(8, 20, 50, .6); cursor: pointer; padding: 16px; }
+.radar-aviso[hidden] { display: none; }
+.radar-caixa { text-align: center; color: #fff; padding: 28px 40px; border-radius: 16px; border: 6px solid #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); animation: pulsar .4s ease-out; }
+.radar-caixa.tem { background: #15803D; }
+.radar-caixa.nao { background: #B91C1C; }
+.radar-caixa p { margin: 0; }
+#radar-titulo { font-size: clamp(36px, 10vw, 84px); font-weight: bold; line-height: 1.1; }
+#radar-sub { font-size: clamp(16px, 3vw, 24px); margin-top: 10px; opacity: .95; }

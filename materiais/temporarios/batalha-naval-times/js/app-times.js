@@ -549,10 +549,23 @@
       ultimoEventoRodada = publico.rodada;
       const ev = publico.eventos || [];
       const meuRadar = ev.find(function (e) { return e.radar && e.atacante === meuTime(); });
-      if (meuRadar) Sons.tocar(meuRadar.tem ? 'radarTem' : 'radarNada');
+      if (meuRadar) { Sons.tocar(meuRadar.tem ? 'radarTem' : 'radarNada'); mostrarRadar(meuRadar); }
       else Sons.tocar(ev.some(function (e) { return e.afundou; }) ? 'afundou' : ev.some(function (e) { return e.acertos && e.acertos.length; }) ? 'explosao' : ev.length ? 'agua' : 'errado');
     }
   }
+
+  let radarTimer = null;
+  function mostrarRadar(e) {
+    const caixa = $('radar-caixa');
+    caixa.className = 'radar-caixa ' + (e.tem ? 'tem' : 'nao');
+    $('radar-titulo').textContent = e.tem ? '📡 HÁ NAVIO!' : '📡 NÃO HÁ NAVIO!';
+    const ch = e.casas[0].split(',').map(Number), fim = e.casas[e.casas.length - 1].split(',').map(Number);
+    $('radar-sub').textContent = ROTULO_PODER[e.poder] + ' no ' + nomeTime(e.alvo) + ' (de ' + Regras.nomeCasa(ch[0], ch[1]) + ' até ' + Regras.nomeCasa(fim[0], fim[1]) + ')';
+    $('radar-aviso').hidden = false;
+    clearTimeout(radarTimer);
+    radarTimer = setTimeout(function () { $('radar-aviso').hidden = true; }, 4000);
+  }
+  $('radar-aviso').addEventListener('click', function () { clearTimeout(radarTimer); $('radar-aviso').hidden = true; });
 
   function renderPlacar(tbody, soNavios) {
     limpar(tbody);

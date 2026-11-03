@@ -48,7 +48,7 @@
       Object.keys(estado.times).forEach(function (id) {
         const t = estado.times[id];
         times[id] = { nome: t.nome, alunos: t.alunos, vivo: t.vivo, sequencia: t.sequencia, arsenal: t.arsenal,
-                      naviosRestantes: naviosRestantes(t), acertou: acertos ? !!acertos[id] : null,
+                      naviosRestantes: naviosRestantes(t), torpedos: t.torpedos, acertou: acertos ? !!acertos[id] : null,
                       vezDe: t.vivo ? JuizTimes.quemEscolhe(estado, id, conectados) : null,
                       tiros: t.tiros, afundadas: t.afundadas };
       });
@@ -133,6 +133,10 @@
     function fecharRodada() {
       const r = JuizTimes.resolverRodada(estado, ataques, acertos);
       eventos = r.eventos;
+      // Navios movidos: o time precisa ver o novo lugar no próprio mar.
+      eventos.forEach(function (e) {
+        if (e.poder === 'mover' && !e.ignorado && con.gravarNavios) con.gravarNavios(e.atacante, estado.times[e.atacante].navios, true);
+      });
       if (r.fim) {
         fase = 'fim'; fim = r.fim; ate = 0;
         publicar();

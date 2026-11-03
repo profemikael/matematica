@@ -137,3 +137,15 @@ test('desconexão na rodada 2 ainda é percebida: vezDe pula o aluno desconectad
   assert.notEqual(m.con.ultimoPublico().fase, 'pergunta');
   assert.equal(m.con.ultimoPublico().times[1].vezDe, 'a1');
 });
+
+test('mover navio: o anfitrião grava o novo lugar dos navios do time e publica os torpedos', function () {
+  const m = montar({ cfg: { torpedos: 2 } }); m.anf.iniciar();
+  assert.equal(m.con.ultimoPublico().times[1].torpedos, 4);
+  m.anf.estado().times[2].arsenal.mover = 1;
+  todosAcertam(m);
+  m.con.simularAtaque(2, { poder: 'mover', mover: { navio: 'n2', l: 6, c: 6, orientacao: 'v' }, por: 'b1' });
+  m.rel.avancar(10000);
+  assert.deepEqual(m.con.naviosGravados[2].navios.n2, { l: 6, c: 6, orientacao: 'v', tamanho: 2 });
+  assert.equal(m.con.naviosGravados[2].pronto, true);
+  assert.equal(m.con.ultimoPublico().times[2].arsenal.mover, 0);
+});

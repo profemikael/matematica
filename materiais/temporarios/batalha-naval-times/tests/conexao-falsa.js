@@ -47,6 +47,8 @@ function criarConexaoFalsa() {
     salvarEstado: function (e) { estadoSalvo = JSON.stringify(e); },
     lerEstado: function () { return Promise.resolve(estadoSalvo ? JSON.parse(estadoSalvo) : null); },
     lerNavios: function () { return Promise.resolve({}); },
+    naviosGravados: {},
+    gravarNavios: function (timeId, navios, pronto) { this.naviosGravados[timeId] = { navios: JSON.parse(JSON.stringify(navios)), pronto: pronto }; },
     aoJogadores: function (cb) { const f = ouvir(ouvJog, { cb: cb }); cb(copia(jogadores)); return f; },
     aoRespostas: function (rodada, cb) { const f = ouvir(ouvResp, { rodada: rodada, cb: cb }); cb(copia(respostas[rodada])); return f; },
     aoAtaques: function (rodada, cb) { const f = ouvir(ouvAtq, { rodada: rodada, cb: cb }); cb(copia(ataques[rodada])); return f; },

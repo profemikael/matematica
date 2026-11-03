@@ -95,8 +95,8 @@ test('registrarAcertos soma 1 ao acertar e zera ao errar', function () {
 test('trocasPossiveis com limiar padrão 3 e 6', function () {
   const e = partidaComTimes([1, 1]);
   e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), []);
-  e.times[1].sequencia = 3; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo']);
-  e.times[1].sequencia = 6; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x']);
+  e.times[1].sequencia = 3; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo', 'mover', 'radar3']);
+  e.times[1].sequencia = 6; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x', 'radar4']);
 });
 
 test('trocasPossiveis vazio no modo normal mesmo com sequência alta', function () {
@@ -107,8 +107,8 @@ test('trocasPossiveis vazio no modo normal mesmo com sequência alta', function 
 
 test('trocasPossiveis respeita limiares da configuração', function () {
   const e = partidaComTimes([1, 1], { limiarDuplo: 2, limiarCruz: 4 });
-  e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo']);
-  e.times[1].sequencia = 4; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x']);
+  e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo', 'mover', 'radar3']);
+  e.times[1].sequencia = 4; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x', 'radar4']);
 });
 
 test('trocar duplo consome a sequência e põe 1 no arsenal', function () {
@@ -237,4 +237,89 @@ test('fim: dois últimos caem na mesma rodada dá empate entre eles', function (
   const e = partidaMao([NA, NA], { modo: 'rapido' });
   const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 0, c: 0, poder: 'normal' }, 2: { alvo: 1, l: 0, c: 0, poder: 'normal' } }, ACERTOU);
   assert.deepEqual(r.fim, { vencedores: [1, 2], empate: true });
+});
+
+// ---------- Poderes extras: mover navio, radar e torpedo ----------
+test('casasDoPoder radar3 no canto devolve 9 casas dentro do mar; radar4 devolve 16 e escorrega da borda', function () {
+  assert.deepEqual(JuizTimes.casasDoPoder('radar3', 0, 0).sort(), ['0,0', '0,1', '0,2', '1,0', '1,1', '1,2', '2,0', '2,1', '2,2']);
+  assert.equal(JuizTimes.casasDoPoder('radar4', 5, 5).length, 16);
+  const canto = JuizTimes.casasDoPoder('radar4', 9, 9);
+  assert.equal(canto.length, 16);
+  assert.ok(canto.indexOf('6,6') >= 0 && canto.indexOf('9,9') >= 0);
+});
+
+test('radar diz se há navio na área sem marcar nenhuma casa e gasta o arsenal', function () {
+  const e = partidaMao([NA, NA]);
+  e.times[1].arsenal.radar3 = 1;
+  let r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 1, c: 1, poder: 'radar3' } }, ACERTOU);
+  assert.equal(r.eventos[0].radar, true);
+  assert.equal(r.eventos[0].tem, true);
+  assert.deepEqual(e.times[2].tiros, {});
+  assert.equal(e.times[1].arsenal.radar3, 0);
+  e.times[1].arsenal.radar3 = 1;
+  r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 7, c: 7, poder: 'radar3' } }, ACERTOU);
+  assert.equal(r.eventos[0].tem, false);
+});
+
+test('mover navio intacto: muda a posição, gasta 1 do arsenal e vale antes do radar da mesma rodada', function () {
+  const e = partidaMao([NA, NA]);
+  e.times[2].arsenal.mover = 1;
+  e.times[1].arsenal.radar3 = 1;
+  const r = JuizTimes.resolverRodada(e, {
+    2: { poder: 'mover', mover: { navio: 'n2', l: 5, c: 5, orientacao: 'v' } },
+    1: { alvo: 2, l: 1, c: 1, poder: 'radar3' }
+  }, ACERTOU);
+  assert.deepEqual(e.times[2].navios.n2, { l: 5, c: 5, orientacao: 'v', tamanho: 2 });
+  assert.equal(e.times[2].arsenal.mover, 0);
+  assert.equal(r.eventos.find(function (x) { return x.poder === 'radar3'; }).tem, false);
+  assert.ok(r.eventos.some(function (x) { return x.poder === 'mover' && x.atacante === 2; }));
+});
+
+test('mover inválido é ignorado e não gasta nada: navio atingido, casa sobreposta, fora do mar, casa já atirada', function () {
+  const dois = function () { return { n2: navio(0, 0, 'h', 2), n3: navio(5, 5, 'h', 3) }; };
+  const casos = [
+    function (e) { e.times[2].tiros['0,0'] = 'acerto'; return { navio: 'n2', l: 3, c: 3, orientacao: 'h' }; },
+    function () { return { navio: 'n2', l: 5, c: 4, orientacao: 'h' }; },
+    function () { return { navio: 'n2', l: 9, c: 9, orientacao: 'h' }; },
+    function (e) { e.times[2].tiros['3,3'] = 'agua'; return { navio: 'n2', l: 3, c: 3, orientacao: 'h' }; },
+    function () { return { navio: 'inexistente', l: 3, c: 3, orientacao: 'h' }; }
+  ];
+  casos.forEach(function (montar) {
+    const e = partidaMao([NA, dois()]);
+    e.times[2].arsenal.mover = 1;
+    const mover = montar(e);
+    const antes = JSON.stringify(e.times[2].navios);
+    const r = JuizTimes.resolverRodada(e, { 2: { poder: 'mover', mover: mover } }, ACERTOU);
+    assert.equal(r.eventos[0].ignorado, true);
+    assert.equal(JSON.stringify(e.times[2].navios), antes);
+    assert.equal(e.times[2].arsenal.mover, 1);
+  });
+});
+
+test('trocar mover e usar no mesmo ataque funciona com sequência suficiente', function () {
+  const e = partidaMao([NA, NA]);
+  e.times[1].sequencia = 3;
+  JuizTimes.resolverRodada(e, { 1: { poder: 'mover', trocar: 'mover', mover: { navio: 'n2', l: 4, c: 4, orientacao: 'h' } } }, ACERTOU);
+  assert.deepEqual(e.times[1].navios.n2, { l: 4, c: 4, orientacao: 'h', tamanho: 2 });
+  assert.equal(e.times[1].sequencia, 0);
+});
+
+test('torpedos do time: só no turbo com classico, por aluno; torpedo afunda o navio inteiro e gasta 1', function () {
+  const um = function (cfg, alunos) {
+    return JuizTimes.criarPartida(Object.assign({}, CFG, cfg), [
+      { id: 1, nome: 'A', alunos: alunos, navios: NA() }, { id: 2, nome: 'B', alunos: ['b'], navios: NA() }]);
+  };
+  function NA() { return { n2: navio(0, 0, 'h', 2) }; }
+  assert.equal(um({ torpedos: 2 }, ['a', 'a2']).times[1].torpedos, 4);
+  assert.equal(um({ torpedos: 2, modo: 'rapido' }, ['a']).times[1].torpedos, 0);
+  assert.equal(um({ torpedos: 2, tiro: 'normal' }, ['a']).times[1].torpedos, 0);
+  const e = um({ torpedos: 1 }, ['a']);
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 0, c: 0, poder: 'torpedo' } }, ACERTOU);
+  assert.equal(e.times[2].vivo, false);
+  assert.equal(r.eventos[0].poder, 'torpedo');
+  assert.equal(e.times[1].torpedos, 0);
+  const f = um({ torpedos: 0 }, ['a']);
+  const r2 = JuizTimes.resolverRodada(f, { 1: { alvo: 2, l: 0, c: 0, poder: 'torpedo' } }, ACERTOU);
+  assert.equal(r2.eventos[0].poder, 'normal');
+  assert.equal(f.times[2].vivo, true);
 });

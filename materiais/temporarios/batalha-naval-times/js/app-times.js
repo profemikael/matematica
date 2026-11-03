@@ -6,7 +6,8 @@
   const $ = function (id) { return document.getElementById(id); };
   const NOMES_TIMES = ['', 'Azul', 'Verde', 'Amarelo', 'Vermelho'];
   const CORES_TIMES = ['', '#2563EB', '#16A34A', '#CA8A04', '#DC2626'];
-  const ROTULO_PODER = { normal: 'Tiro normal', duplo: '⚡ Tiro duplo', cruz: '✚ Tiro em cruz', x: '✖ Tiro em X' };
+  const ROTULO_PODER = { normal: 'Tiro normal', duplo: '⚡ Tiro duplo', cruz: '✚ Tiro em cruz', x: '✖ Tiro em X', torpedo: '🚀 Torpedo',
+                         mover: '⚓ Mover navio', radar3: '📡 Radar 3×3', radar4: '📡 Radar 4×4' };
   const CHAVE_SENHA = 'bnt-senha', CHAVE_NOME = 'bnt-nome', CHAVE_ID = 'bnt-id', CHAVE_FICHA = 'bnt-ficha';
 
   function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -37,6 +38,7 @@
   let navioSel = null, orientacaoSel = 'h';
   let ultimaChaveFase = null, rodadaRespondida = 0;
   let alvoSel = null, mira = null, poderSel = 'normal', trocarSel = null, verticalSel = false;
+  let moverNavioSel = null, moverOri = 'h';
 
   function eu() { return { id: meuId(), nome: ($('nome').value || ler(CHAVE_NOME) || 'Aluno').trim().slice(0, 20) || 'Aluno' }; }
   function meuTime() { const j = jogadores[meuId()]; return j && j.time ? j.time : 0; }
@@ -75,9 +77,12 @@
 
   // ---------------- criar sala ----------------
   for (let s = 5; s <= 15; s++) { const o = criarEl('option', s + ' segundos'); o.value = String(s); if (s === 10) o.selected = true; $('segundos').appendChild(o); }
-  Array.prototype.forEach.call(document.querySelectorAll('input[name=tiro]'), function (r) {
-    r.addEventListener('change', function () { $('linha-limiares').hidden = document.querySelector('input[name=tiro]:checked').value !== 'turbo'; });
-  });
+  function atualizarOpcoesTurbo() {
+    const turbo = document.querySelector('input[name=tiro]:checked').value === 'turbo';
+    $('linha-limiares').hidden = !turbo;
+    $('linha-torpedos').hidden = !(turbo && document.querySelector('input[name=modo]:checked').value === 'classico');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('input[name=tiro], input[name=modo]'), function (r) { r.addEventListener('change', atualizarOpcoesTurbo); });
 
   async function carregarBancos() {
     if (bancos.length) return;
@@ -106,7 +111,8 @@
       modo: document.querySelector('input[name=modo]:checked').value,
       tiro: document.querySelector('input[name=tiro]:checked').value,
       resposta: document.querySelector('input[name=resposta]:checked').value,
-      limiarDuplo: Math.max(1, Number($('limiar-duplo').value) || 3), limiarCruz: Math.max(1, Number($('limiar-cruz').value) || 6)
+      limiarDuplo: Math.max(1, Number($('limiar-duplo').value) || 3), limiarCruz: Math.max(1, Number($('limiar-cruz').value) || 6),
+      torpedos: $('linha-torpedos').hidden ? 0 : Number($('torpedos').value) || 0
     };
     try {
       const j = eu();
@@ -135,7 +141,7 @@
     conexao = carteiro.abrir(senha, codigo, j);
     conexao.aoConexao(function (ligado) { $('sem-conexao').hidden = ligado; });
     conexao.aoJogadores(function (obj) { jogadores = obj; if (!$('tela-sala').hidden) renderSala(); if (publico) renderBatalha(); });
-    conexao.aoNavios(function (obj) { naviosSala = obj; if (!$('tela-sala').hidden) renderSala(); if (!$('tela-posicionar').hidden) renderPosicionar(); });
+    conexao.aoNavios(function (obj) { naviosSala = obj; if (!$('tela-sala').hidden) renderSala(); if (!$('tela-posicionar').hidden) renderPosicionar(); if (publico) renderTabuleiros(); });
     conexao.aoPublico(function (p) {
       publico = p;
       if (p.fase === 'fim') mostrarFim(); else { if ($('tela-batalha').hidden) Tela.mostrar('tela-batalha'); renderBatalha(); }
@@ -373,8 +379,15 @@
   }
 
   function trocasDoTime(meu) {
-    if (config.tiro !== 'turbo') return [];
-    return meu.sequencia >= config.limiarCruz ? ['cruz', 'x'] : meu.sequencia >= config.limiarDuplo ? ['duplo'] : [];
+    const t = meuTime();
+    return JuizTimes.trocasPossiveis({ config: config, times: (function () { const o = {}; o[t] = { sequencia: meu.sequencia }; return o; })() }, t);
+  }
+
+  function naviosIntactos(meu) {
+    const navios = naviosSala[meuTime()] ? naviosSala[meuTime()].navios || {} : {};
+    return Object.keys(navios).filter(function (id) {
+      return Regras.casasDoNavio(navios[id]).every(function (k) { return meu.tiros[Regras.chave(k.l, k.c)] !== 'acerto'; });
+    });
   }
 
   function adversarios() {
@@ -392,7 +405,7 @@
       caixa.appendChild(criarEl('p', '✔ Seu time acertou! Quem escolhe o alvo agora: ' + (j ? j.nome : 'um colega'), 'feedback'));
       return;
     }
-    caixa.appendChild(criarEl('p', 'Sua vez de escolher! Clique no mar do adversário.', 'feedback'));
+    caixa.appendChild(criarEl('p', poderSel === 'mover' ? 'Sua vez! Escolha um navio e clique no SEU mar para movê-lo.' : 'Sua vez de escolher! Clique no mar do adversário.', 'feedback'));
     const advs = adversarios();
     if (!alvoSel || advs.indexOf(alvoSel) < 0) alvoSel = advs[0] || null;
     const linha = criarEl('div', null, 'poderes-times');
@@ -401,17 +414,18 @@
       b.addEventListener('click', function () { alvoSel = id; mira = null; montarAtaque(); renderTabuleiros(); });
       linha.appendChild(b);
     });
-    caixa.appendChild(linha);
+    if (poderSel !== 'mover') caixa.appendChild(linha);
     if (config.tiro === 'turbo') {
       const poderes = criarEl('div', null, 'poderes-times');
       const opcoesPoder = [{ p: 'normal', rotulo: ROTULO_PODER.normal, trocar: null }];
-      ['duplo', 'cruz', 'x'].forEach(function (p) {
+      ['duplo', 'cruz', 'x', 'mover', 'radar3', 'radar4'].forEach(function (p) {
         if (meu.arsenal[p] > 0) opcoesPoder.push({ p: p, rotulo: ROTULO_PODER[p] + ' (arsenal: ' + meu.arsenal[p] + ')', trocar: null });
         else if (trocasDoTime(meu).indexOf(p) >= 0) opcoesPoder.push({ p: p, rotulo: ROTULO_PODER[p] + ' — gastar a sequência', trocar: p });
       });
+      if (meu.torpedos > 0) opcoesPoder.push({ p: 'torpedo', rotulo: ROTULO_PODER.torpedo + ' (restam ' + meu.torpedos + ')', trocar: null });
       opcoesPoder.forEach(function (o) {
         const b = criarEl('button', o.rotulo, 'botao' + (poderSel === o.p ? ' ativo' : '')); b.type = 'button';
-        b.addEventListener('click', function () { poderSel = o.p; trocarSel = o.trocar; mira = null; montarAtaque(); renderTabuleiros(); });
+        b.addEventListener('click', function () { poderSel = o.p; trocarSel = o.trocar; mira = null; moverNavioSel = null; montarAtaque(); renderTabuleiros(); });
         poderes.appendChild(b);
       });
       if (poderSel === 'duplo') {
@@ -420,16 +434,30 @@
         poderes.appendChild(g);
       }
       caixa.appendChild(poderes);
+      if (poderSel === 'mover') {
+        const navios = criarEl('div', null, 'poderes-times');
+        naviosIntactos(meu).forEach(function (id) {
+          const tam = naviosSala[meuTime()].navios[id].tamanho;
+          const b = criarEl('button', 'Navio de ' + tam + ' (' + id + ')', 'botao' + (moverNavioSel === id ? ' ativo' : '')); b.type = 'button';
+          b.addEventListener('click', function () { moverNavioSel = id; montarAtaque(); renderTabuleiros(); });
+          navios.appendChild(b);
+        });
+        const g = criarEl('button', '↻ Girar: ' + (moverOri === 'h' ? 'deitado' : 'em pé'), 'botao'); g.type = 'button';
+        g.addEventListener('click', function () { moverOri = moverOri === 'h' ? 'v' : 'h'; montarAtaque(); });
+        navios.appendChild(g);
+        caixa.appendChild(navios);
+      }
       caixa.appendChild(criarEl('p', 'Sequência do time: ' + meu.sequencia, 'dica'));
     }
-    if (mira) caixa.appendChild(criarEl('p', 'Alvo marcado: ' + Regras.nomeCasa(mira.l, mira.c) + ' no ' + nomeTime(mira.alvo) + '. Pode mudar até o tempo acabar.', 'mensagem'));
+    if (mira && mira.mover) caixa.appendChild(criarEl('p', 'Navio será movido para ' + Regras.nomeCasa(mira.l, mira.c) + '. Pode mudar até o tempo acabar.', 'mensagem'));
+    else if (mira) caixa.appendChild(criarEl('p', 'Alvo marcado: ' + Regras.nomeCasa(mira.l, mira.c) + ' no ' + nomeTime(mira.alvo) + '. Pode mudar até o tempo acabar.', 'mensagem'));
   }
 
   function aoClicarAlvo(l, c) {
     if (!publico || publico.fase !== 'ataque' || publico.pausada) return;
     const t = meuTime(), meu = t ? publico.times[t] : null;
-    if (!meu || !meu.vivo || meu.acertou !== true || meu.vezDe !== meuId() || !alvoSel) return;
-    if (publico.times[alvoSel].tiros[Regras.chave(l, c)]) return;
+    if (!meu || !meu.vivo || meu.acertou !== true || meu.vezDe !== meuId() || !alvoSel || poderSel === 'mover') return;
+    if (publico.times[alvoSel].tiros[Regras.chave(l, c)] && !ehRadar()) return;
     mira = { alvo: alvoSel, l: l, c: c };
     const ataque = { alvo: alvoSel, l: l, c: c, poder: poderSel, vertical: verticalSel };
     if (trocarSel) ataque.trocar = trocarSel;
@@ -438,24 +466,40 @@
     renderTabuleiros();
   }
 
+  function ehRadar() { return poderSel === 'radar3' || poderSel === 'radar4'; }
+
+  function aoClicarMeu(l, c) {
+    if (!ataquePossivel() || poderSel !== 'mover') return;
+    if (!moverNavioSel) { $('bat-mensagem').textContent = 'Escolha primeiro o navio que vai mover.'; return; }
+    const t = meuTime();
+    mira = { mover: true, l: l, c: c };
+    const ataque = { poder: 'mover', mover: { navio: moverNavioSel, l: l, c: c, orientacao: moverOri } };
+    if (trocarSel) ataque.trocar = trocarSel;
+    conexao.enviarAtaque(publico.rodada, t, ataque);
+    montarAtaque();
+    renderTabuleiros();
+  }
+
   function previaDe(l, c) {
     const casas = JuizTimes.casasDoPoder(poderSel, l, c, verticalSel).map(function (ch) { const p = ch.split(',').map(Number); return { l: p[0], c: p[1] }; });
-    return { casas: casas, valida: true };
+    return { casas: casas, valida: true, radar: ehRadar() };
   }
 
   function renderTabuleiros() {
     const p = publico, t = meuTime();
     if (!tabMeu) {
-      tabMeu = Tela.criarTabuleiro($('bat-meu'), {});
+      tabMeu = Tela.criarTabuleiro($('bat-meu'), { aoClicar: aoClicarMeu });
       tabAlvo = Tela.criarTabuleiro($('bat-alvo'), {
         aoClicar: aoClicarAlvo,
-        aoPassar: function (l, c) { if (ataquePossivel()) tabAlvo.pintar(opAlvo(previaDe(l, c))); },
+        aoPassar: function (l, c) { if (ataquePossivel() && poderSel !== 'mover') tabAlvo.pintar(opAlvo(previaDe(l, c))); },
         aoSair: function () { tabAlvo.pintar(opAlvo(null)); }
       });
     }
     const meu = t ? p.times[t] : null;
     $('bat-titulo-meu').textContent = meu ? 'Meu mar (' + nomeTime(t) + ')' : 'Meu mar';
-    tabMeu.pintar({ navios: t && naviosSala[t] ? naviosSala[t].navios : {}, tiros: meu ? meu.tiros : {}, afundadas: meu ? meu.afundadas : [] });
+    const moverAtivo = ataquePossivel() && poderSel === 'mover';
+    tabMeu.pintar({ navios: t && naviosSala[t] ? naviosSala[t].navios : {}, tiros: meu ? meu.tiros : {}, afundadas: meu ? meu.afundadas : [],
+                    clicavel: function () { return moverAtivo; }, mirada: mira && mira.mover ? Regras.chave(mira.l, mira.c) : undefined });
     const adv = alvoParaMostrar();
     $('bat-titulo-alvo').textContent = adv ? 'Mar do ' + nomeTime(adv) : 'Mar do adversário';
     tabAlvo.pintar(opAlvo(null));
@@ -474,9 +518,9 @@
     const adv = alvoParaMostrar();
     const dados = adv ? publico.times[adv] : null;
     const op = { tiros: dados ? dados.tiros : {}, afundadas: dados ? dados.afundadas : [],
-                 clicavel: function (l, c) { return ataquePossivel() && !!dados && !dados.tiros[Regras.chave(l, c)]; } };
+                 clicavel: function (l, c) { return ataquePossivel() && poderSel !== 'mover' && !!dados && (ehRadar() || !dados.tiros[Regras.chave(l, c)]); } };
     if (previa) op.previa = previa;
-    if (mira && mira.alvo === adv) op.mirada = Regras.chave(mira.l, mira.c);
+    if (mira && !mira.mover && mira.alvo === adv) op.mirada = Regras.chave(mira.l, mira.c);
     return op;
   }
 
@@ -487,8 +531,13 @@
     if (publico.fase !== 'resultado' && publico.fase !== 'fim') return;
     (publico.eventos || []).forEach(function (e) {
       let texto = nomeTime(e.atacante) + ' atacou ' + nomeTime(e.alvo);
-      if (e.ignorado) texto += ': ataque sem efeito.';
-      else {
+      if (e.ignorado && e.alvo === e.atacante) texto = nomeTime(e.atacante) + ' tentou mover um navio, mas não deu.';
+      else if (e.ignorado) texto += ': ataque sem efeito.';
+      else if (e.poder === 'mover') texto = nomeTime(e.atacante) + ' reorganizou os navios ⚓';
+      else if (e.radar) {
+        texto = nomeTime(e.atacante) + ' usou ' + ROTULO_PODER[e.poder] + ' em ' + nomeTime(e.alvo);
+        if (e.atacante === meuTime()) texto += ': ' + (e.tem ? '🟢 há navio na área!' : '⚪ nenhum navio na área.');
+      } else {
         const nomes = e.casas.map(function (ch) { const p = ch.split(',').map(Number); return Regras.nomeCasa(p[0], p[1]); }).join(', ');
         texto += ' em ' + nomes + (e.poder !== 'normal' ? ' (' + ROTULO_PODER[e.poder] + ')' : '') + ': ' +
           (e.afundou ? '💥 afundou um navio!' : e.acertos.length ? '🔥 acertou!' : '🌊 água.');
@@ -499,7 +548,9 @@
     if (publico.rodada !== ultimoEventoRodada && publico.fase === 'resultado') {
       ultimoEventoRodada = publico.rodada;
       const ev = publico.eventos || [];
-      Sons.tocar(ev.some(function (e) { return e.afundou; }) ? 'afundou' : ev.some(function (e) { return e.acertos && e.acertos.length; }) ? 'explosao' : ev.length ? 'agua' : 'errado');
+      const meuRadar = ev.find(function (e) { return e.radar && e.atacante === meuTime(); });
+      if (meuRadar) Sons.tocar(meuRadar.tem ? 'radarTem' : 'radarNada');
+      else Sons.tocar(ev.some(function (e) { return e.afundou; }) ? 'afundou' : ev.some(function (e) { return e.acertos && e.acertos.length; }) ? 'explosao' : ev.length ? 'agua' : 'errado');
     }
   }
 
@@ -514,7 +565,7 @@
       tr.appendChild(criarEl('td', nomes));
       tr.appendChild(criarEl('td', String(t.naviosRestantes)));
       tr.appendChild(criarEl('td', String(t.sequencia)));
-      tr.appendChild(criarEl('td', config.tiro === 'turbo' ? '⚡' + t.arsenal.duplo + ' ✚' + t.arsenal.cruz + ' ✖' + t.arsenal.x : '—'));
+      tr.appendChild(criarEl('td', config.tiro === 'turbo' ? '⚡' + t.arsenal.duplo + ' ✚' + t.arsenal.cruz + ' ✖' + t.arsenal.x + ' ⚓' + t.arsenal.mover + ' 📡' + (t.arsenal.radar3 + t.arsenal.radar4) + (t.torpedos ? ' 🚀' + t.torpedos : '') : '—'));
       tbody.appendChild(tr);
     });
   }

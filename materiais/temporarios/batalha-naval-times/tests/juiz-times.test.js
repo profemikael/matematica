@@ -90,3 +90,53 @@ test('registrarAcertos soma 1 ao acertar e zera ao errar', function () {
   assert.equal(e.times[1].sequencia, 2);
   assert.equal(e.times[2].sequencia, 0);
 });
+
+// ---------- Task 2: trocas do Turbo e casas dos poderes ----------
+test('trocasPossiveis com limiar padrão 3 e 6', function () {
+  const e = partidaComTimes([1, 1]);
+  e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), []);
+  e.times[1].sequencia = 3; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo']);
+  e.times[1].sequencia = 6; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x']);
+});
+
+test('trocasPossiveis vazio no modo normal mesmo com sequência alta', function () {
+  const e = partidaComTimes([1, 1], { tiro: 'normal' });
+  e.times[1].sequencia = 9;
+  assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), []);
+});
+
+test('trocasPossiveis respeita limiares da configuração', function () {
+  const e = partidaComTimes([1, 1], { limiarDuplo: 2, limiarCruz: 4 });
+  e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo']);
+  e.times[1].sequencia = 4; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x']);
+});
+
+test('trocar duplo consome a sequência e põe 1 no arsenal', function () {
+  const e = partidaComTimes([1, 1]);
+  e.times[1].sequencia = 3;
+  assert.equal(JuizTimes.trocar(e, 1, 'duplo'), true);
+  assert.equal(e.times[1].sequencia, 0);
+  assert.equal(e.times[1].arsenal.duplo, 1);
+});
+
+test('trocar não permitido devolve false e não muda nada', function () {
+  const e = partidaComTimes([1, 1]);
+  e.times[1].sequencia = 3;
+  assert.equal(JuizTimes.trocar(e, 1, 'cruz'), false);
+  assert.equal(e.times[1].sequencia, 3);
+  assert.equal(e.times[1].arsenal.cruz, 0);
+});
+
+test('casasDoPoder cruz no canto A1 só devolve as casas dentro do mar', function () {
+  assert.deepEqual(JuizTimes.casasDoPoder('cruz', 0, 0).sort(), ['0,0', '0,1', '1,0']);
+});
+
+test('casasDoPoder duplo vertical usa a casa de baixo; duplo normal a da direita', function () {
+  assert.deepEqual(JuizTimes.casasDoPoder('duplo', 2, 2, true), ['2,2', '3,2']);
+  assert.deepEqual(JuizTimes.casasDoPoder('duplo', 2, 2, false), ['2,2', '2,3']);
+});
+
+test('casasDoPoder x no centro devolve 5 casas e normal devolve 1', function () {
+  assert.equal(JuizTimes.casasDoPoder('x', 5, 5).length, 5);
+  assert.deepEqual(JuizTimes.casasDoPoder('normal', 5, 5), ['5,5']);
+});

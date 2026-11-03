@@ -61,7 +61,41 @@
     });
   }
 
-  const JuizTimes = { criarPartida, quemEscolhe, avaliarRespostas, registrarAcertos, vivos };
+  const DESLOCAMENTOS = {
+    normal: [[0, 0]],
+    duplo: [[0, 0], [0, 1]],
+    duploEmPe: [[0, 0], [1, 0]],
+    cruz: [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]],
+    x: [[0, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
+  };
+
+  function trocasPossiveis(estado, timeId) {
+    if (estado.config.tiro !== 'turbo') return [];
+    const seq = estado.times[timeId].sequencia;
+    if (seq >= estado.config.limiarCruz) return ['cruz', 'x'];
+    if (seq >= estado.config.limiarDuplo) return ['duplo'];
+    return [];
+  }
+
+  function trocar(estado, timeId, poder) {
+    if (trocasPossiveis(estado, timeId).indexOf(poder) < 0) return false;
+    const t = estado.times[timeId];
+    t.arsenal[poder] += 1;
+    t.sequencia = 0;
+    return true;
+  }
+
+  // Casas (chaves "l,c") que o poder atinge, dentro do mar 10x10; a casa escolhida vem primeiro.
+  function casasDoPoder(poder, l, c, vertical) {
+    const chave = poder === 'duplo' && vertical ? 'duploEmPe' : poder;
+    return (DESLOCAMENTOS[chave] || DESLOCAMENTOS.normal)
+      .map(function (d) { return [l + d[0], c + d[1]]; })
+      .filter(function (p) { return p[0] >= 0 && p[0] < Regras.TAMANHO && p[1] >= 0 && p[1] < Regras.TAMANHO; })
+      .map(function (p) { return Regras.chave(p[0], p[1]); });
+  }
+
+  const JuizTimes = { criarPartida, quemEscolhe, avaliarRespostas, registrarAcertos, vivos,
+                      trocasPossiveis, trocar, casasDoPoder };
   raiz.JuizTimes = JuizTimes;
   if (typeof module !== 'undefined' && module.exports) module.exports = JuizTimes;
 })(typeof window !== 'undefined' ? window : globalThis);

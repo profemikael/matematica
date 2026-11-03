@@ -228,7 +228,7 @@
 
   $('btn-posicionar').addEventListener('click', function () {
     if (!tabPos) {
-      tabPos = Tela.criarTabuleiro($('pos-tabuleiro'), { aoClicar: aoClicarMar });
+      tabPos = Tela.criarTabuleiro($('pos-tabuleiro'), { aoClicar: aoClicarPosicao, aoPassar: aoPassarPosicao, aoSair: function () { pintarPos(null); } });
       $('pos-tabuleiro').parentNode.style.setProperty('--casa', 'min(40px, calc((100vw - 60px) / 11))');
     }
     Tela.mostrar('tela-posicionar');
@@ -236,7 +236,7 @@
   });
   $('btn-pos-voltar').addEventListener('click', function () { Tela.mostrar('tela-sala'); renderSala(); });
 
-  function aoClicarMar(l, c) {
+  function aoClicarPosicao(l, c) {
     if (souPronto() || !navioSel) { if (!souPronto()) $('pos-dica').textContent = 'Escolha um navio da lista.'; return; }
     const navios = Object.assign({}, meusNavios());
     const novo = { l: l, c: c, orientacao: orientacaoSel, tamanho: navioDe(navioSel).tamanho };
@@ -264,7 +264,21 @@
     $('btn-pronto').disabled = Object.keys(navios).length !== Regras.FROTA.length;
     $('btn-pronto').textContent = pronto ? '✎ Desmarcar “Pronto” para mexer' : '✔ Pronto';
     ['btn-girar', 'btn-aleatorio', 'btn-limpar'].forEach(function (id) { $(id).disabled = pronto; });
-    tabPos.pintar({ navios: navios, tiros: {}, clicavel: function () { return !pronto; } });
+    pintarPos(null);
+  }
+
+  // Prévia do navio sob o mouse: verde se cabe, vermelho se não cabe.
+  function pintarPos(previa) {
+    const pronto = souPronto();
+    const op = { navios: meusNavios(), tiros: {}, clicavel: function () { return !pronto; } };
+    if (previa) op.previa = previa;
+    tabPos.pintar(op);
+  }
+
+  function aoPassarPosicao(l, c) {
+    if (souPronto() || !navioSel) return;
+    const navio = { l: l, c: c, orientacao: orientacaoSel, tamanho: navioDe(navioSel).tamanho };
+    pintarPos({ casas: Regras.casasDoNavio(navio), valida: Regras.podePosicionar(meusNavios(), navioSel, navio) === null });
   }
   $('btn-girar').addEventListener('click', function () { orientacaoSel = orientacaoSel === 'h' ? 'v' : 'h'; renderPosicionar(); });
   $('btn-aleatorio').addEventListener('click', function () { gravarMeusNavios(Regras.gerarFrotaAleatoria(Math.random), false); });

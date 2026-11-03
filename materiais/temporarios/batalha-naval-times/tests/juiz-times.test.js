@@ -140,3 +140,101 @@ test('casasDoPoder x no centro devolve 5 casas e normal devolve 1', function () 
   assert.equal(JuizTimes.casasDoPoder('x', 5, 5).length, 5);
   assert.deepEqual(JuizTimes.casasDoPoder('normal', 5, 5), ['5,5']);
 });
+
+// ---------- Task 3: ataques simultâneos, eliminação e fim ----------
+const navio = function (l, c, o, t) { return { l: l, c: c, orientacao: o, tamanho: t }; };
+function partidaMao(naviosPorTime, cfg) {
+  const times = naviosPorTime.map(function (n, i) { return { id: i + 1, nome: 'T' + (i + 1), alunos: ['u' + (i + 1)], navios: n }; });
+  return JuizTimes.criarPartida(Object.assign({}, CFG, cfg || {}), times);
+}
+const NA = { n2: navio(0, 0, 'h', 2) };            // um navio: A1-B1 ... casas 0,0 e 0,1
+const ACERTOU = { 1: true, 2: true, 3: true };
+
+test('um ataque na água marca agua e nenhum navio afunda', function () {
+  const e = partidaMao([NA, NA]);
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 5, c: 5, poder: 'normal' } }, ACERTOU);
+  assert.deepEqual(e.times[2].tiros, { '5,5': 'agua' });
+  assert.equal(r.eventos[0].afundou, false);
+  assert.equal(r.fim, null);
+});
+
+test('acerto no classico marca só a casa; no rapido afunda o navio inteiro', function () {
+  const c = partidaMao([NA, NA]);
+  JuizTimes.resolverRodada(c, { 1: { alvo: 2, l: 0, c: 0, poder: 'normal' } }, ACERTOU);
+  assert.deepEqual(c.times[2].tiros, { '0,0': 'acerto' });
+  assert.equal(c.times[2].vivo, true);
+  const r = partidaMao([NA, NA], { modo: 'rapido' });
+  const res = JuizTimes.resolverRodada(r, { 1: { alvo: 2, l: 0, c: 0, poder: 'normal' } }, ACERTOU);
+  assert.equal(r.times[2].vivo, false);
+  assert.deepEqual(res.eliminados, [2]);
+});
+
+test('dois times na mesma casa do mesmo adversário: os dois eventos registram o acerto', function () {
+  const e = partidaMao([NA, NA, NA]);
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 3, l: 0, c: 0, poder: 'normal' }, 2: { alvo: 3, l: 0, c: 0, poder: 'normal' } }, ACERTOU);
+  assert.deepEqual(r.eventos.map(function (x) { return x.acertos; }), [['0,0'], ['0,0']]);
+});
+
+test('dois tiros que completam um navio juntos o marcam afundado', function () {
+  const e = partidaMao([NA, NA, NA]);
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 3, l: 0, c: 0, poder: 'normal' }, 2: { alvo: 3, l: 0, c: 1, poder: 'normal' } }, ACERTOU);
+  assert.equal(e.times[3].vivo, false);
+  assert.deepEqual(e.times[3].afundadas.sort(), ['0,0', '0,1']);
+  assert.ok(r.eventos.every(function (x) { return x.afundou; }));
+});
+
+test('time que errou a pergunta não ataca mesmo enviando ataque', function () {
+  const e = partidaMao([NA, NA]);
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 0, c: 0, poder: 'normal' } }, { 1: false, 2: true });
+  assert.deepEqual(e.times[2].tiros, {});
+  assert.equal(r.eventos.length, 0);
+});
+
+test('ataque inválido é ignorado sem lançar erro', function () {
+  const e = partidaMao([NA, NA, NA]);
+  e.times[3].vivo = false;
+  e.times[2].tiros['4,4'] = 'agua';
+  const ataques = {
+    1: { alvo: 3, l: 0, c: 0, poder: 'normal' },
+    2: { alvo: 2, l: 0, c: 0, poder: 'normal' }
+  };
+  let r = JuizTimes.resolverRodada(e, ataques, ACERTOU);
+  assert.ok(r.eventos.every(function (x) { return x.ignorado === true; }));
+  r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 10, c: 0, poder: 'normal' } }, { 1: true });
+  assert.equal(r.eventos[0].ignorado, true);
+  r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 4, c: 4, poder: 'normal' } }, { 1: true });
+  assert.equal(r.eventos[0].ignorado, true);
+});
+
+test('poder que o time não tem vira tiro normal e não gasta arsenal; poder do arsenal gasta 1', function () {
+  const e = partidaMao([NA, NA]);
+  let r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 5, c: 5, poder: 'cruz' } }, ACERTOU);
+  assert.equal(r.eventos[0].poder, 'normal');
+  assert.equal(r.eventos[0].casas.length, 1);
+  e.times[1].arsenal.cruz = 1;
+  r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 7, c: 7, poder: 'cruz' } }, ACERTOU);
+  assert.equal(r.eventos[0].casas.length, 5);
+  assert.equal(e.times[1].arsenal.cruz, 0);
+});
+
+test('trocar + poder no mesmo ataque funciona com sequência suficiente', function () {
+  const e = partidaMao([NA, NA]);
+  e.times[1].sequencia = 3;
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 5, c: 5, poder: 'duplo', trocar: 'duplo' } }, ACERTOU);
+  assert.equal(r.eventos[0].poder, 'duplo');
+  assert.equal(r.eventos[0].casas.length, 2);
+  assert.equal(e.times[1].sequencia, 0);
+  assert.equal(e.times[1].arsenal.duplo, 0);
+});
+
+test('fim: último time vivo vence', function () {
+  const e = partidaMao([NA, NA], { modo: 'rapido' });
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 0, c: 0, poder: 'normal' } }, { 1: true, 2: false });
+  assert.deepEqual(r.fim, { vencedores: [1], empate: false });
+});
+
+test('fim: dois últimos caem na mesma rodada dá empate entre eles', function () {
+  const e = partidaMao([NA, NA], { modo: 'rapido' });
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 0, c: 0, poder: 'normal' }, 2: { alvo: 1, l: 0, c: 0, poder: 'normal' } }, ACERTOU);
+  assert.deepEqual(r.fim, { vencedores: [1, 2], empate: true });
+});

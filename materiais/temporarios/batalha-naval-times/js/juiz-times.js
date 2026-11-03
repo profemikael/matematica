@@ -94,8 +94,77 @@
       .map(function (p) { return Regras.chave(p[0], p[1]); });
   }
 
+  function ehInteiro09(v) { return Number.isInteger(v) && v >= 0 && v < Regras.TAMANHO; }
+
+  function todasAtingidas(navios, tiros) {
+    return Object.keys(navios).every(function (id) {
+      return Regras.casasDoNavio(navios[id]).every(function (k) { return tiros[Regras.chave(k.l, k.c)] === 'acerto'; });
+    });
+  }
+
+  // Resolve os ataques da rodada ao mesmo tempo: todos contra o tabuleiro como estava no começo da rodada.
+  function resolverRodada(estado, ataques, acertos) {
+    const vivosAntes = vivos(estado);
+    const antes = {};
+    vivosAntes.forEach(function (id) { antes[id] = Object.assign({}, estado.times[id].tiros); });
+    const eventos = [];
+    const novosTiros = {};   // alvo -> { chave: 'agua'|'acerto' }
+
+    vivosAntes.forEach(function (id) {
+      const a = ataques[id];
+      if (!a || acertos[id] !== true) return;
+      const t = estado.times[id];
+      const alvo = estado.times[a.alvo];
+      const ignorar = function () {
+        eventos.push({ atacante: id, alvo: a.alvo, casas: [], agua: [], acertos: [], afundou: false, ignorado: true, poder: 'normal' });
+      };
+      if (!alvo || !alvo.vivo || a.alvo === id || !ehInteiro09(a.l) || !ehInteiro09(a.c) || antes[a.alvo] === undefined
+          || antes[a.alvo][Regras.chave(a.l, a.c)]) { ignorar(); return; }
+      if (a.trocar) trocar(estado, id, a.trocar);
+      let poder = 'normal';
+      if (estado.config.tiro === 'turbo' && a.poder && a.poder !== 'normal' && t.arsenal[a.poder] >= 1) {
+        poder = a.poder;
+        t.arsenal[poder] -= 1;
+      }
+      const casas = casasDoPoder(poder, a.l, a.c, !!a.vertical).filter(function (ch) { return !antes[a.alvo][ch]; });
+      const r = Regras.resolverTiroMultiplo(alvo.navios, antes[a.alvo], estado.config.modo, casas, false);
+      const acu = novosTiros[a.alvo] = novosTiros[a.alvo] || {};
+      r.agua.forEach(function (ch) { acu[ch] = acu[ch] || 'agua'; });
+      r.acertos.forEach(function (ch) { acu[ch] = 'acerto'; });
+      eventos.push({ atacante: id, alvo: a.alvo, casas: casas, agua: r.agua, acertos: r.acertos, afundou: r.afundados.length > 0, poder: poder });
+    });
+
+    Object.keys(novosTiros).forEach(function (alvoId) {
+      const alvo = estado.times[alvoId];
+      Object.keys(novosTiros[alvoId]).forEach(function (ch) {
+        if (alvo.tiros[ch] !== 'acerto') alvo.tiros[ch] = novosTiros[alvoId][ch];
+      });
+      // Navios completados (por um tiro ou pela soma de vários) entram em afundadas.
+      Object.keys(alvo.navios).forEach(function (nid) {
+        const cs = Regras.casasDoNavio(alvo.navios[nid]).map(function (k) { return Regras.chave(k.l, k.c); });
+        if (cs.every(function (ch) { return alvo.tiros[ch] === 'acerto'; }) && alvo.afundadas.indexOf(cs[0]) < 0) {
+          cs.forEach(function (ch) { alvo.afundadas.push(ch); });
+          eventos.forEach(function (ev) {
+            if (String(ev.alvo) === String(alvoId) && ev.acertos.some(function (ch) { return cs.indexOf(ch) >= 0; })) ev.afundou = true;
+          });
+        }
+      });
+    });
+
+    const eliminados = [];
+    vivosAntes.forEach(function (id) {
+      const t = estado.times[id];
+      if (todasAtingidas(t.navios, t.tiros)) { t.vivo = false; eliminados.push(id); }
+    });
+    const restam = vivos(estado);
+    let fim = null;
+    if (restam.length === 1) fim = { vencedores: restam, empate: false };
+    else if (restam.length === 0) fim = { vencedores: vivosAntes, empate: true };
+    return { eventos: eventos, eliminados: eliminados, fim: fim };
+  }
+
   const JuizTimes = { criarPartida, quemEscolhe, avaliarRespostas, registrarAcertos, vivos,
-                      trocasPossiveis, trocar, casasDoPoder };
+                      trocasPossiveis, trocar, casasDoPoder, resolverRodada };
   raiz.JuizTimes = JuizTimes;
   if (typeof module !== 'undefined' && module.exports) module.exports = JuizTimes;
 })(typeof window !== 'undefined' ? window : globalThis);

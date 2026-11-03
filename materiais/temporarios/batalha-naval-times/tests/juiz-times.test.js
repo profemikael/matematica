@@ -1,0 +1,92 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const JuizTimes = require('../js/juiz-times.js');
+const Regras = require('../../batalha-naval/js/regras.js');
+
+const CFG = { modo: 'classico', tiro: 'turbo', resposta: 'todos', segundos: 10 };
+
+function partidaComTimes(tamanhos, cfg) {
+  const times = tamanhos.map(function (n, i) {
+    const alunos = [];
+    for (let k = 0; k < n; k++) alunos.push('t' + (i + 1) + 'a' + (k + 1));
+    return { id: i + 1, nome: 'Time ' + (i + 1), alunos: alunos, navios: Regras.gerarFrotaAleatoria(Math.random) };
+  });
+  return JuizTimes.criarPartida(Object.assign({}, CFG, cfg || {}), times);
+}
+const todosConectados = function (estado) {
+  const c = {};
+  Object.values(estado.times).forEach(function (t) { t.alunos.forEach(function (u) { c[u] = true; }); });
+  return c;
+};
+const PERG = { tipo: 'digitar', pergunta: '2+2', resposta: '4' };
+
+test('criarPartida lança erro com menos de 2 times com alunos', function () {
+  assert.throws(function () { partidaComTimes([2]); });
+  assert.throws(function () { partidaComTimes([2, 0]); });
+});
+
+test('quemEscolhe alterna entre os alunos do time a cada rodada', function () {
+  const e = partidaComTimes([2, 1]);
+  const c = todosConectados(e);
+  e.rodada = 1; assert.equal(JuizTimes.quemEscolhe(e, 1, c), 't1a1');
+  e.rodada = 2; assert.equal(JuizTimes.quemEscolhe(e, 1, c), 't1a2');
+  e.rodada = 3; assert.equal(JuizTimes.quemEscolhe(e, 1, c), 't1a1');
+  e.rodada = 2; assert.equal(JuizTimes.quemEscolhe(e, 2, c), 't2a1');
+});
+
+test('quemEscolhe pula aluno desconectado e devolve null se ninguém do time está conectado', function () {
+  const e = partidaComTimes([2, 1]);
+  const c = todosConectados(e);
+  e.rodada = 2; c.t1a2 = false;
+  assert.equal(JuizTimes.quemEscolhe(e, 1, c), 't1a1');
+  c.t1a1 = false;
+  assert.equal(JuizTimes.quemEscolhe(e, 1, c), null);
+});
+
+test('avaliarRespostas modo todos: só acerta se todos os conectados acertam', function () {
+  const e = partidaComTimes([2, 1]);
+  const c = todosConectados(e);
+  const r = { t1a1: { texto: '4', em: 1 }, t1a2: { texto: '5', em: 2 }, t2a1: { texto: '4', em: 3 } };
+  assert.deepEqual(JuizTimes.avaliarRespostas(e, PERG, r, c), { 1: false, 2: true });
+});
+
+test('avaliarRespostas modo todos: sem resposta conta como errado, mas aluno desconectado é ignorado', function () {
+  const e = partidaComTimes([2, 1]);
+  const c = todosConectados(e);
+  const r = { t1a1: { texto: '4', em: 1 }, t2a1: { texto: '4', em: 3 } };
+  assert.equal(JuizTimes.avaliarRespostas(e, PERG, r, c)[1], false);
+  c.t1a2 = false;
+  assert.equal(JuizTimes.avaliarRespostas(e, PERG, r, c)[1], true);
+});
+
+test('avaliarRespostas time sem ninguém conectado nunca acerta', function () {
+  const e = partidaComTimes([2, 1]);
+  const c = todosConectados(e);
+  c.t1a1 = false; c.t1a2 = false;
+  const r = { t1a1: { texto: '4', em: 1 }, t1a2: { texto: '4', em: 2 }, t2a1: { texto: '4', em: 3 } };
+  assert.equal(JuizTimes.avaliarRespostas(e, PERG, r, c)[1], false);
+});
+
+test('avaliarRespostas modo primeiro: vale a resposta com menor em entre os do time', function () {
+  const e = partidaComTimes([2, 1], { resposta: 'primeiro' });
+  const c = todosConectados(e);
+  assert.equal(JuizTimes.avaliarRespostas(e, PERG, { t1a1: { texto: '9', em: 1 }, t1a2: { texto: '4', em: 5 } }, c)[1], false);
+  assert.equal(JuizTimes.avaliarRespostas(e, PERG, { t1a1: { texto: '9', em: 5 }, t1a2: { texto: '4', em: 1 } }, c)[1], true);
+  assert.equal(JuizTimes.avaliarRespostas(e, PERG, {}, c)[1], false);
+});
+
+test('avaliarRespostas ignora times eliminados', function () {
+  const e = partidaComTimes([1, 1, 1]);
+  e.times[3].vivo = false;
+  const r = JuizTimes.avaliarRespostas(e, PERG, {}, todosConectados(e));
+  assert.deepEqual(Object.keys(r), ['1', '2']);
+});
+
+test('registrarAcertos soma 1 ao acertar e zera ao errar', function () {
+  const e = partidaComTimes([1, 1]);
+  JuizTimes.registrarAcertos(e, { 1: true, 2: true });
+  JuizTimes.registrarAcertos(e, { 1: true, 2: false });
+  assert.equal(e.times[1].sequencia, 2);
+  assert.equal(e.times[2].sequencia, 0);
+});

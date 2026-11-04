@@ -30,10 +30,45 @@
     let pausada = false;
     let respostas = {};
     let ataques = {};
-    let conectados = {};
+    let jogadoresBrutos = {};   // como o Firebase mostra os jogadores (nome, time, conectado, vistoEm)
+    let avisos = [];            // "Beto saiu do Time Azul", "Beto voltou..." (da rodada atual)
+    const semSinalMs = opcoes.semSinalMs || 15000;
     let cancelarRelogio = null;
     let desinscrever = [];
     let pararJogadores = null;
+
+    // Presente = marcado como conectado E mandando sinal de vida há pouco (pega Chromebook desligado ou fechado,
+    // que o Firebase só perceberia depois de cerca de 1 minuto). Sem vistoEm (jogadores antigos) vale só "conectado".
+    function estaPresente(uid) {
+      const j = jogadoresBrutos[uid];
+      if (!j || !j.conectado) return false;
+      if (typeof j.vistoEm === 'number' && relogio.agora() - j.vistoEm > semSinalMs) return false;
+      return true;
+    }
+    function mapaConectados() {
+      const m = {};
+      Object.keys(jogadoresBrutos).forEach(function (u) { m[u] = estaPresente(u); });
+      return m;
+    }
+    function nomeDe(uid) { return (jogadoresBrutos[uid] && jogadoresBrutos[uid].nome) || 'Um aluno'; }
+
+    // No começo de cada rodada: quem sumiu sai do time (o time nunca fica vazio) e quem voltou é recolocado.
+    function sincronizarTimes() {
+      avisos = [];
+      const presentes = mapaConectados();
+      JuizTimes.vivos(estado).forEach(function (id) {
+        const t = estado.times[id];
+        const saindo = t.alunos.filter(function (u) { return !presentes[u]; });
+        if (saindo.length > 0 && saindo.length < t.alunos.length) {
+          saindo.forEach(function (u) { avisos.push(nomeDe(u) + ' saiu do ' + t.nome + ' (desconectou)'); });
+          t.alunos = t.alunos.filter(function (u) { return presentes[u]; });
+        }
+        Object.keys(jogadoresBrutos)
+          .filter(function (u) { return jogadoresBrutos[u].time === Number(id) && presentes[u] && t.alunos.indexOf(u) < 0; })
+          .sort(function (a, b) { return (jogadoresBrutos[a].entrouEm || 0) - (jogadoresBrutos[b].entrouEm || 0); })
+          .forEach(function (u) { t.alunos.push(u); avisos.push(nomeDe(u) + ' voltou para o ' + t.nome); });
+      });
+    }
 
     function limparRelogio() { if (cancelarRelogio) { cancelarRelogio(); cancelarRelogio = null; } }
     function limparOuvintes() { desinscrever.forEach(function (f) { f(); }); desinscrever = []; }
@@ -50,11 +85,11 @@
         const t = estado.times[id];
         times[id] = { nome: t.nome, alunos: t.alunos, vivo: t.vivo, sequencia: t.sequencia, arsenal: t.arsenal,
                       naviosRestantes: naviosRestantes(t), torpedos: t.torpedos, acertou: acertos ? !!acertos[id] : null,
-                      vezDe: t.vivo ? JuizTimes.quemEscolhe(estado, id, conectados) : null,
+                      vezDe: t.vivo ? JuizTimes.quemEscolhe(estado, id, mapaConectados()) : null,
                       tiros: t.tiros, afundadas: t.afundadas };
       });
       return { fase: fase, rodada: estado.rodada, ate: ate, pausada: pausada, pergunta: perguntaPublica,
-               times: times, eventos: eventos, fim: fim, movedores: movedores };
+               times: times, eventos: eventos, fim: fim, movedores: movedores, avisos: avisos };
     }
 
     function publicar() {
@@ -83,6 +118,7 @@
     function iniciarRodada() {
       limparOuvintes();
       estado.rodada += 1;
+      sincronizarTimes();
       acertos = null; eventos = []; respostas = {}; ataques = {}; movedores = [];
       perguntaIdx = Perguntas.sortear(monte, aleatorio);
       perguntaPublica = escolherPublica(perguntas[perguntaIdx]);
@@ -102,7 +138,7 @@
       if (fase !== 'pergunta' || pausada) return;
       const presentes = [];
       JuizTimes.vivos(estado).forEach(function (id) {
-        estado.times[id].alunos.forEach(function (u) { if (conectados[u]) presentes.push(u); });
+        estado.times[id].alunos.forEach(function (u) { if (estaPresente(u)) presentes.push(u); });
       });
       if (presentes.length > 0 && presentes.every(function (u) { return !!respostas[u]; })) encerrarPergunta();
     }
@@ -110,7 +146,7 @@
     function encerrarPergunta() {
       if (fase !== 'pergunta') return;
       limparRelogio(); limparOuvintes();
-      acertos = JuizTimes.avaliarRespostas(estado, perguntas[perguntaIdx], respostas, conectados);
+      acertos = JuizTimes.avaliarRespostas(estado, perguntas[perguntaIdx], respostas, mapaConectados());
       JuizTimes.registrarAcertos(estado, acertos);
       const algum = Object.keys(acertos).some(function (id) { return acertos[id]; });
       if (algum) comecarAtaque(); else fecharRodada();
@@ -184,8 +220,7 @@
     function observarJogadores() {
       if (pararJogadores) pararJogadores();
       pararJogadores = con.aoJogadores(function (j) {
-        conectados = {};
-        Object.keys(j || {}).forEach(function (u) { conectados[u] = !!j[u].conectado; });
+        jogadoresBrutos = j || {};
         if (estado && fase === 'pergunta') talvezFecharPergunta();
       });
     }

@@ -52,3 +52,6 @@
 .casa.radar-velho { outline-style: dashed; opacity: .7; }
 .radar-msg.velho { border-style: dashed; }
 .guardado { font-weight: bold; color: #7C2D12; }
+
+.avisos-times { list-style: none; margin: 6px auto; padding: 0; max-width: 720px; text-align: center; }
+.avisos-times li { display: inline-block; margin: 2px 4px; padding: 4px 10px; border-radius: 12px; background: #FEF3C7; border: 1px solid #F59E0B; font-size: 14px; }

@@ -72,18 +72,25 @@
       const eu = sala.child('jogadores/' + jogador.id);
       const conectado = db.ref('.info/connected');
       let fechada = false;
+      let ligadoAgora = false;
       const ouvintes = [];   // [ref, evento, função]
 
       function ouvir(ref, evento, fn) { ref.on(evento, fn); ouvintes.push([ref, evento, fn]); return function () { ref.off(evento, fn); }; }
 
       function aoConectado(s) {
         const ligado = s.val() === true;
+        ligadoAgora = ligado;
         if (conexao.aoConexaoCb) conexao.aoConexaoCb(ligado);
         if (!ligado) return;
         eu.onDisconnect().update({ conectado: false, vistoEm: AGORA() });
         eu.update({ nome: jogador.nome, conectado: true, vistoEm: AGORA() });
       }
       conectado.on('value', aoConectado);
+      // Sinal de vida a cada 5 s: o anfitrião percebe em ~15 s um Chromebook desligado ou fechado
+      // (o Firebase sozinho só perceberia depois de cerca de 1 minuto).
+      const batimento = setInterval(function () {
+        if (!fechada && ligadoAgora) eu.update({ vistoEm: AGORA(), conectado: true });
+      }, 5000);
 
       const conexao = {
         aoConexaoCb: null,
@@ -113,6 +120,7 @@
         },
         fechar: function () {
           fechada = true;
+          clearInterval(batimento);
           conectado.off('value', aoConectado);
           ouvintes.forEach(function (o) { o[0].off(o[1], o[2]); });
           eu.onDisconnect().cancel();

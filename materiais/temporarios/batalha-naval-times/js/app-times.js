@@ -413,6 +413,8 @@
     else if (p.fase === 'resultado' && meu.acertou === false) msg = 'Seu time errou a pergunta nesta rodada.';
     $('bat-mensagem').textContent = msg;
 
+    limpar($('bat-avisos'));
+    (p.avisos || []).forEach(function (txt) { $('bat-avisos').appendChild(criarEl('li', '👋 ' + txt)); });
     renderEventos();
     renderTabuleiros();
     renderPlacar($('bat-placar'), false);

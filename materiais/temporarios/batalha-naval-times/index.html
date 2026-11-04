@@ -137,6 +137,7 @@
     <p id="bat-pausa" class="alerta" hidden>⏸ Partida pausada pelo professor</p>
     <div id="bat-pergunta" class="cartao conta-times" hidden></div>
     <div id="bat-ataque" class="cartao conta-times" hidden></div>
+    <div id="bat-movimento" class="cartao conta-times" hidden></div>
     <p id="bat-mensagem" class="mensagem"></p>
     <p id="bat-radar-msg" class="radar-msg" hidden></p>
     <div id="bat-mares" class="tabuleiros tabuleiros-times">
@@ -153,6 +154,16 @@
       <button id="btn-encerrar" class="botao" type="button">⏹ Encerrar partida</button>
     </div>
   </section>
+
+  <!-- Escolha do poder quando a sequência chega a um nível -->
+  <div id="poder-escolha" class="poder-escolha" hidden>
+    <div class="poder-caixa">
+      <h3 id="poder-titulo"></h3>
+      <p id="poder-sub"></p>
+      <div id="poder-botoes"></div>
+      <button id="poder-pular" class="botao" type="button">Continuar acumulando (não trocar agora)</button>
+    </div>
+  </div>
 
   <!-- Resultado do radar, grande no meio da tela -->
   <div id="radar-aviso" class="radar-aviso" hidden>

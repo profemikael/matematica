@@ -25,6 +25,7 @@
     let acertos = null;
     let eventos = [];
     let fim = null;
+    let movedores = [];   // times que declararam mover navio e estão na etapa de movimento
     let ate = 0;
     let pausada = false;
     let respostas = {};
@@ -53,14 +54,14 @@
                       tiros: t.tiros, afundadas: t.afundadas };
       });
       return { fase: fase, rodada: estado.rodada, ate: ate, pausada: pausada, pergunta: perguntaPublica,
-               times: times, eventos: eventos, fim: fim };
+               times: times, eventos: eventos, fim: fim, movedores: movedores };
     }
 
     function publicar() {
       const pub = montarPublico();
       con.publicar(pub);
       con.salvarEstado({ estado: estado, fase: fase, monte: monte, perguntaIdx: perguntaIdx, perguntaPublica: perguntaPublica,
-                         acertos: acertos, eventos: eventos, fim: fim, pausada: pausada });
+                         acertos: acertos, eventos: eventos, fim: fim, pausada: pausada, movedores: movedores });
       if (opcoes.aoMudar) opcoes.aoMudar(pub);
     }
 
@@ -81,7 +82,7 @@
     function iniciarRodada() {
       limparOuvintes();
       estado.rodada += 1;
-      acertos = null; eventos = []; respostas = {}; ataques = {};
+      acertos = null; eventos = []; respostas = {}; ataques = {}; movedores = [];
       perguntaIdx = Perguntas.sortear(monte, aleatorio);
       perguntaPublica = escolherPublica(perguntas[perguntaIdx]);
       comecarPergunta();
@@ -125,6 +126,38 @@
 
     function encerrarAtaque() {
       if (fase !== 'ataque') return;
+      limparRelogio(); limparOuvintes();
+      const quem = JuizTimes.vivos(estado).filter(function (id) {
+        return acertos[id] && JuizTimes.podeMover(estado, id, ataques[id]);
+      });
+      if (quem.length > 0) comecarMovimento(quem); else fecharRodada();
+    }
+
+    // Etapa de movimento: tempo extra para quem declarou mover navio; os outros times veem o aviso.
+    function segundosMover() {
+      return estado.config.segundosMover || Math.max(15, estado.config.segundos * 2);
+    }
+
+    function comecarMovimento(quem) {
+      fase = 'movimento';
+      movedores = quem;
+      limparOuvintes();
+      desinscrever.push(con.aoAtaques(estado.rodada, function (a) { ataques = a || {}; talvezFecharMovimento(); }));
+      agendar(segundosMover() * 1000, encerrarMovimento);
+      publicar();
+    }
+
+    function talvezFecharMovimento() {
+      if (fase !== 'movimento' || pausada) return;
+      const prontos = movedores.every(function (id) {
+        const m = ataques[id] && ataques[id].mover;
+        return !!m && Number.isInteger(m.l) && Number.isInteger(m.c);
+      });
+      if (prontos) encerrarMovimento();
+    }
+
+    function encerrarMovimento() {
+      if (fase !== 'movimento') return;
       limparRelogio(); limparOuvintes();
       fecharRodada();
     }
@@ -170,6 +203,7 @@
       pausada = false;
       if (fase === 'pergunta') comecarPergunta();
       else if (fase === 'ataque') comecarAtaque();
+      else if (fase === 'movimento') comecarMovimento(movedores);
       else if (fase === 'resultado') { agendar(RESULTADO_MS, iniciarRodada); publicar(); }
       else publicar();
     }
@@ -179,7 +213,7 @@
         const s = await con.lerEstado();
         if (!s) return false;
         estado = s.estado; fase = s.fase; monte = s.monte; perguntaIdx = s.perguntaIdx; perguntaPublica = s.perguntaPublica;
-        acertos = s.acertos; eventos = s.eventos || []; fim = s.fim;
+        acertos = s.acertos; eventos = s.eventos || []; fim = s.fim; movedores = s.movedores || [];
         Object.keys(estado.times).forEach(function (id) {
           const t = estado.times[id];
           t.tiros = t.tiros || {}; t.afundadas = t.afundadas || [];

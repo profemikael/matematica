@@ -127,12 +127,26 @@
     return novo;
   }
 
+  // O time declarou mover e tem como? (poder no arsenal, ou sequência que permite trocar por mover agora)
+  function podeMover(estado, timeId, a) {
+    if (!a || a.poder !== 'mover') return false;
+    const t = estado.times[timeId];
+    if (t.arsenal.mover >= 1) return true;
+    return a.trocar === 'mover' && trocasPossiveis(estado, timeId).indexOf('mover') >= 0;
+  }
+
   // Resolve os ataques da rodada ao mesmo tempo. Ordem: 1) mover navio; 2) radar e tiros contra o mar já movido,
   // todos contra os tiros como estavam no começo da rodada.
   function resolverRodada(estado, ataques, acertos) {
     const vivosAntes = vivos(estado);
     const eventos = [];
     const planos = [];
+
+    // Trocar a sequência por um poder vale mesmo sem atacar: o poder fica guardado no arsenal.
+    vivosAntes.forEach(function (id) {
+      const a = ataques[id];
+      if (a && a.trocar && acertos[id] === true) trocar(estado, id, a.trocar);
+    });
 
     vivosAntes.forEach(function (id) {
       const a = ataques[id];
@@ -142,7 +156,6 @@
         eventos.push({ atacante: id, alvo: alvo === undefined ? a.alvo : alvo, casas: [], agua: [], acertos: [], afundou: false, ignorado: true, poder: 'normal' });
       };
       if (a.poder === 'mover') {
-        if (a.trocar) trocar(estado, id, a.trocar);
         const novo = t.arsenal.mover >= 1 ? movimentoValido(t, a.mover) : null;
         if (!novo) { ignorar(id); return; }
         planos.push({ id: id, tipo: 'mover', navio: a.mover.navio, novo: novo });
@@ -153,7 +166,6 @@
       const jaAtingida = !!alvo.tiros[Regras.chave(a.l, a.c)];
       const radar = a.poder === 'radar3' || a.poder === 'radar4';
       if (jaAtingida && !radar) { ignorar(); return; }
-      if (a.trocar) trocar(estado, id, a.trocar);
       if (radar && t.arsenal[a.poder] >= 1) { planos.push({ id: id, tipo: 'radar', poder: a.poder, a: a }); return; }
       if (jaAtingida) { ignorar(); return; }
       let poder = 'normal';
@@ -227,7 +239,7 @@
   }
 
   const JuizTimes = { criarPartida, quemEscolhe, avaliarRespostas, registrarAcertos, vivos,
-                      trocasPossiveis, trocar, casasDoPoder, resolverRodada };
+                      trocasPossiveis, trocar, casasDoPoder, resolverRodada, podeMover };
   raiz.JuizTimes = JuizTimes;
   if (typeof module !== 'undefined' && module.exports) module.exports = JuizTimes;
 })(typeof window !== 'undefined' ? window : globalThis);

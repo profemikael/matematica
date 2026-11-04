@@ -65,10 +65,11 @@
       if (opcoes.aoMudar) opcoes.aoMudar(pub);
     }
 
-    function agendar(ms, fn) {
+    // `extra`: tolerância depois do prazo mostrado (respostas digitadas que ainda estão chegando); o prazo publicado não muda.
+    function agendar(ms, fn, extra) {
       limparRelogio();
       ate = relogio.agora() + ms;
-      cancelarRelogio = relogio.agendar(function () { cancelarRelogio = null; fn(); }, ms);
+      cancelarRelogio = relogio.agendar(function () { cancelarRelogio = null; fn(); }, ms + (extra || 0));
     }
 
     function escolherPublica(p) {
@@ -93,7 +94,7 @@
       respostas = {};
       limparOuvintes();
       desinscrever.push(con.aoRespostas(estado.rodada, function (r) { respostas = r || {}; talvezFecharPergunta(); }));
-      agendar(estado.config.segundos * 1000, encerrarPergunta);
+      agendar(estado.config.segundos * 1000, encerrarPergunta, opcoes.gracaMs || 0);
       publicar();
     }
 

@@ -41,6 +41,7 @@
   let alvoSel = null, mira = null, poderSel = 'normal', trocarSel = null, verticalSel = false;
   let moverNavioSel = null, moverOri = 'h', moverEnviado = null, ultimaMov = null;
   let popupRodada = 0;
+  let campoPergunta = null, enviarPergunta = null, timerEnvioAuto = null;
   let radares = {};   // alvo (id do time) -> [{ casas, tem, poder, rodada }] dos radares do MEU time
 
   function eu() { return { id: meuId(), nome: ($('nome').value || ler(CHAVE_NOME) || 'Aluno').trim().slice(0, 20) || 'Aluno' }; }
@@ -334,7 +335,7 @@
   // ---------------- iniciar (anfitrião) ----------------
   function criarAnfitriao(perguntas, times) {
     return Anfitriao.criar({
-      conexao: conexao, config: config, times: times, perguntas: perguntas,
+      conexao: conexao, config: config, times: times, perguntas: perguntas, gracaMs: 1500,
       relogio: { agora: function () { return conexao.horaServidor(); },
                  agendar: function (fn, ms) { const h = setTimeout(fn, ms); return function () { clearTimeout(h); }; } }
     });
@@ -415,12 +416,27 @@
     renderEventos();
     renderTabuleiros();
     renderPlacar($('bat-placar'), false);
+    agendarEnvioAutomatico();
+  }
+
+  // Quando o tempo acaba, o que o aluno já digitou e ainda não enviou é enviado sozinho (e vale se estiver certo).
+  function agendarEnvioAutomatico() {
+    clearTimeout(timerEnvioAuto);
+    if (!publico || publico.fase !== 'pergunta' || publico.pausada || !campoPergunta || rodadaRespondida === publico.rodada) return;
+    const rodada = publico.rodada;
+    timerEnvioAuto = setTimeout(function () {
+      if (!publico || publico.fase !== 'pergunta' || publico.pausada || publico.rodada !== rodada || rodadaRespondida === rodada || !campoPergunta) return;
+      const texto = campoPergunta.value.trim();
+      campoPergunta.disabled = true;   // acabou o tempo: não dá mais para digitar
+      if (texto) enviarPergunta(texto);
+    }, Math.max(0, publico.ate - agora()));
   }
 
   function montarPergunta() {
     const caixa = $('bat-pergunta');
     limpar(caixa);
     const pr = publico.pergunta;
+    campoPergunta = null; enviarPergunta = null;
     caixa.appendChild(criarEl('p', pr.texto, 'conta-pergunta'));
     if (rodadaRespondida === publico.rodada) { caixa.appendChild(criarEl('p', '✔ Resposta enviada. Aguarde...', 'feedback')); return; }
     const enviar = function (texto) {
@@ -442,6 +458,7 @@
       const f = criarEl('form'); const i = criarEl('input'); i.type = 'text'; i.autocomplete = 'off'; i.setAttribute('inputmode', 'decimal');
       const b = criarEl('button', 'Enviar', 'botao principal'); b.type = 'submit';
       f.appendChild(i); f.appendChild(b);
+      campoPergunta = i; enviarPergunta = enviar;
       f.addEventListener('submit', function (ev) { ev.preventDefault(); if (i.value.trim()) enviar(i.value.trim()); });
       caixa.appendChild(f);
       i.focus();

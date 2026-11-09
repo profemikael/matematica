@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Batalha Naval em Times</title>
 <link rel="stylesheet" href="../batalha-naval/css/estilo.css?v=2026-10-05-painel">
-<link rel="stylesheet" href="css/times.css?v=2026-11-09">
+<link rel="stylesheet" href="css/times.css?v=2026-11-09b">
 </head>
 <body>
 <main class="folha">
@@ -161,13 +161,18 @@
     </div>
   </section>
 
-  <!-- Cartão das regras: antes da rodada 1, todos leem e clicam "Entendi" -->
+  <!-- Cartão das regras em duas telas: 1) como é a partida; 2) sequência de acertos e prêmios (só no Turbo) -->
   <div id="regras-aviso" class="poder-escolha" hidden>
     <div class="poder-caixa regras-caixa">
-      <h3>📜 Regras desta partida</h3>
-      <ul id="regras-lista" class="regras-lista"></ul>
+      <h3 id="regras-titulo"></h3>
+      <div id="regras-conteudo"></div>
+      <p id="regras-pontos" class="regras-pontos" aria-hidden="true"></p>
+      <div class="regras-acoes">
+        <button id="btn-regras-voltar" class="botao" type="button">◀ Voltar</button>
+        <button id="btn-regras-prox" class="botao principal regras-ok" type="button">Próximo ▶</button>
+        <button id="btn-regras-ok" class="botao principal regras-ok" type="button">✔ Entendi!</button>
+      </div>
       <p id="regras-prontos" class="regras-prontos"></p>
-      <button id="btn-regras-ok" class="botao principal regras-ok" type="button">✔ Entendi!</button>
       <button id="btn-comecar-ja" class="botao" type="button" hidden>Professor: começar mesmo assim</button>
     </div>
   </div>

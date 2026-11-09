@@ -377,7 +377,7 @@
   $('btn-regras-ok').addEventListener('click', function () {
     if (!conexao) return;
     $('btn-regras-ok').disabled = true;
-    $('btn-regras-ok').textContent = '✔ Você confirmou. Esperando os colegas…';
+    $('btn-regras-ok').textContent = '✔ Confirmado! Esperando os colegas…';
     conexao.aceitarRegras();
   });
   $('btn-ver-final').addEventListener('click', function () { mostrarFim(); });
@@ -851,49 +851,108 @@
     });
   }
 
-  // ---------------- cartão das regras (antes da rodada 1) ----------------
-  function textosRegras() {
-    const c = config || {};
-    const linhas = [];
-    linhas.push(['⏱', 'Cada rodada: uma pergunta com ' + (c.segundos || 10) + ' segundos para responder.']);
-    linhas.push(['👥', c.resposta === 'primeiro' ? 'Vale a resposta de quem do time responder primeiro.' : 'Todos do time precisam acertar a pergunta para o time atacar.']);
-    linhas.push(['🎯', 'O time que acerta ataca: quem escolhe o alvo muda a cada rodada.']);
-    linhas.push(['💥', c.modo === 'rapido' ? 'Modo Rápido: um tiro em qualquer parte afunda o navio inteiro.' : 'Modo Clássico: para afundar um navio, acerte todas as casas dele.']);
-    linhas.push(['🏆', 'Vence o último time com navios no mar.']);
-    if (c.tiro === 'turbo') {
-      const n1 = c.limiarDuplo || 3, n2 = c.limiarCruz || 6, torp = c.modo !== 'rapido';
-      linhas.push(['🔥', 'Nível 1 — ' + acertos(n1) + ' seguidos: troque a sequência por ⚡ tiro duplo, ⚓ mover navio, 📡 radar 3×3' + (torp ? ' ou 🚀 2 torpedos.' : '.')]);
-      linhas.push(['🔥🔥', 'Nível 2 — ' + acertos(n2) + ' seguidos: ✚ tiro em cruz, ✖ tiro em X, 📡 radar 4×4' + (torp ? ' ou 🚀 5 torpedos.' : '.')]);
-      linhas.push(['💡', 'No nível 1 dá para continuar a sequência até o nível 2. Trocar zera a sequência; errar uma pergunta também zera, mas o que está guardado continua.']);
-      if (torp && c.torpedos) linhas.push(['🚀', 'Cada aluno também começa com ' + c.torpedos + (c.torpedos === 1 ? ' torpedo' : ' torpedos') + ' para o time. O torpedo afunda o navio inteiro que acertar.']);
+  // ---------------- cartão das regras (antes da rodada 1), em duas telas visuais ----------------
+  let regrasPagina = 1;
+
+  // Mini tabuleiro 5×5 para desenhar a ideia de cada regra/prêmio. marcas = { "l,c": classe } (alvo, navio, fogo, radar, velho, afundado).
+  function miniMar(marcas) {
+    const g = criarEl('div', null, 'mini-mar');
+    for (let l = 0; l < 5; l++) for (let c = 0; c < 5; c++) {
+      const k = marcas[l + ',' + c];
+      g.appendChild(criarEl('span', null, 'mini-casa' + (k ? ' ' + k : '')));
     }
-    return linhas;
+    return g;
+  }
+  function marcas(lista, classe, base) { const m = Object.assign({}, base || {}); lista.forEach(function (k) { m[k] = classe; }); return m; }
+  const MINI = {
+    classico: marcas(['2,1', '2,2', '2,3'], 'fogo'),
+    rapido: marcas(['2,1', '2,3'], 'afundado', { '2,2': 'alvo' }),
+    duplo: marcas(['2,2', '2,3'], 'alvo'),
+    mover: marcas(['3,2', '3,3'], 'navio', marcas(['1,1', '1,2'], 'velho')),
+    radar3: marcas(['1,1', '1,2', '1,3', '2,1', '2,2', '2,3', '3,1', '3,2', '3,3'], 'radar'),
+    torpedo2: marcas(['2,1', '2,3'], 'afundado', { '2,2': 'alvo' }),
+    cruz: marcas(['2,2', '1,2', '3,2', '2,1', '2,3'], 'alvo'),
+    x: marcas(['2,2', '1,1', '1,3', '3,1', '3,3'], 'alvo'),
+    radar4: marcas(['0,0', '0,1', '0,2', '0,3', '1,0', '1,1', '1,2', '1,3', '2,0', '2,1', '2,2', '2,3', '3,0', '3,1', '3,2', '3,3'], 'radar'),
+    torpedo5: marcas(['2,0', '2,1', '2,3'], 'afundado', { '2,2': 'alvo' })
+  };
+
+  // Cartão grande: ícone, valor em destaque, legenda curta e (opcional) o mini tabuleiro.
+  function cartaoRegra(icone, valor, legenda, mini) {
+    const c = criarEl('div', null, 'regra-cartao');
+    c.appendChild(criarEl('div', icone, 'regra-icone'));
+    if (mini) c.appendChild(miniMar(mini));
+    c.appendChild(criarEl('div', valor, 'regra-valor'));
+    c.appendChild(criarEl('div', legenda, 'regra-legenda'));
+    return c;
+  }
+
+  function telaPartida() {
+    const c = config || {};
+    const grade = criarEl('div', null, 'regras-grade');
+    grade.appendChild(cartaoRegra('⏱️', (c.segundos || 10) + ' s', 'para responder'));
+    grade.appendChild(cartaoRegra(c.resposta === 'primeiro' ? '🙋' : '👥', c.resposta === 'primeiro' ? '1º A RESPONDER' : 'TODOS', c.resposta === 'primeiro' ? 'vale a 1ª resposta do time' : 'do time acertam'));
+    grade.appendChild(c.modo === 'rapido' ? cartaoRegra('💥', 'RÁPIDO', '1 tiro afunda o navio', MINI.rapido)
+      : cartaoRegra('🔥', 'CLÁSSICO', 'acerte todas as casas', MINI.classico));
+    grade.appendChild(cartaoRegra('🏆', 'ÚLTIMO', 'time com navios vence'));
+    if (c.tiro === 'turbo' && c.modo !== 'rapido' && c.torpedos) grade.appendChild(cartaoRegra('🚀', '× ' + c.torpedos, 'torpedos por aluno'));
+    return grade;
+  }
+
+  function linhaNivel(n, titulo, premios) {
+    const caixa = criarEl('div', null, 'nivel-linha');
+    const cab = criarEl('div', null, 'nivel-cab');
+    const bolas = criarEl('div', null, 'nivel-bolas');
+    for (let i = 0; i < n; i++) bolas.appendChild(criarEl('span', '✔', 'nivel-bola'));
+    cab.appendChild(bolas);
+    cab.appendChild(criarEl('span', '→ ' + titulo, 'nivel-titulo'));
+    caixa.appendChild(cab);
+    const grade = criarEl('div', null, 'regras-grade premios');
+    premios.forEach(function (p) { grade.appendChild(cartaoRegra(p[0], p[1], '', MINI[p[2]])); });
+    caixa.appendChild(grade);
+    return caixa;
+  }
+
+  function telaSequencia() {
+    const c = config || {}, torp = c.modo !== 'rapido';
+    const caixa = criarEl('div');
+    caixa.appendChild(linhaNivel(c.limiarDuplo || 3, 'NÍVEL 1', [['⚡', 'duplo', 'duplo'], ['⚓', 'mover', 'mover'], ['📡', '3×3', 'radar3']]
+      .concat(torp ? [['🚀', '× 2', 'torpedo2']] : [])));
+    caixa.appendChild(linhaNivel(c.limiarCruz || 6, 'NÍVEL 2', [['✚', 'cruz', 'cruz'], ['✖', 'X', 'x'], ['📡', '4×4', 'radar4']]
+      .concat(torp ? [['🚀', '× 5', 'torpedo5']] : [])));
+    caixa.appendChild(criarEl('p', '❌ errou → sequência volta a 0 (o que está guardado fica)', 'regras-nota'));
+    return caixa;
   }
 
   function renderRegras() {
     const caixa = $('regras-aviso');
     const ver = !!publico && publico.fase === 'regras';
     caixa.hidden = !ver;
-    if (!ver) return;
-    const lista = $('regras-lista');
-    limpar(lista);
-    textosRegras().forEach(function (l) {
-      const li = criarEl('li');
-      li.appendChild(criarEl('span', l[0], 'regras-icone'));
-      li.appendChild(criarEl('span', l[1]));
-      lista.appendChild(li);
-    });
+    if (!ver) { regrasPagina = 1; return; }
+    const turbo = config && config.tiro === 'turbo';
+    const paginas = turbo ? 2 : 1;
+    if (regrasPagina > paginas) regrasPagina = paginas;
+    $('regras-titulo').textContent = regrasPagina === 1 ? '⚓ Como é esta partida' : '🔥 Sequência de acertos = prêmios';
+    const conteudo = $('regras-conteudo');
+    limpar(conteudo);
+    conteudo.appendChild(regrasPagina === 1 ? telaPartida() : telaSequencia());
+    $('regras-pontos').textContent = paginas > 1 ? (regrasPagina === 1 ? '●○' : '○●') : '';
     const todos = [];
     Object.keys(publico.times).forEach(function (id) { (publico.times[id].alunos || []).forEach(function (u) { todos.push(u); }); });
     const aceitaram = publico.aceitaram || [];
     $('regras-prontos').textContent = 'Prontos: ' + aceitaram.length + ' de ' + todos.length;
     const euAceitei = aceitaram.indexOf(meuId()) >= 0 || (jogadores[meuId()] && jogadores[meuId()].aceitouRegras === true);
     const participo = todos.indexOf(meuId()) >= 0;
-    $('btn-regras-ok').hidden = !participo;
+    const ultima = regrasPagina === paginas;
+    $('btn-regras-voltar').hidden = regrasPagina === 1;
+    $('btn-regras-prox').hidden = ultima;
+    $('btn-regras-ok').hidden = !participo || !ultima;
     $('btn-regras-ok').disabled = euAceitei;
-    $('btn-regras-ok').textContent = euAceitei ? '✔ Você confirmou. Esperando os colegas…' : '✔ Entendi!';
+    $('btn-regras-ok').textContent = euAceitei ? '✔ Confirmado! Esperando os colegas…' : '✔ Entendi!';
     $('btn-comecar-ja').hidden = !souAnfitriao;
   }
+  $('btn-regras-prox').addEventListener('click', function () { regrasPagina = 2; renderRegras(); });
+  $('btn-regras-voltar').addEventListener('click', function () { regrasPagina = 1; renderRegras(); });
 
   // Fim de jogo: a batalha continua na tela, com os tiros da última rodada e os navios de todos revelados.
   function renderFimNaBatalha() {

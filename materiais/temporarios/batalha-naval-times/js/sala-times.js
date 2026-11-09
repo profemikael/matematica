@@ -85,7 +85,6 @@
         eu.onDisconnect().update({ conectado: false, vistoEm: AGORA() });
         eu.update({ nome: jogador.nome, conectado: true, vistoEm: AGORA() });
       }
-      conectado.on('value', aoConectado);
       // Sinal de vida a cada 5 s: o anfitrião percebe em ~15 s um Chromebook desligado ou fechado
       // (o Firebase sozinho só perceberia depois de cerca de 1 minuto).
       const batimento = setInterval(function () {
@@ -112,6 +111,8 @@
         },
         aoNavios: function (cb) { return ouvir(sala.child('navios'), 'value', function (s) { if (!fechada) cb(s.val() || {}); }); },
         gravarNavios: function (timeId, navios, pronto) { return sala.child('navios/' + timeId).set({ navios: navios, pronto: !!pronto }); },
+        // Cartão das regras: o aluno clicou "Entendi" (fica no registro dele; o anfitrião espera todos).
+        aceitarRegras: function () { return eu.update({ aceitouRegras: true }); },
         escolherTime: function (uid, timeId) { return sala.child('jogadores/' + uid + '/time').set(timeId); },
         moverJogador: function (uid, timeId) { return sala.child('jogadores/' + uid + '/time').set(timeId); },
         enviarResposta: function (rodada, texto) { return sala.child('respostas/' + rodada + '/' + jogador.id).set({ texto: String(texto), em: AGORA() }); },
@@ -127,6 +128,7 @@
           eu.update({ conectado: false, vistoEm: AGORA() });
         }
       };
+      conectado.on('value', aoConectado);   // depois de "conexao" existir: o Firebase pode avisar na mesma hora
       return conexao;
     }
 

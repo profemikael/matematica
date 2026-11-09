@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Batalha Naval em Times</title>
 <link rel="stylesheet" href="../batalha-naval/css/estilo.css?v=2026-10-05-painel">
-<link rel="stylesheet" href="css/times.css?v=2026-11-03">
+<link rel="stylesheet" href="css/times.css?v=2026-11-09">
 </head>
 <body>
 <main class="folha">
@@ -61,11 +61,11 @@
       <fieldset>
         <legend>Tipo de tiro</legend>
         <label class="opcao"><input type="radio" name="tiro" value="normal" checked> Normal – um tiro por vez</label>
-        <label class="opcao"><input type="radio" name="tiro" value="turbo"> Turbo – sequência de acertos do time dá tiro duplo, em cruz e em X</label>
+        <label class="opcao"><input type="radio" name="tiro" value="turbo"> Turbo – a sequência de acertos do time dá prêmios: tiros especiais, radar, mover navio e torpedos</label>
       </fieldset>
       <div id="linha-limiares" hidden>
-        <label>Sequência para o tiro duplo <input id="limiar-duplo" type="number" min="1" max="20" value="3"></label>
-        <label>Sequência para cruz e X <input id="limiar-cruz" type="number" min="1" max="20" value="6"></label>
+        <label>Nível 1 — acertos seguidos <input id="limiar-duplo" type="number" min="1" max="20" value="3"></label>
+        <label>Nível 2 — acertos seguidos <input id="limiar-cruz" type="number" min="1" max="20" value="6"></label>
       </div>
       <label id="linha-torpedos" hidden>Torpedos por aluno (afundam o navio inteiro; só no Turbo com Clássico)
         <select id="torpedos"><option value="0">0</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
@@ -135,6 +135,11 @@
       <span id="bat-tempo"></span>
     </div>
     <p id="bat-pausa" class="alerta" hidden>⏸ Partida pausada pelo professor</p>
+    <div id="bat-fim" class="bat-fim" hidden>
+      <p id="bat-fim-titulo"></p>
+      <p class="dica">Veja os últimos tiros e onde estavam os navios de todos os times.</p>
+      <button id="btn-ver-final" class="botao principal" type="button">Ver o resultado final</button>
+    </div>
     <div id="bat-pergunta" class="cartao conta-times" hidden></div>
     <div id="bat-ataque" class="cartao conta-times" hidden></div>
     <div id="bat-movimento" class="cartao conta-times" hidden></div>
@@ -156,13 +161,24 @@
     </div>
   </section>
 
+  <!-- Cartão das regras: antes da rodada 1, todos leem e clicam "Entendi" -->
+  <div id="regras-aviso" class="poder-escolha" hidden>
+    <div class="poder-caixa regras-caixa">
+      <h3>📜 Regras desta partida</h3>
+      <ul id="regras-lista" class="regras-lista"></ul>
+      <p id="regras-prontos" class="regras-prontos"></p>
+      <button id="btn-regras-ok" class="botao principal regras-ok" type="button">✔ Entendi!</button>
+      <button id="btn-comecar-ja" class="botao" type="button" hidden>Professor: começar mesmo assim</button>
+    </div>
+  </div>
+
   <!-- Escolha do poder quando a sequência chega a um nível -->
   <div id="poder-escolha" class="poder-escolha" hidden>
     <div class="poder-caixa">
       <h3 id="poder-titulo"></h3>
       <p id="poder-sub"></p>
       <div id="poder-botoes"></div>
-      <button id="poder-pular" class="botao" type="button">Continuar acumulando (não trocar agora)</button>
+      <button id="poder-pular" class="botao poder-continuar" type="button">⏭ Continuar a sequência</button>
     </div>
   </div>
 

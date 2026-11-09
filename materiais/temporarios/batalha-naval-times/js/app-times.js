@@ -7,7 +7,11 @@
   const NOMES_TIMES = ['', 'Azul', 'Verde', 'Amarelo', 'Vermelho'];
   const CORES_TIMES = ['', '#2563EB', '#16A34A', '#CA8A04', '#DC2626'];
   const ROTULO_PODER = { normal: 'Tiro normal', duplo: '⚡ Tiro duplo', cruz: '✚ Tiro em cruz', x: '✖ Tiro em X', torpedo: '🚀 Torpedo',
-                         mover: '⚓ Mover navio', radar3: '📡 Radar 3×3', radar4: '📡 Radar 4×4' };
+                         mover: '⚓ Mover navio', radar3: '📡 Radar 3×3', radar4: '📡 Radar 4×4', torpedo2: '🚀 2 torpedos', torpedo5: '🚀 5 torpedos' };
+  function acertos(n) { return n + (n === 1 ? ' acerto' : ' acertos'); }
+  function ehPremioTorpedo(p) { return p === 'torpedo2' || p === 'torpedo5'; }
+  // O poder que a troca da sequência libera para usar nesta rodada (o prêmio de torpedos libera o torpedo).
+  function poderDaTroca(p) { return ehPremioTorpedo(p) ? 'torpedo' : p; }
   const CHAVE_SENHA = 'bnt-senha', CHAVE_NOME = 'bnt-nome', CHAVE_ID = 'bnt-id', CHAVE_FICHA = 'bnt-ficha';
 
   function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -148,7 +152,9 @@
     conexao.aoNavios(function (obj) { naviosSala = obj; if (!$('tela-sala').hidden) renderSala(); if (!$('tela-posicionar').hidden) renderPosicionar(); if (publico) renderTabuleiros(); });
     conexao.aoPublico(function (p) {
       publico = p;
-      if (p.fase === 'fim') mostrarFim(); else { if ($('tela-batalha').hidden) Tela.mostrar('tela-batalha'); renderBatalha(); }
+      if (p.fase === 'fim' && !$('tela-fim').hidden) { mostrarFim(); return; }
+      if ($('tela-batalha').hidden) Tela.mostrar('tela-batalha');
+      renderBatalha();
     });
     try { radares = JSON.parse(sessionStorage.getItem('bnt-radares-' + codigo)) || {}; } catch (e) { radares = {}; }
     $('sala-codigo').textContent = codigo;
@@ -335,7 +341,7 @@
   // ---------------- iniciar (anfitrião) ----------------
   function criarAnfitriao(perguntas, times) {
     return Anfitriao.criar({
-      conexao: conexao, config: config, times: times, perguntas: perguntas, gracaMs: 1500,
+      conexao: conexao, config: config, times: times, perguntas: perguntas, gracaMs: 1500, cartaoRegras: true,
       relogio: { agora: function () { return conexao.horaServidor(); },
                  agendar: function (fn, ms) { const h = setTimeout(fn, ms); return function () { clearTimeout(h); }; } }
     });
@@ -367,22 +373,33 @@
 
   $('btn-pausar').addEventListener('click', function () { if (anfitriao) anfitriao.pausar(); });
   $('btn-retomar').addEventListener('click', function () { if (anfitriao) anfitriao.retomar(); });
+  $('btn-comecar-ja').addEventListener('click', function () { if (anfitriao) anfitriao.comecarJa(); });
+  $('btn-regras-ok').addEventListener('click', function () {
+    if (!conexao) return;
+    $('btn-regras-ok').disabled = true;
+    $('btn-regras-ok').textContent = '✔ Você confirmou. Esperando os colegas…';
+    conexao.aceitarRegras();
+  });
+  $('btn-ver-final').addEventListener('click', function () { mostrarFim(); });
   $('btn-encerrar').addEventListener('click', function () { if (anfitriao && confirm('Encerrar a partida para todos?')) anfitriao.encerrar(); });
 
   // ---------------- batalha ----------------
   function atualizarTempo() {
-    if (!publico || publico.fase === 'fim' || publico.fase === 'espera') { $('bat-tempo').textContent = ''; return; }
+    if (!publico || publico.fase === 'fim' || publico.fase === 'espera' || publico.fase === 'regras') { $('bat-tempo').textContent = ''; return; }
     if (publico.pausada) { $('bat-tempo').textContent = '⏸'; return; }
     const ms = publico.ate - agora();
     $('bat-tempo').textContent = '⏱ ' + Math.max(0, Math.ceil(ms / 1000)) + ' s';
   }
 
-  const TEXTO_FASE = { pergunta: 'Responda a pergunta!', ataque: 'Hora de atacar!', movimento: 'Movimento de navios!', resultado: 'Resultado da rodada' };
+  const TEXTO_FASE = { regras: 'Leiam as regras', pergunta: 'Responda a pergunta!', ataque: 'Hora de atacar!', movimento: 'Movimento de navios!',
+                       resultado: 'Resultado da rodada', fim: '🏁 Fim de jogo' };
 
   function renderBatalha() {
     if (!publico) return;
     const p = publico, t = meuTime(), meu = t ? p.times[t] : null;
-    $('bat-rodada').textContent = 'Rodada ' + p.rodada;
+    $('bat-rodada').textContent = p.fase === 'regras' ? 'Antes de começar' : 'Rodada ' + p.rodada;
+    renderRegras();
+    renderFimNaBatalha();
     $('bat-fase').textContent = TEXTO_FASE[p.fase] || '';
     $('bat-pausa').hidden = !p.pausada;
     $('bat-anfitriao').hidden = !souAnfitriao;
@@ -407,7 +424,8 @@
     renderMovimento();
 
     let msg = '';
-    if (!meu) msg = 'Você está só assistindo (não está em nenhum time).';
+    if (p.fase === 'fim') msg = '';
+    else if (!meu) msg = 'Você está só assistindo (não está em nenhum time).';
     else if (!meu.vivo) msg = 'Seu time foi eliminado. Você continua acompanhando a partida.';
     else if (p.fase === 'ataque' && meu.acertou === false) msg = 'Seu time errou a pergunta e não ataca nesta rodada.';
     else if (p.fase === 'resultado' && meu.acertou === false) msg = 'Seu time errou a pergunta nesta rodada.';
@@ -473,6 +491,8 @@
   }
 
   const DICA_PODER = { duplo: 'atinge 2 casas seguidas', cruz: 'atinge 5 casas em cruz', x: 'atinge 5 casas em X',
+                       torpedo2: '2 torpedos para o time: cada um afunda o navio inteiro que acertar',
+                       torpedo5: '5 torpedos para o time: cada um afunda o navio inteiro que acertar',
                        mover: 'move um navio seu (etapa extra com mais tempo; os outros times são avisados)',
                        radar3: 'diz se há navio numa área 3×3', radar4: 'diz se há navio numa área 4×4' };
 
@@ -498,18 +518,19 @@
     if (opcoes.length === 0) return;
     popupRodada = publico.rodada;
     if (meu.vezDe !== meuId()) return;   // só quem escolhe nesta rodada decide; os outros veem o aviso no painel
-    $('poder-titulo').textContent = '🎉 Sequência de ' + meu.sequencia + ' acertos!';
-    $('poder-sub').textContent = 'Troque a sequência por um poder. Você pode usar agora ou guardar para depois (errar uma pergunta zera a sequência, mas o poder guardado fica).';
+    const nivel = meu.sequencia >= config.limiarCruz ? 2 : 1;
+    $('poder-titulo').textContent = '🎉 Nível ' + nivel + '! Sequência de ' + acertos(meu.sequencia);
+    $('poder-sub').textContent = 'Troque a sequência por um prêmio: use agora ou guarde para depois. Trocar zera a sequência; errar uma pergunta também zera, mas o que está guardado fica.';
     const caixa = $('poder-botoes');
     limpar(caixa);
     opcoes.forEach(function (p) {
       const linha = criarEl('div', null, 'poder-linha');
-      const nome = criarEl('div'); nome.appendChild(criarEl('b', ROTULO_PODER[p])); nome.appendChild(criarEl('small', DICA_PODER[p]));
+      const nome = criarEl('div', null, 'poder-nome'); nome.appendChild(criarEl('b', ROTULO_PODER[p])); nome.appendChild(criarEl('small', DICA_PODER[p]));
       const botoes = criarEl('div', null, 'botoes');
-      const agoraBtn = criarEl('button', 'Usar agora', 'botao principal'); agoraBtn.type = 'button';
-      const guardarBtn = criarEl('button', 'Guardar', 'botao'); guardarBtn.type = 'button';
+      const agoraBtn = criarEl('button', ehPremioTorpedo(p) ? 'Usar 1 agora' : 'Usar agora', 'botao principal'); agoraBtn.type = 'button';
+      const guardarBtn = criarEl('button', ehPremioTorpedo(p) ? 'Pegar os torpedos' : 'Guardar', 'botao'); guardarBtn.type = 'button';
       const escolher = function (usarAgora) {
-        trocarSel = p; poderSel = usarAgora ? p : 'normal'; mira = null;
+        trocarSel = p; poderSel = usarAgora ? poderDaTroca(p) : 'normal'; mira = null;
         $('poder-escolha').hidden = true;
         montarAtaque(); renderTabuleiros(); enviarEscolha();
       };
@@ -519,6 +540,10 @@
       linha.appendChild(nome); linha.appendChild(botoes);
       caixa.appendChild(linha);
     });
+    const faltam = config.limiarCruz - meu.sequencia;
+    $('poder-pular').textContent = nivel === 1 && faltam > 0
+      ? '⏭ Continuar a sequência → nível 2 (faltam ' + faltam + (faltam === 1 ? ' acerto)' : ' acertos)')
+      : '⏭ Continuar sem trocar';
     $('poder-escolha').hidden = false;
   }
   $('poder-pular').addEventListener('click', function () { $('poder-escolha').hidden = true; });
@@ -543,7 +568,10 @@
         else if (trocarSel === p) opcoesPoder.push({ p: p, rotulo: ROTULO_PODER[p] + ' (da sua sequência)', trocar: p });
         else if (trocasDoTime(meu).indexOf(p) >= 0) opcoesPoder.push({ p: p, rotulo: ROTULO_PODER[p] + ' — gastar a sequência', trocar: p });
       });
+      const premioTorp = trocasDoTime(meu).filter(ehPremioTorpedo)[0];
       if (meu.torpedos > 0) opcoesPoder.push({ p: 'torpedo', rotulo: ROTULO_PODER.torpedo + ' (restam ' + meu.torpedos + ')', trocar: null });
+      else if (ehPremioTorpedo(trocarSel)) opcoesPoder.push({ p: 'torpedo', rotulo: ROTULO_PODER.torpedo + ' (da sua sequência)', trocar: trocarSel });
+      else if (premioTorp) opcoesPoder.push({ p: 'torpedo', rotulo: ROTULO_PODER.torpedo + ' — trocar a sequência por ' + ROTULO_PODER[premioTorp], trocar: premioTorp });
       opcoesPoder.forEach(function (o) {
         const b = criarEl('button', o.rotulo, 'botao' + (poderSel === o.p ? ' ativo' : '')); b.type = 'button';
         b.addEventListener('click', function () {
@@ -560,9 +588,11 @@
       caixa.appendChild(poderes);
       if (trocarSel) {
         const linha = criarEl('p', null, 'guardado');
-        linha.appendChild(document.createTextNode('🎁 Sequência trocada por ' + ROTULO_PODER[trocarSel] + ': ' + (poderSel === trocarSel ? 'vai usar agora. ' : 'fica guardado no arsenal. ')));
+        const usando = poderSel === poderDaTroca(trocarSel);
+        linha.appendChild(document.createTextNode('🎁 Sequência trocada por ' + ROTULO_PODER[trocarSel] + ': ' +
+          (usando ? (ehPremioTorpedo(trocarSel) ? 'vai usar 1 agora (os outros ficam guardados). ' : 'vai usar agora. ') : 'fica guardado no arsenal. ')));
         const des = criarEl('button', 'Desfazer troca', 'botao'); des.type = 'button';
-        des.addEventListener('click', function () { if (poderSel === trocarSel) poderSel = 'normal'; trocarSel = null; mira = null; montarAtaque(); renderTabuleiros(); enviarEscolha(); });
+        des.addEventListener('click', function () { if (usando) poderSel = 'normal'; trocarSel = null; mira = null; montarAtaque(); renderTabuleiros(); enviarEscolha(); });
         linha.appendChild(des);
         caixa.appendChild(linha);
       }
@@ -687,6 +717,7 @@
       return op;
     }
     const op = { tiros: dados.tiros, afundadas: dados.afundadas,
+                 navios: publico.fase === 'fim' && naviosSala[t] ? naviosSala[t].navios || {} : undefined,
                  clicavel: function (l, c) { return ataquePossivel() && poderSel !== 'mover' && dados.vivo && (ehRadar() || !dados.tiros[Regras.chave(l, c)]); } };
     if (previa) op.previa = previa;
     if (mira && mira.alvo === t) op.mirada = Regras.chave(mira.l, mira.c);
@@ -740,7 +771,7 @@
       ul.appendChild(criarEl('li', texto));
     });
     if ((publico.eventos || []).length === 0) ul.appendChild(criarEl('li', 'Nenhum time atacou nesta rodada.'));
-    if (publico.rodada !== ultimoEventoRodada && publico.fase === 'resultado') {
+    if (publico.rodada !== ultimoEventoRodada && (publico.fase === 'resultado' || publico.fase === 'fim')) {
       ultimoEventoRodada = publico.rodada;
       const ev = publico.eventos || [];
       ev.forEach(function (e) { if (e.poder === 'mover' && !e.ignorado && e.atacante !== meuTime()) marcarVelhos(e.atacante); });
@@ -818,6 +849,62 @@
       tr.appendChild(criarEl('td', config.tiro === 'turbo' ? '⚡' + t.arsenal.duplo + ' ✚' + t.arsenal.cruz + ' ✖' + t.arsenal.x + ' ⚓' + t.arsenal.mover + ' 📡' + (t.arsenal.radar3 + t.arsenal.radar4) + (t.torpedos ? ' 🚀' + t.torpedos : '') : '—'));
       tbody.appendChild(tr);
     });
+  }
+
+  // ---------------- cartão das regras (antes da rodada 1) ----------------
+  function textosRegras() {
+    const c = config || {};
+    const linhas = [];
+    linhas.push(['⏱', 'Cada rodada: uma pergunta com ' + (c.segundos || 10) + ' segundos para responder.']);
+    linhas.push(['👥', c.resposta === 'primeiro' ? 'Vale a resposta de quem do time responder primeiro.' : 'Todos do time precisam acertar a pergunta para o time atacar.']);
+    linhas.push(['🎯', 'O time que acerta ataca: quem escolhe o alvo muda a cada rodada.']);
+    linhas.push(['💥', c.modo === 'rapido' ? 'Modo Rápido: um tiro em qualquer parte afunda o navio inteiro.' : 'Modo Clássico: para afundar um navio, acerte todas as casas dele.']);
+    linhas.push(['🏆', 'Vence o último time com navios no mar.']);
+    if (c.tiro === 'turbo') {
+      const n1 = c.limiarDuplo || 3, n2 = c.limiarCruz || 6, torp = c.modo !== 'rapido';
+      linhas.push(['🔥', 'Nível 1 — ' + acertos(n1) + ' seguidos: troque a sequência por ⚡ tiro duplo, ⚓ mover navio, 📡 radar 3×3' + (torp ? ' ou 🚀 2 torpedos.' : '.')]);
+      linhas.push(['🔥🔥', 'Nível 2 — ' + acertos(n2) + ' seguidos: ✚ tiro em cruz, ✖ tiro em X, 📡 radar 4×4' + (torp ? ' ou 🚀 5 torpedos.' : '.')]);
+      linhas.push(['💡', 'No nível 1 dá para continuar a sequência até o nível 2. Trocar zera a sequência; errar uma pergunta também zera, mas o que está guardado continua.']);
+      if (torp && c.torpedos) linhas.push(['🚀', 'Cada aluno também começa com ' + c.torpedos + (c.torpedos === 1 ? ' torpedo' : ' torpedos') + ' para o time. O torpedo afunda o navio inteiro que acertar.']);
+    }
+    return linhas;
+  }
+
+  function renderRegras() {
+    const caixa = $('regras-aviso');
+    const ver = !!publico && publico.fase === 'regras';
+    caixa.hidden = !ver;
+    if (!ver) return;
+    const lista = $('regras-lista');
+    limpar(lista);
+    textosRegras().forEach(function (l) {
+      const li = criarEl('li');
+      li.appendChild(criarEl('span', l[0], 'regras-icone'));
+      li.appendChild(criarEl('span', l[1]));
+      lista.appendChild(li);
+    });
+    const todos = [];
+    Object.keys(publico.times).forEach(function (id) { (publico.times[id].alunos || []).forEach(function (u) { todos.push(u); }); });
+    const aceitaram = publico.aceitaram || [];
+    $('regras-prontos').textContent = 'Prontos: ' + aceitaram.length + ' de ' + todos.length;
+    const euAceitei = aceitaram.indexOf(meuId()) >= 0 || (jogadores[meuId()] && jogadores[meuId()].aceitouRegras === true);
+    const participo = todos.indexOf(meuId()) >= 0;
+    $('btn-regras-ok').hidden = !participo;
+    $('btn-regras-ok').disabled = euAceitei;
+    $('btn-regras-ok').textContent = euAceitei ? '✔ Você confirmou. Esperando os colegas…' : '✔ Entendi!';
+    $('btn-comecar-ja').hidden = !souAnfitriao;
+  }
+
+  // Fim de jogo: a batalha continua na tela, com os tiros da última rodada e os navios de todos revelados.
+  function renderFimNaBatalha() {
+    const b = $('bat-fim');
+    const ver = !!publico && publico.fase === 'fim';
+    b.hidden = !ver;
+    if (!ver) return;
+    const f = publico.fim || { vencedores: [], empate: false };
+    $('bat-fim-titulo').textContent = f.encerrada ? '🏁 Partida encerrada pelo professor'
+      : f.empate ? '🏁 Fim de jogo! Empate entre ' + f.vencedores.map(nomeTime).join(' e ')
+        : '🏁 Fim de jogo! O ' + nomeTime(f.vencedores[0]) + ' venceu';
   }
 
   // ---------------- fim ----------------

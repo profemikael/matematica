@@ -18,7 +18,8 @@ function montar(opcoes) {
   const times = [{ id: 1, nome: 'A', alunos: ['a1', 'a2'], navios: NA() }, { id: 2, nome: 'B', alunos: ['b1'], navios: NA() }];
   con.definirJogadores({ a1: { conectado: true }, a2: { conectado: true }, b1: { conectado: true } });
   const anf = Anfitriao.criar({ conexao: con, config: Object.assign({}, CFG, opcoes.cfg), times: times,
-                                perguntas: opcoes.perguntas || PERGS, relogio: rel, aleatorio: function () { return 0.5; } });
+                                perguntas: opcoes.perguntas || PERGS, relogio: rel, aleatorio: function () { return 0.5; },
+                                cartaoRegras: !!opcoes.regras });   // { regras: true }: começa pelo cartão das regras (como no jogo)
   return { anf: anf, con: con, rel: rel };
 }
 const certa = function (pub) { return PERGS.find(function (p) { return p.pergunta === pub.pergunta.texto; }).resposta; };
@@ -148,4 +149,32 @@ test('mover navio: o anfitrião grava o novo lugar dos navios do time e publica 
   assert.deepEqual(m.con.naviosGravados[2].navios.n2, { l: 6, c: 6, orientacao: 'v', tamanho: 2 });
   assert.equal(m.con.naviosGravados[2].pronto, true);
   assert.equal(m.con.ultimoPublico().times[2].arsenal.mover, 0);
+});
+
+// ---------- Cartão das regras antes da 1ª rodada ----------
+
+test('iniciar mostra o cartão das regras; a rodada 1 só começa quando todos os conectados aceitam', function () {
+  const m = montar({ regras: true }); m.anf.iniciar();
+  assert.equal(m.con.ultimoPublico().fase, 'regras');
+  assert.equal(m.con.ultimoPublico().rodada, 0);
+  m.con.definirJogadores({ a1: { conectado: true, aceitouRegras: true }, a2: { conectado: true }, b1: { conectado: true, aceitouRegras: true } });
+  assert.equal(m.con.ultimoPublico().fase, 'regras');
+  assert.deepEqual(m.con.ultimoPublico().aceitaram.sort(), ['a1', 'b1']);
+  m.rel.avancar(60000);   // sem prazo: espera
+  assert.equal(m.con.ultimoPublico().fase, 'regras');
+  m.con.definirJogadores({ a1: { conectado: true, aceitouRegras: true }, a2: { conectado: false }, b1: { conectado: true, aceitouRegras: true } });
+  assert.equal(m.con.ultimoPublico().fase, 'pergunta', 'quem desconectou não é esperado');
+  assert.equal(m.con.ultimoPublico().rodada, 1);
+});
+
+test('o professor pode começar sem esperar todos aceitarem; recarregar no cartão continua no cartão', async function () {
+  const m = montar({ regras: true }); m.anf.iniciar();
+  m.anf.comecarJa();
+  assert.equal(m.con.ultimoPublico().fase, 'pergunta');
+  const n = montar({ regras: true }); n.anf.iniciar();
+  const outro = Anfitriao.criar({ conexao: n.con, config: CFG, times: [], perguntas: PERGS, relogio: n.rel, aleatorio: function () { return 0.5; }, cartaoRegras: true });
+  await outro.retomar();
+  assert.equal(n.con.ultimoPublico().fase, 'regras');
+  n.con.definirJogadores({ a1: { conectado: true, aceitouRegras: true }, a2: { conectado: true, aceitouRegras: true }, b1: { conectado: true, aceitouRegras: true } });
+  assert.equal(n.con.ultimoPublico().fase, 'pergunta');
 });

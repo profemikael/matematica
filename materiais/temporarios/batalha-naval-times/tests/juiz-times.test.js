@@ -95,8 +95,8 @@ test('registrarAcertos soma 1 ao acertar e zera ao errar', function () {
 test('trocasPossiveis com limiar padrão 3 e 6', function () {
   const e = partidaComTimes([1, 1]);
   e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), []);
-  e.times[1].sequencia = 3; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo', 'mover', 'radar3']);
-  e.times[1].sequencia = 6; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x', 'radar4']);
+  e.times[1].sequencia = 3; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo', 'mover', 'radar3', 'torpedo2']);
+  e.times[1].sequencia = 6; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x', 'radar4', 'torpedo5']);
 });
 
 test('trocasPossiveis vazio no modo normal mesmo com sequência alta', function () {
@@ -107,8 +107,8 @@ test('trocasPossiveis vazio no modo normal mesmo com sequência alta', function 
 
 test('trocasPossiveis respeita limiares da configuração', function () {
   const e = partidaComTimes([1, 1], { limiarDuplo: 2, limiarCruz: 4 });
-  e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo', 'mover', 'radar3']);
-  e.times[1].sequencia = 4; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x', 'radar4']);
+  e.times[1].sequencia = 2; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['duplo', 'mover', 'radar3', 'torpedo2']);
+  e.times[1].sequencia = 4; assert.deepEqual(JuizTimes.trocasPossiveis(e, 1), ['cruz', 'x', 'radar4', 'torpedo5']);
 });
 
 test('trocar duplo consome a sequência e põe 1 no arsenal', function () {
@@ -322,4 +322,33 @@ test('torpedos do time: só no turbo com classico, por aluno; torpedo afunda o n
   const r2 = JuizTimes.resolverRodada(f, { 1: { alvo: 2, l: 0, c: 0, poder: 'torpedo' } }, ACERTOU);
   assert.equal(r2.eventos[0].poder, 'normal');
   assert.equal(f.times[2].vivo, true);
+});
+
+// ---------- Torpedos como prêmio da sequência ----------
+
+test('torpedos como prêmio: nível 1 dá 2 e nível 2 dá 5 torpedos (somam ao saldo); no Rápido não aparecem', function () {
+  const e = partidaComTimes([1, 1], { torpedos: 1 });
+  assert.equal(e.times[1].torpedos, 1);
+  e.times[1].sequencia = 3;
+  assert.equal(JuizTimes.trocar(e, 1, 'torpedo2'), true);
+  assert.equal(e.times[1].torpedos, 3);
+  assert.equal(e.times[1].sequencia, 0);
+  e.times[1].sequencia = 6;
+  assert.equal(JuizTimes.trocar(e, 1, 'torpedo2'), false);
+  assert.equal(JuizTimes.trocar(e, 1, 'torpedo5'), true);
+  assert.equal(e.times[1].torpedos, 8);
+  const r = partidaComTimes([1, 1], { modo: 'rapido' });
+  r.times[1].sequencia = 3; assert.deepEqual(JuizTimes.trocasPossiveis(r, 1), ['duplo', 'mover', 'radar3']);
+  r.times[1].sequencia = 6; assert.deepEqual(JuizTimes.trocasPossiveis(r, 1), ['cruz', 'x', 'radar4']);
+  assert.equal(JuizTimes.trocar(r, 1, 'torpedo2'), false);
+});
+
+test('trocar por torpedos e usar um torpedo no mesmo ataque afunda o navio inteiro', function () {
+  const NB = function () { return { n2: { l: 0, c: 0, orientacao: 'h', tamanho: 2 } }; };
+  const e = JuizTimes.criarPartida(Object.assign({}, CFG), [{ id: 1, nome: 'A', alunos: ['a'], navios: NB() }, { id: 2, nome: 'B', alunos: ['b'], navios: NB() }]);
+  e.times[1].sequencia = 3;
+  const r = JuizTimes.resolverRodada(e, { 1: { alvo: 2, l: 0, c: 0, poder: 'torpedo', trocar: 'torpedo2' } }, { 1: true, 2: false });
+  assert.equal(r.eventos[0].poder, 'torpedo');
+  assert.equal(e.times[2].vivo, false);
+  assert.equal(e.times[1].torpedos, 1);
 });

@@ -1,5 +1,5 @@
 // Anfitrião: o computador do professor é o juiz da partida em times.
-// Controla o relógio e as fases (pergunta → ataque → resultado), aplica as regras do JuizTimes e publica o estado.
+// Controla o relógio e as fases (regras → pergunta → ataque → resultado), aplica as regras do JuizTimes e publica o estado.
 // Não conhece DOM nem Firebase: fala só com a "conexão" (ver o plano).
 (function (raiz) {
   'use strict';
@@ -10,7 +10,8 @@
 
   const RESULTADO_MS = 5000;
 
-  // opcoes = { conexao, config, times, perguntas, relogio: { agora(), agendar(fn, ms) → cancelar }, aleatorio, aoMudar?(publico) }
+  // opcoes = { conexao, config, times, perguntas, relogio: { agora(), agendar(fn, ms) → cancelar }, aleatorio, aoMudar?(publico),
+  //            cartaoRegras? (true: antes da rodada 1, todos os conectados leem as regras e clicam "Entendi") }
   function criar(opcoes) {
     const con = opcoes.conexao;
     const relogio = opcoes.relogio;
@@ -32,6 +33,7 @@
     let ataques = {};
     let jogadoresBrutos = {};   // como o Firebase mostra os jogadores (nome, time, conectado, vistoEm)
     let avisos = [];            // "Beto saiu do Time Azul", "Beto voltou..." (da rodada atual)
+    let aceitaram = [];         // fase 'regras': quem já clicou "Entendi" no cartão das regras
     const semSinalMs = opcoes.semSinalMs || 15000;
     let cancelarRelogio = null;
     let desinscrever = [];
@@ -89,7 +91,7 @@
                       tiros: t.tiros, afundadas: t.afundadas };
       });
       return { fase: fase, rodada: estado.rodada, ate: ate, pausada: pausada, pergunta: perguntaPublica,
-               times: times, eventos: eventos, fim: fim, movedores: movedores, avisos: avisos };
+               times: times, eventos: eventos, fim: fim, movedores: movedores, avisos: avisos, aceitaram: aceitaram };
     }
 
     function publicar() {
@@ -115,6 +117,24 @@
     }
 
     // ---- fases ----
+    // Cartão das regras: sem prazo; a rodada 1 começa quando todos os alunos conectados dos times clicaram "Entendi".
+    function comecarRegras() {
+      fase = 'regras'; ate = 0;
+      talvezFecharRegras();
+      if (fase === 'regras') publicar();
+    }
+
+    function talvezFecharRegras() {
+      if (fase !== 'regras' || pausada) return;
+      const presentes = [];
+      JuizTimes.vivos(estado).forEach(function (id) {
+        estado.times[id].alunos.forEach(function (u) { if (estaPresente(u)) presentes.push(u); });
+      });
+      const novos = presentes.filter(function (u) { return jogadoresBrutos[u] && jogadoresBrutos[u].aceitouRegras === true; });
+      if (presentes.length > 0 && novos.length === presentes.length) { iniciarRodada(); return; }
+      if (novos.join(',') !== aceitaram.join(',')) { aceitaram = novos; publicar(); }
+    }
+
     function iniciarRodada() {
       limparOuvintes();
       estado.rodada += 1;
@@ -222,6 +242,7 @@
       pararJogadores = con.aoJogadores(function (j) {
         jogadoresBrutos = j || {};
         if (estado && fase === 'pergunta') talvezFecharPergunta();
+        if (estado && fase === 'regras') talvezFecharRegras();
       });
     }
 
@@ -229,15 +250,19 @@
     function iniciar() {
       estado = JuizTimes.criarPartida(opcoes.config, opcoes.times);
       monte = Perguntas.criarMonte(perguntas.length, aleatorio);
-      fim = null; pausada = false;
+      fim = null; pausada = false; aceitaram = [];
       observarJogadores();
-      iniciarRodada();
+      if (opcoes.cartaoRegras) comecarRegras(); else iniciarRodada();
     }
+
+    // Professor: começa a rodada 1 sem esperar quem ainda não clicou "Entendi".
+    function comecarJa() { if (estado && fase === 'regras') iniciarRodada(); }
 
     // Reinicia a fase atual com o tempo cheio (depois de pausa ou de recarregar a página).
     function continuarFase() {
       pausada = false;
-      if (fase === 'pergunta') comecarPergunta();
+      if (fase === 'regras') comecarRegras();
+      else if (fase === 'pergunta') comecarPergunta();
       else if (fase === 'ataque') comecarAtaque();
       else if (fase === 'movimento') comecarMovimento(movedores);
       else if (fase === 'resultado') { agendar(RESULTADO_MS, iniciarRodada); publicar(); }
@@ -275,7 +300,7 @@
       publicar();
     }
 
-    return { iniciar: iniciar, retomar: retomar, pausar: pausar, encerrar: encerrar, estado: function () { return estado; } };
+    return { iniciar: iniciar, comecarJa: comecarJa, retomar: retomar, pausar: pausar, encerrar: encerrar, estado: function () { return estado; } };
   }
 
   const Anfitriao = { criar: criar, RESULTADO_MS: RESULTADO_MS };

@@ -70,18 +70,23 @@
     x: [[0, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
   };
 
+  // Prêmio em torpedos de cada nível (só no Clássico: no Rápido qualquer tiro já afunda o navio inteiro).
+  const TORPEDOS_DO_PREMIO = { torpedo2: 2, torpedo5: 5 };
+
   function trocasPossiveis(estado, timeId) {
     if (estado.config.tiro !== 'turbo') return [];
     const seq = estado.times[timeId].sequencia;
-    if (seq >= estado.config.limiarCruz) return ['cruz', 'x', 'radar4'];
-    if (seq >= estado.config.limiarDuplo) return ['duplo', 'mover', 'radar3'];
+    const comTorpedo = estado.config.modo !== 'rapido';
+    if (seq >= estado.config.limiarCruz) return ['cruz', 'x', 'radar4'].concat(comTorpedo ? ['torpedo5'] : []);
+    if (seq >= estado.config.limiarDuplo) return ['duplo', 'mover', 'radar3'].concat(comTorpedo ? ['torpedo2'] : []);
     return [];
   }
 
   function trocar(estado, timeId, poder) {
     if (trocasPossiveis(estado, timeId).indexOf(poder) < 0) return false;
     const t = estado.times[timeId];
-    t.arsenal[poder] += 1;
+    if (TORPEDOS_DO_PREMIO[poder]) t.torpedos = (t.torpedos || 0) + TORPEDOS_DO_PREMIO[poder];
+    else t.arsenal[poder] += 1;
     t.sequencia = 0;
     return true;
   }
@@ -238,7 +243,7 @@
     return { eventos: eventos, eliminados: eliminados, fim: fim };
   }
 
-  const JuizTimes = { criarPartida, quemEscolhe, avaliarRespostas, registrarAcertos, vivos,
+  const JuizTimes = { TORPEDOS_DO_PREMIO, criarPartida, quemEscolhe, avaliarRespostas, registrarAcertos, vivos,
                       trocasPossiveis, trocar, casasDoPoder, resolverRodada, podeMover };
   raiz.JuizTimes = JuizTimes;
   if (typeof module !== 'undefined' && module.exports) module.exports = JuizTimes;

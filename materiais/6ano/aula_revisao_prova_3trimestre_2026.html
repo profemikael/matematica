@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão com Resumo – 3º Trimestre</title>
+<style>
+* { box-sizing: border-box; }
+html { background:#e9edf3; }
+body { font-family:'Lato','Segoe UI','DejaVu Sans',sans-serif; color:#1f2937;
+  max-width:900px; margin:0 auto; background:#fff; padding:0 0 50px; box-shadow:0 0 22px rgba(0,0,0,.10); line-height:1.5; }
+.hero { background:linear-gradient(105deg,#1e3a8a,#2563eb); color:#fff; padding:26px 34px 30px; }
+.hero .eye { font-size:8.5pt; letter-spacing:2px; text-transform:uppercase; color:#bfdbfe; font-weight:700; }
+.hero h1 { font-size:24pt; font-weight:900; margin:8px 0 4px; }
+.hero .sub { color:#dbeafe; font-size:11pt; }
+.wrap { padding:0 34px; }
+.toolbar { position:sticky; top:0; background:#fff; padding:12px 34px; border-bottom:1px solid #e2e8f0; z-index:5; display:flex; gap:10px; align-items:center; }
+.toolbar button { font-family:inherit; font-size:10pt; font-weight:700; border:1px solid #2563eb; background:#eff6ff; color:#1d4ed8; border-radius:8px; padding:7px 14px; cursor:pointer; }
+.toolbar .lbl { color:#64748b; font-size:9.5pt; }
+.bloco { font-size:15pt; font-weight:900; color:#1e3a8a; margin:26px 0 10px; }
+.bloco span { font-weight:400; color:#64748b; font-size:11pt; }
+.resumo { border:1px solid #bfdbfe; background:linear-gradient(180deg,#f5f9ff,#eef5ff); border-radius:14px; padding:16px 18px; margin-bottom:18px; }
+.resumo h3 { margin:0 0 12px; color:#1e3a8a; font-size:13pt; font-weight:800; }
+.rgrid { display:flex; flex-wrap:wrap; gap:10px; }
+.rcard { flex:1 1 200px; min-width:190px; background:#fff; border:1px solid #d8e3f2; border-radius:11px; padding:11px 12px; }
+.rc-t { font-weight:800; color:#1d4ed8; font-size:10.5pt; margin-bottom:6px; }
+.rc-svg { text-align:center; min-height:56px; display:flex; align-items:center; justify-content:center; }
+.rc-ex { font-size:9.5pt; color:#334155; line-height:1.4; margin-top:6px; }
+.q { border:1px solid #d8dee9; border-radius:12px; padding:16px 18px; margin-bottom:14px; }
+.q-head { display:flex; gap:12px; align-items:flex-start; }
+.q-n { flex:none; width:30px; height:30px; border-radius:50%; background:#1e3a8a; color:#fff; font-weight:800; text-align:center; line-height:30px; font-size:12pt; }
+.q-en { font-size:12pt; font-weight:600; padding-top:3px; }
+.q-alts { margin:12px 0 12px 42px; }
+.alt { padding:5px 10px; border-radius:7px; margin-bottom:5px; font-size:11.5pt; border:1px solid transparent; }
+.alt b { color:#1e3a8a; }
+.reveal { margin-left:42px; font-family:inherit; font-size:11pt; font-weight:700; cursor:pointer; border:none; background:#f59e0b; color:#fff; border-radius:9px; padding:9px 20px; }
+.reveal:hover { background:#d97706; }
+.ans { display:none; margin:12px 0 2px 42px; padding:12px 16px; border-left:4px solid #16a34a; background:#f0fdf4; border-radius:0 8px 8px 0; font-size:11.5pt; }
+.ans b { color:#15803d; }
+.q.revealed .ans { display:block; }
+.q.revealed .alt.correct { background:#dcfce7; border-color:#16a34a; font-weight:700; }
+.q.revealed .reveal { background:#64748b; }
+.foot { text-align:center; color:#8a94a6; font-size:8.5pt; margin-top:30px; }
+</style></head>
+<body>
+<div class="hero">
+  <div class="eye">Matemática · 6º ano · 3º Trimestre</div>
+  <h1>Revisão para a Prova</h1>
+  <div class="sub">Resumo visual + 20 questões comentadas</div>
+</div>
+<div class="toolbar">
+  <button onclick="todas(true)">Mostrar todas</button>
+  <button onclick="todas(false)">Ocultar todas</button>
+  <span class="lbl">Dica: leia o resumo, tente responder e só então revele.</span>
+</div>
+<div class="wrap">
+  <div class="bloco">Parte 1 — Frações <span>· 10 questões</span></div>
+  <div class="resumo">
+  <h3>Relembre — Frações</h3>
+  <div class="rgrid">
+    <div class="rcard"><div class="rc-t">Numerador e denominador</div><div class="rc-svg"><div style="display:flex;align-items:center;gap:10px;justify-content:center"><span style="display:inline-block;text-align:center;vertical-align:middle;font-size:12pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">3<span style="display:block;border-top:1.4px solid #1d4ed8;">8</span></span><svg width="68" height="68" viewBox="0 0 68 68"><path d="M 34 34 L 34.00 2.00 A 32 32 0 0 1 56.63 11.37 Z" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 56.63 11.37 A 32 32 0 0 1 66.00 34.00 Z" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 66.00 34.00 A 32 32 0 0 1 56.63 56.63 Z" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 56.63 56.63 A 32 32 0 0 1 34.00 66.00 Z" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 34.00 66.00 A 32 32 0 0 1 11.37 56.63 Z" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 11.37 56.63 A 32 32 0 0 1 2.00 34.00 Z" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 2.00 34.00 A 32 32 0 0 1 11.37 11.37 Z" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><path d="M 34 34 L 11.37 11.37 A 32 32 0 0 1 34.00 2.00 Z" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/></svg></div></div><div class="rc-ex">Em cima (3) = partes que tenho. Embaixo (8) = partes do todo.</div></div>
+    <div class="rcard"><div class="rc-t">Equivalentes</div><div class="rc-svg"><div style="display:flex;flex-direction:column;gap:3px"><svg width="130" height="16" viewBox="0 0 130 16"><rect x="0.0" y="0" width="65.0" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="65.0" y="0" width="65.0" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/></svg><svg width="130" height="16" viewBox="0 0 130 16"><rect x="0.0" y="0" width="32.5" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="32.5" y="0" width="32.5" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="65.0" y="0" width="32.5" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><rect x="97.5" y="0" width="32.5" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/></svg><svg width="130" height="16" viewBox="0 0 130 16"><rect x="0.0" y="0" width="16.2" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="16.2" y="0" width="16.2" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="32.5" y="0" width="16.2" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="48.8" y="0" width="16.2" height="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="65.0" y="0" width="16.2" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><rect x="81.2" y="0" width="16.2" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><rect x="97.5" y="0" width="16.2" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/><rect x="113.8" y="0" width="16.2" height="16" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/></svg></div></div><div class="rc-ex"><span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">1<span style="display:block;border-top:1.4px solid #1d4ed8;">2</span></span> = <span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">2<span style="display:block;border-top:1.4px solid #1d4ed8;">4</span></span> = <span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">4<span style="display:block;border-top:1.4px solid #1d4ed8;">8</span></span> — multiplique ou divida em cima e embaixo pelo mesmo número.</div></div>
+    <div class="rcard"><div class="rc-t">Fração de uma quantidade</div><div class="rc-svg"><svg width="150" height="20" viewBox="0 0 150 20"><rect x="0.0" y="0" width="37.5" height="20" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="37.5" y="0" width="37.5" height="20" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="75.0" y="0" width="37.5" height="20" fill="#2563eb" stroke="#1e3a8a" stroke-width="1.2"/><rect x="112.5" y="0" width="37.5" height="20" fill="#eff6ff" stroke="#1e3a8a" stroke-width="1.2"/></svg></div><div class="rc-ex">3/4 de 20 → 20÷4 = 5 → 5×3 = <b>15</b>. (divide pelo de baixo, multiplica pelo de cima)</div></div>
+    <div class="rcard"><div class="rc-t">Comparar</div><div class="rc-svg"><div style="font-weight:800;color:#1d4ed8;font-size:10pt"><span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">5<span style="display:block;border-top:1.4px solid #1d4ed8;">8</span></span> &gt; <span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">3<span style="display:block;border-top:1.4px solid #1d4ed8;">8</span></span><br><span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">2<span style="display:block;border-top:1.4px solid #1d4ed8;">3</span></span> &gt; <span style="display:inline-block;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.05;font-weight:800;color:#1d4ed8;margin:0 2px;">2<span style="display:block;border-top:1.4px solid #1d4ed8;">7</span></span></div></div><div class="rc-ex">Mesmo denominador → maior numerador. Mesmo numerador → menor denominador. Diferentes → iguale pelo MMC.</div></div>
+  </div>
+</div>
+  <div class="q">
+  <div class="q-head"><span class="q-n">1</span><span class="q-en">Uma torta foi cortada em 6 pedaços iguais e você comeu 4. Que fração da torta você comeu?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 6/4</div><div class="alt"><b>B)</b> 2/6</div><div class="alt"><b>C)</b> 6/2</div><div class="alt"><b>D)</b> 4/10</div><div class="alt correct"><b>E)</b> 4/6</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: E) 4/6.</b><br>Comeu 4 pedaços de um total de 6 → 4/6 (partes que peguei sobre o total).</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">2</span><span class="q-en">Dividir 5 barras de chocolate igualmente entre 6 amigos. Quanto cada um recebe?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 6/5 de barra</div><div class="alt correct"><b>B)</b> 5/6 de barra</div><div class="alt"><b>C)</b> 5 barras</div><div class="alt"><b>D)</b> 1/6 de barra</div><div class="alt"><b>E)</b> 6 barras</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: B) 5/6 de barra.</b><br>Fração é divisão: 5 ÷ 6 = 5/6. O que divido fica em cima (5), em quantos embaixo (6).</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">3</span><span class="q-en">Qual fração é equivalente a 3/7?</span></div>
+  <div class="q-alts"><div class="alt correct"><b>A)</b> 6/14</div><div class="alt"><b>B)</b> 6/15</div><div class="alt"><b>C)</b> 7/3</div><div class="alt"><b>D)</b> 3/14</div><div class="alt"><b>E)</b> 9/16</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: A) 6/14.</b><br>Multiplico em cima e embaixo pelo mesmo número: 3×2 / 7×2 = 6/14.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">4</span><span class="q-en">Complete: 2/5 = ?/20. O numerador que falta é:</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 10</div><div class="alt"><b>B)</b> 5</div><div class="alt correct"><b>C)</b> 8</div><div class="alt"><b>D)</b> 40</div><div class="alt"><b>E)</b> 2</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: C) 8.</b><br>De 5 para 20 multipliquei por 4 (20 ÷ 5 = 4). Logo em cima: 2 × 4 = 8.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">5</span><span class="q-en">Simplificando a fração 24/36 por fatoração, qual é a irredutível?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 12/18</div><div class="alt"><b>B)</b> 4/6</div><div class="alt"><b>C)</b> 3/4</div><div class="alt"><b>D)</b> 6/9</div><div class="alt correct"><b>E)</b> 2/3</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: E) 2/3.</b><br>24 = 2·2·2·3 e 36 = 2·2·3·3. Cortando os comuns (2·2·3 = 12): 24÷12 / 36÷12 = 2/3.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">6</span><span class="q-en">Quanto é 5/8 de 96?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 48</div><div class="alt"><b>B)</b> 40</div><div class="alt correct"><b>C)</b> 60</div><div class="alt"><b>D)</b> 72</div><div class="alt"><b>E)</b> 56</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: C) 60.</b><br>Divido pelo de baixo e multiplico pelo de cima: 96 ÷ 8 = 12, depois 12 × 5 = 60.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">7</span><span class="q-en">Pedro comeu 3/7 de uma pizza e Marina comeu 1/2 de outra pizza do mesmo tamanho. Quem comeu mais?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> Pedro, porque 7 é maior que 2</div><div class="alt correct"><b>B)</b> Marina, porque 7/14 é maior que 6/14</div><div class="alt"><b>C)</b> os dois comeram partes iguais</div><div class="alt"><b>D)</b> Pedro, porque 3/7 é maior que 1/2</div><div class="alt"><b>E)</b> não dá para saber</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: B) Marina, porque 7/14 é maior que 6/14.</b><br>Igualo os denominadores com MMC(7,2)=14: 3/7 = 6/14 e 1/2 = 7/14. Como 7/14 &gt; 6/14, Marina comeu mais.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">8</span><span class="q-en">Coloque em ordem crescente: 1/3, 2/5 e 3/4.</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 3/4 &lt; 2/5 &lt; 1/3</div><div class="alt"><b>B)</b> 2/5 &lt; 1/3 &lt; 3/4</div><div class="alt"><b>C)</b> 1/3 &lt; 3/4 &lt; 2/5</div><div class="alt correct"><b>D)</b> 1/3 &lt; 2/5 &lt; 3/4</div><div class="alt"><b>E)</b> 3/4 &lt; 1/3 &lt; 2/5</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: D) 1/3 &lt; 2/5 &lt; 3/4.</b><br>MMC(3,5,4)=60: 1/3 = 20/60, 2/5 = 24/60, 3/4 = 45/60. Então 1/3 &lt; 2/5 &lt; 3/4.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">9</span><span class="q-en">Rita e Sofia dividem o lucro assim: Rita 2/5, Sofia 1/4, e o restante vai para o caixa da escola. Que fração vai para o caixa?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 13/20</div><div class="alt"><b>B)</b> 3/20</div><div class="alt"><b>C)</b> 1/20</div><div class="alt"><b>D)</b> 9/20</div><div class="alt correct"><b>E)</b> 7/20</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: E) 7/20.</b><br>2/5 + 1/4 = 8/20 + 5/20 = 13/20. Sobra: 20/20 − 13/20 = 7/20.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">10</span><span class="q-en">A turma arrecadou R$ 360,00. Usaram 1/4 para o lanche e 1/6 para o material. Quanto sobra guardado?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> R$ 150,00</div><div class="alt"><b>B)</b> R$ 180,00</div><div class="alt"><b>C)</b> R$ 240,00</div><div class="alt correct"><b>D)</b> R$ 210,00</div><div class="alt"><b>E)</b> R$ 120,00</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: D) R$ 210,00.</b><br>Lanche: 360 ÷ 4 = 90. Material: 360 ÷ 6 = 60. Gasto = 150. Sobra = 360 − 150 = 210.</div>
+</div>
+  <div class="bloco">Parte 2 — Geometria e Medidas <span>· 10 questões</span></div>
+  <div class="resumo">
+  <h3>Relembre — Geometria e Medidas</h3>
+  <div class="rgrid">
+    <div class="rcard"><div class="rc-t">O que é polígono?</div><div class="rc-svg"><div style="display:flex;gap:8px;justify-content:center;align-items:center"><svg width="44" height="44" viewBox="0 0 44 44"><polygon points="22.0,4.0 39.1,16.4 32.6,36.6 11.4,36.6 4.9,16.4" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/></svg><svg width="46" height="46" viewBox="0 0 46 46"><circle cx="23.0" cy="23.0" r="18.0" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/></svg><svg width="70" height="56" viewBox="0 0 70 56"><polyline points="8,8 56,14 32,48" fill="#eff6ff" stroke="#dc2626" stroke-width="2" fill="none"/></svg></div></div><div class="rc-ex">Figura <b>fechada</b>, só com <b>lados retos</b>. Com curva ou aberta → não é.</div></div>
+    <div class="rcard"><div class="rc-t">Pelo número de lados</div><div class="rc-svg"><div style="display:flex;gap:6px;justify-content:center"><svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20.0,4.0 33.9,28.0 6.1,28.0" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="40" height="40" viewBox="0 0 40 40"><polygon points="31.3,8.7 31.3,31.3 8.7,31.3 8.7,8.7" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20.0,4.0 35.2,15.1 29.4,32.9 10.6,32.9 4.8,15.1" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20.0,4.0 33.9,12.0 33.9,28.0 20.0,36.0 6.1,28.0 6.1,12.0" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg></div></div><div class="rc-ex">Triângulo(3), quadrilátero(4), pentágono(5), hexágono(6)… <b>Regular</b> = lados e ângulos todos iguais.</div></div>
+    <div class="rcard"><div class="rc-t">Triângulos — lados</div><div class="rc-svg"><div style="display:flex;gap:6px;justify-content:center"><svg width="70" height="56" viewBox="0 0 70 56"><polygon points="35,6 8,50 62,50" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="70" height="56" viewBox="0 0 70 56"><polygon points="35,6 16,50 54,50" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="70" height="56" viewBox="0 0 70 56"><polygon points="8,48 64,40 46,8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg></div></div><div class="rc-ex">Equilátero (3 iguais), isósceles (2 iguais), escaleno (3 diferentes).</div></div>
+    <div class="rcard"><div class="rc-t">Triângulos — ângulos</div><div class="rc-svg"><div style="display:flex;gap:6px;justify-content:center"><svg width="70" height="56" viewBox="0 0 70 56"><polygon points="35,8 10,50 60,50" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="70" height="56" viewBox="0 0 70 56"><polygon points="12,50 12,12 58,50" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="70" height="56" viewBox="0 0 70 56"><polygon points="6,44 66,44 52,26" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg></div></div><div class="rc-ex">Acutângulo (&lt;90°), retângulo (=90°), obtusângulo (&gt;90°).</div></div>
+    <div class="rcard"><div class="rc-t">Quadriláteros</div><div class="rc-svg"><div style="display:flex;gap:6px;justify-content:center"><svg width="64" height="52" viewBox="0 0 64 52"><polygon points="14,8 50,8 50,44 14,44" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="64" height="52" viewBox="0 0 64 52"><polygon points="6,12 58,12 58,40 6,40" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="64" height="52" viewBox="0 0 64 52"><polygon points="32,6 58,26 32,46 6,26" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg><svg width="64" height="52" viewBox="0 0 64 52"><polygon points="20,10 44,10 58,44 6,44" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/></svg></div></div><div class="rc-ex">Quadrado, retângulo, losango, trapézio. Quadrado tem 4 ângulos retos.</div></div>
+    <div class="rcard"><div class="rc-t">Plano cartesiano</div><div class="rc-svg"><svg width="132" height="122" viewBox="0 0 132 122"><line x1="16" y1="6" x2="16" y2="114" stroke="#dbe3ef"/><line x1="16" y1="114" x2="124" y2="114" stroke="#dbe3ef"/><line x1="34" y1="6" x2="34" y2="114" stroke="#dbe3ef"/><line x1="16" y1="96" x2="124" y2="96" stroke="#dbe3ef"/><line x1="52" y1="6" x2="52" y2="114" stroke="#dbe3ef"/><line x1="16" y1="78" x2="124" y2="78" stroke="#dbe3ef"/><line x1="70" y1="6" x2="70" y2="114" stroke="#dbe3ef"/><line x1="16" y1="60" x2="124" y2="60" stroke="#dbe3ef"/><line x1="88" y1="6" x2="88" y2="114" stroke="#dbe3ef"/><line x1="16" y1="42" x2="124" y2="42" stroke="#dbe3ef"/><line x1="106" y1="6" x2="106" y2="114" stroke="#dbe3ef"/><line x1="16" y1="24" x2="124" y2="24" stroke="#dbe3ef"/><line x1="124" y1="6" x2="124" y2="114" stroke="#dbe3ef"/><line x1="16" y1="6" x2="124" y2="6" stroke="#dbe3ef"/><line x1="16" y1="114" x2="70" y2="114" stroke="#16a34a" stroke-width="2"/><line x1="70" y1="114" x2="70" y2="24" stroke="#16a34a" stroke-width="2"/><line x1="16" y1="114" x2="128" y2="114" stroke="#1e3a8a" stroke-width="1.6"/><line x1="16" y1="2" x2="16" y2="114" stroke="#1e3a8a" stroke-width="1.6"/><circle cx="70" cy="24" r="3.5" fill="#1d4ed8"/><text x="75" y="20" font-size="9" font-weight="800" fill="#1d4ed8">(3, 5)</text></svg></div><div class="rc-ex">Ponto (x, y): <b>primeiro ando</b> (→), <b>depois subo</b> (↑). (3,5) ≠ (5,3).</div></div>
+    <div class="rcard"><div class="rc-t">Perímetro × Área</div><div class="rc-svg"><div style="display:flex;gap:12px;justify-content:center;align-items:center"><svg width="72" height="56" viewBox="0 0 72 56"><line x1="4" y1="4" x2="4" y2="52" stroke="#cbd5e1"/><line x1="20" y1="4" x2="20" y2="52" stroke="#cbd5e1"/><line x1="36" y1="4" x2="36" y2="52" stroke="#cbd5e1"/><line x1="52" y1="4" x2="52" y2="52" stroke="#cbd5e1"/><line x1="68" y1="4" x2="68" y2="52" stroke="#cbd5e1"/><line x1="4" y1="4" x2="68" y2="4" stroke="#cbd5e1"/><line x1="4" y1="20" x2="68" y2="20" stroke="#cbd5e1"/><line x1="4" y1="36" x2="68" y2="36" stroke="#cbd5e1"/><line x1="4" y1="52" x2="68" y2="52" stroke="#cbd5e1"/><rect x="4" y="4" width="64" height="48" fill="none" stroke="#2563eb" stroke-width="2.4"/></svg><svg width="72" height="56" viewBox="0 0 72 56"><rect x="4" y="4" width="64" height="48" fill="#eff6ff"/><line x1="4" y1="4" x2="4" y2="52" stroke="#cbd5e1"/><line x1="20" y1="4" x2="20" y2="52" stroke="#cbd5e1"/><line x1="36" y1="4" x2="36" y2="52" stroke="#cbd5e1"/><line x1="52" y1="4" x2="52" y2="52" stroke="#cbd5e1"/><line x1="68" y1="4" x2="68" y2="52" stroke="#cbd5e1"/><line x1="4" y1="4" x2="68" y2="4" stroke="#cbd5e1"/><line x1="4" y1="20" x2="68" y2="20" stroke="#cbd5e1"/><line x1="4" y1="36" x2="68" y2="36" stroke="#cbd5e1"/><line x1="4" y1="52" x2="68" y2="52" stroke="#cbd5e1"/><rect x="4" y="4" width="64" height="48" fill="none" stroke="#2563eb" stroke-width="2.4"/></svg></div></div><div class="rc-ex"><b>Perímetro</b> = soma dos lados (contorno). <b>Área</b> = quadradinhos de dentro; retângulo = base × altura.</div></div>
+  </div>
+</div>
+  <div class="q">
+  <div class="q-head"><span class="q-n">11</span><span class="q-en">Uma figura é feita de 4 segmentos de reta, mas fica aberta (um lado não encontra o outro). Ela é um polígono?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> sim, pois só tem segmentos de reta</div><div class="alt"><b>B)</b> sim, pois tem 4 lados</div><div class="alt"><b>C)</b> sim, pois tem vértices</div><div class="alt"><b>D)</b> não, pois tem curvas</div><div class="alt correct"><b>E)</b> não, pois não é fechada</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: E) não, pois não é fechada.</b><br>Polígono precisa ser FECHADO e feito só de lados retos. Aberta não vale.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">12</span><span class="q-en">Um polígono tem 6 ângulos. Qual é o nome dele?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> pentágono</div><div class="alt"><b>B)</b> heptágono</div><div class="alt correct"><b>C)</b> hexágono</div><div class="alt"><b>D)</b> octógono</div><div class="alt"><b>E)</b> triângulo</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: C) hexágono.</b><br>O número de ângulos é igual ao de lados. 6 lados = hexágono.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">13</span><span class="q-en">Qual destes polígonos é regular?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> retângulo de lados 2 cm e 6 cm</div><div class="alt"><b>B)</b> losango com ângulos diferentes</div><div class="alt"><b>C)</b> triângulo de lados 3, 4 e 5 cm</div><div class="alt correct"><b>D)</b> hexágono com os 6 lados iguais e os 6 ângulos iguais</div><div class="alt"><b>E)</b> trapézio</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: D) hexágono com os 6 lados iguais e os 6 ângulos iguais.</b><br>Regular = TODOS os lados e TODOS os ângulos iguais. Só o hexágono descrito cumpre as duas coisas.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">14</span><span class="q-en">Ana está em (1, 2). Ela anda 4 unidades para a direita e 3 para cima. Em que ponto ela chega?</span></div>
+  <div class="q-alts"><div class="alt correct"><b>A)</b> (5, 5)</div><div class="alt"><b>B)</b> (4, 3)</div><div class="alt"><b>C)</b> (3, 4)</div><div class="alt"><b>D)</b> (5, 3)</div><div class="alt"><b>E)</b> (4, 5)</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: A) (5, 5).</b><br>Direita soma no x: 1 + 4 = 5. Cima soma no y: 2 + 3 = 5. Chega em (5, 5).</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">15</span><span class="q-en">Os pontos (1,1), (4,1) e (4,4) são três vértices de um quadrado. Qual é o quarto vértice?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> (4, 1)</div><div class="alt"><b>B)</b> (1, 1)</div><div class="alt"><b>C)</b> (4, 4)</div><div class="alt"><b>D)</b> (0, 4)</div><div class="alt correct"><b>E)</b> (1, 4)</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: E) (1, 4).</b><br>Falta o canto de cima à esquerda: mesmo x do (1,1) e mesma altura do (4,4) → (1, 4).</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">16</span><span class="q-en">Qual destes triângulos é escaleno? (medidas dos lados)</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 5, 5 e 5 cm</div><div class="alt"><b>B)</b> 7, 7 e 3 cm</div><div class="alt correct"><b>C)</b> 4, 6 e 9 cm</div><div class="alt"><b>D)</b> 6, 6 e 10 cm</div><div class="alt"><b>E)</b> 2, 2 e 2 cm</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: C) 4, 6 e 9 cm.</b><br>Escaleno = os três lados diferentes. Só 4, 6 e 9 têm todos diferentes.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">17</span><span class="q-en">Um triângulo tem ângulos de 35°, 40° e 105°. Quanto aos ângulos, ele é:</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> acutângulo</div><div class="alt"><b>B)</b> retângulo</div><div class="alt"><b>C)</b> equilátero</div><div class="alt"><b>D)</b> isósceles</div><div class="alt correct"><b>E)</b> obtusângulo</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: E) obtusângulo.</b><br>Tem um ângulo maior que 90° (o de 105°) → obtusângulo.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">18</span><span class="q-en">Qual é a diferença entre um losango e um quadrado?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> o losango tem 3 lados iguais e o quadrado tem 4</div><div class="alt"><b>B)</b> o quadrado tem lados paralelos e o losango não</div><div class="alt correct"><b>C)</b> o quadrado tem os 4 ângulos retos; o losango não precisa ter</div><div class="alt"><b>D)</b> o losango é um triângulo</div><div class="alt"><b>E)</b> não há diferença</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: C) o quadrado tem os 4 ângulos retos; o losango não precisa ter.</b><br>Os dois têm 4 lados iguais; a diferença é que o quadrado garante os 4 ângulos de 90°, o losango não.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">19</span><span class="q-en">Um retângulo tem lados de 11 cm e 4 cm. Qual é o perímetro?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> 44 cm</div><div class="alt"><b>B)</b> 15 cm</div><div class="alt"><b>C)</b> 22 cm</div><div class="alt correct"><b>D)</b> 30 cm</div><div class="alt"><b>E)</b> 26 cm</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: D) 30 cm.</b><br>Perímetro é a soma dos lados: 11 + 4 + 11 + 4 = 30 cm.</div>
+</div><div class="q">
+  <div class="q-head"><span class="q-n">20</span><span class="q-en">Uma sala de 5 m por 4 m: o piso custa R$ 30,00 o m² e o rodapé R$ 4,00 o metro. Quanto custam o piso e o rodapé juntos?</span></div>
+  <div class="q-alts"><div class="alt"><b>A)</b> R$ 150,00</div><div class="alt"><b>B)</b> R$ 600,00</div><div class="alt"><b>C)</b> R$ 72,00</div><div class="alt correct"><b>D)</b> R$ 672,00</div><div class="alt"><b>E)</b> R$ 744,00</div></div>
+  <button class="reveal" onclick="toggle(this)">Mostrar resposta</button>
+  <div class="ans"><b>Resposta: D) R$ 672,00.</b><br>Piso (área): 5 × 4 = 20 m² × 30 = R$ 600. Rodapé (perímetro): 5+4+5+4 = 18 m × 4 = R$ 72. Total: 600 + 72 = R$ 672.</div>
+</div>
+  <div class="foot">EMEF Ceará – Rede Municipal de Canoas · Matemática 6º ano · 2026</div>
+</div>
+<script>
+function toggle(btn){ var c=btn.closest('.q'); var on=c.classList.toggle('revealed'); btn.textContent=on?'Ocultar resposta':'Mostrar resposta'; }
+function todas(m){ document.querySelectorAll('.q').forEach(function(c){ c.classList.toggle('revealed',m); c.querySelector('.reveal').textContent=m?'Ocultar resposta':'Mostrar resposta'; }); }
+</script>
+</body></html>

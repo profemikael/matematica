@@ -9,4 +9,5 @@ var BANCOS = [
   "operacoes-basicas-nivel4.js",
   "lua-eclipses-terra.js",
   "8ano-geometria-01.js",
+  "6ano-simulado-02.js",
 ];

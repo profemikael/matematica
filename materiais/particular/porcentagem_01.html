@@ -93,6 +93,9 @@ const F = { aluno:"entry.659926714", atividade:"entry.1123997006", questao:"entr
   tentativa:"entry.426479395", erro:"entry.1281287574", tempo:"entry.1896467064" };
 const ATIVIDADE = "Porcentagem 01 - Diagnóstico";
 const CHAVE = "particular_porcentagem01";
+const ALUNO_ID = (new URLSearchParams(location.search).get("aluno") || "").trim().toLowerCase();
+const AULA = (new URLSearchParams(location.search).get("aula") || "").trim().toLowerCase();
+const ATIVIDADE_ENVIO = ATIVIDADE + (AULA ? " | " + AULA : "");
 
 const BLOCOS = [
  { titulo:"Nível 1: o que é porcentagem",
@@ -161,6 +164,11 @@ const BLOCOS = [
 ];
 let est = { nome:"", b:0, q:0, fila:[], hist:[] };
 try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s) est = Object.assign(est, s); } catch(e) {}
+if (ALUNO_ID && est.nome !== ALUNO_ID) {
+  est = { nome:ALUNO_ID, b:0, q:0, fila:est.fila || [], hist:[] };
+  salvarInicial();
+}
+function salvarInicial(){ try { localStorage.setItem(CHAVE, JSON.stringify(est)); } catch(e) {} }
 function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(est)); } catch(e) {} }
 
 let tentativas = 0, inicioQ = Date.now();
@@ -235,7 +243,7 @@ function conferir(){
   const v = lerNumero(txt);
   tentativas++;
   const ok = !isNaN(v) && perto(v, q.r, q.r % 1 ? 0.02 : 0.005);
-  enviar({ aluno:est.nome, atividade:ATIVIDADE, questao:rotulo(), digitada:txt, correta:String(q.r).replace(".", ","),
+  enviar({ aluno:est.nome, atividade:ATIVIDADE_ENVIO, questao:rotulo(), digitada:txt, correta:String(q.r).replace(".", ","),
     acertou: ok ? "Sim" : "Não", tentativa:tentativas, erro: ok ? "" : tipoErro(q, v), tempo:Math.round((Date.now()-inicioQ)/1000) });
   if (ok){
     $("msg").className = "msg ok"; $("msg").textContent = "Certo!";
@@ -252,7 +260,7 @@ function conferir(){
 
 function pular(){
   const q = BLOCOS[est.b].q[est.q];
-  enviar({ aluno:est.nome, atividade:ATIVIDADE, questao:rotulo(), digitada:"(pulou)", correta:String(q.r).replace(".", ","),
+  enviar({ aluno:est.nome, atividade:ATIVIDADE_ENVIO, questao:rotulo(), digitada:"(pulou)", correta:String(q.r).replace(".", ","),
     acertou:"Pulou", tentativa:tentativas, erro:"Pulou a questão", tempo:Math.round((Date.now()-inicioQ)/1000) });
   registrarHist("Pulou");
   avancar();
@@ -263,7 +271,7 @@ function fim(){
   $("telaAtividade").classList.add("esconde");
   const t = $("telaFim"); t.classList.remove("esconde");
   const linhas = est.hist.map(h => `<tr><td>${h.r.split(" - ")[0]}</td><td>${h.a==="Sim" ? "Acertou" : "Pulou"}</td><td>${h.t}</td></tr>`).join("");
-  t.innerHTML = `<h2>Atividade concluída!</h2><p>Obrigado, ${est.nome}. Suas respostas foram enviadas para o professor. Leve o caderno com os cálculos para a aula.</p>
+  t.innerHTML = `<h2>Atividade concluída!</h2><p>${(ALUNO_ID || est.nome.includes("@")) ? "Obrigado." : "Obrigado, " + est.nome + "."} Suas respostas foram enviadas para o professor. Leve o caderno com os cálculos para a aula.</p>
     <table><tr><th>Questão</th><th>Resultado</th><th>Tentativas</th></tr>${linhas}</table>
     <p style="margin-top:14px"><button id="btnReiniciar">Recomeçar do início</button></p>`;
   $("btnReiniciar").onclick = reiniciar;
@@ -272,7 +280,9 @@ function fim(){
 
 function reiniciar(){
   const fila = est.fila;
-  est = { nome:"", b:0, q:0, fila:fila, hist:[] }; salvar();
+  est = { nome:ALUNO_ID, b:0, q:0, fila:fila, hist:[] }; salvar();
+  window.scrollTo(0,0);
+  if (ALUNO_ID) { $("telaFim").classList.add("esconde"); desenhar(); return; }
   $("telaFim").classList.add("esconde"); $("telaAtividade").classList.add("esconde");
   $("telaNome").classList.remove("esconde"); $("nome").value = ""; window.scrollTo(0,0);
 }

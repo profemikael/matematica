@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porcentagem 01 - Atividade em níveis</title>
+<style>
+  :root { --azul:#1F4E79; --azulClaro:#e8eff6; --verde:#2e7d32; --vermelho:#b3261e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Times New Roman", Times, serif; font-size:18px; color:#1a1a1a; background:#f4f6f9; line-height:1.4; }
+  .wrap { max-width:720px; margin:0 auto; padding:14px; }
+  .faixa { background:var(--azul); color:#fff; padding:12px 16px; border-radius:6px; }
+  .faixa h1 { margin:0; font-size:24px; }
+  .faixa p { margin:4px 0 0; font-size:16px; opacity:.9; }
+  .card { background:#fff; border:1px solid #d6dde6; border-radius:6px; padding:14px 16px; margin-top:12px; }
+  .aviso { border-left:6px solid #c9a227; background:#fff8e1; }
+  .teoria { border-left:6px solid var(--azul); background:#f5f8fc; }
+  .teoria p { color:#1F4E79; }
+  .formula { background:var(--azul); color:#fff; font-weight:bold; text-align:center; font-size:20px; padding:10px 12px; border-radius:6px; margin:8px 0; }
+  .formula small { display:block; font-weight:normal; font-size:15px; opacity:.85; margin-top:2px; }
+  .atalhos { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:8px 0; }
+  .atalhos div { background:var(--azul); color:#fff; text-align:center; padding:8px 4px; border-radius:6px; font-size:17px; }
+  .atalhos b { display:block; font-size:22px; }
+  .teoria h2, .card h2 { margin:0 0 6px; color:var(--azul); font-size:21px; }
+  .copie { display:inline-block; font-size:14px; background:var(--azulClaro); color:var(--azul); padding:2px 8px; border-radius:10px; margin-bottom:6px; }
+  .teoria p { margin:6px 0; }
+  .ex { background:#fff; border:1px dashed #9fb3c8; color:#333; font-style:italic; padding:6px 10px; border-radius:4px; margin:6px 0; }
+  .ex::before { content:"Exemplo: "; font-style:normal; font-weight:bold; color:var(--azul); }
+  .niveis { display:flex; gap:6px; margin-top:12px; }
+  .niveis span { flex:1; text-align:center; padding:6px 2px; border-radius:4px; background:#dde3ea; color:#666; font-size:15px; }
+  .niveis span.feito { background:var(--verde); color:#fff; }
+  .niveis span.atual { background:var(--azul); color:#fff; font-weight:bold; }
+  .num { color:#666; font-size:15px; }
+  .enun { font-size:20px; margin:6px 0 12px; color:#111; }
+  .linha { display:flex; gap:8px; }
+  input[type=text] { flex:1; min-width:0; font-family:inherit; font-size:22px; padding:10px; border:2px solid #b8c4d2; border-radius:6px; }
+  input[type=text]:focus { outline:none; border-color:var(--azul); }
+  button { font-family:inherit; font-size:19px; padding:10px 18px; border:none; border-radius:6px; background:var(--azul); color:#fff; cursor:pointer; }
+  button.sec { background:#e3e7ec; color:#333; font-size:16px; }
+  .msg { min-height:26px; margin-top:8px; font-weight:bold; }
+  .msg.ok { color:var(--verde); } .msg.erro { color:var(--vermelho); }
+  .dica { display:none; margin-top:8px; padding:8px 10px; background:#fff8e1; border-radius:4px; }
+  .esconde { display:none; }
+  .fim td, .fim th { padding:4px 8px; border-bottom:1px solid #ddd; text-align:left; }
+  .fim th { background:var(--azul); color:#fff; }
+  .fim table { border-collapse:collapse; width:100%; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="faixa">
+    <h1>Porcentagem</h1>
+    <p>Atividade em 4 níveis. Cada nível abre quando você termina o anterior.</p>
+  </div>
+
+  <div class="card aviso">
+    <b>Antes de começar:</b> faça todos os cálculos à mão, no caderno, sem calculadora e sem celular. Se errar, tudo bem: o erro mostra o que a gente precisa trabalhar nas aulas.
+  </div>
+
+  <div id="telaNome" class="card">
+    <h2>Seu nome</h2>
+    <div class="linha">
+      <input type="text" id="nome" placeholder="Digite seu nome" autocomplete="name">
+      <button id="btnComecar">Começar</button>
+    </div>
+    <div class="msg erro" id="msgNome"></div>
+  </div>
+
+  <div id="telaAtividade" class="esconde">
+    <div class="niveis" id="niveis"></div>
+    <div style="text-align:right;margin-top:4px"><a href="#" id="lnkReiniciar" style="font-size:14px;color:#666">Recomeçar do início</a></div>
+    <div class="card teoria" id="teoria"></div>
+    <div class="card" id="questao">
+      <div class="num" id="qNum"></div>
+      <div class="enun" id="qEnun"></div>
+      <div class="linha">
+        <input type="text" id="resp" inputmode="decimal" autocomplete="off" placeholder="Sua resposta">
+        <button id="btnResp">Conferir</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="dica" id="dica"></div>
+      <div style="margin-top:10px"><button class="sec esconde" id="btnPular">Não consegui, pular esta questão</button></div>
+    </div>
+  </div>
+
+  <div id="telaFim" class="card fim esconde"></div>
+</div>
+
+<script>
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdDp_Usjq7aPc_whNWfCFu1ztIWVET3n5X9_3_s3MCrseTnkQ/formResponse";
+const F = { aluno:"entry.659926714", atividade:"entry.1123997006", questao:"entry.1692331355",
+  digitada:"entry.1805724041", correta:"entry.637093830", acertou:"entry.1410261161",
+  tentativa:"entry.426479395", erro:"entry.1281287574", tempo:"entry.1896467064" };
+const ATIVIDADE = "Porcentagem 01 - Diagnóstico";
+const CHAVE = "particular_porcentagem01";
+
+const BLOCOS = [
+ { titulo:"Nível 1: o que é porcentagem",
+   teoria:`<p>Porcentagem quer dizer <b>por cem</b>: 25% são 25 partes de 100.</p>
+   <div class="formula">25% = 25 ÷ 100 = 0,25</div>
+   <p>Atalhos para calcular de cabeça:</p>
+   <div class="atalhos"><div><b>50%</b>metade</div><div><b>25%</b>metade da metade</div><div><b>10%</b>dividir por 10</div><div><b>1%</b>dividir por 100</div></div>
+   <p>Para 30%, calcule 10% e multiplique por 3.</p>
+   <div class="ex">10% de 90 é 9, então 30% de 90 é 3 × 9 = 27.</div>`,
+   q:[
+    { e:"Quanto é 10% de 80?", r:8, d:"10% é dividir por 10.", t:[[0.8,"Dividiu por 100 (calculou 1%)"],[72,"Deu o que sobra (80 menos 10%)"],[88,"Somou os 10% ao valor"]] },
+    { e:"Quanto é 50% de 46?", r:23, d:"50% é a metade.", t:[[4.6,"Calculou 10% em vez de 50%"],[92,"Dobrou em vez de dividir"]] },
+    { e:"Quanto é 25% de 120?", r:30, d:"25% é a metade da metade: primeiro divida 120 por 2, depois divida o resultado por 2 de novo.", t:[[12,"Calculou 10% em vez de 25%"],[60,"Calculou 50% (só uma metade)"],[90,"Deu o que sobra (120 menos 25%)"]] },
+    { e:"Quanto é 30% de 70?", r:21, d:"Calcule primeiro 10% de 70 e depois multiplique por 3.", t:[[7,"Calculou só 10%, faltou multiplicar por 3"],[49,"Deu o que sobra (70 menos 30%)"],[2.1,"Erro de vírgula"]] },
+    { c:"Lucas: 25% de R$ 240 no jogo", e:"Lucas juntou R$ 240 de mesada. Ele decidiu gastar 25% desse dinheiro num jogo novo e guardar o resto. Quanto custou o jogo?", r:60, d:"O jogo custou 25% de 240. Lembre: 25% é a metade da metade.", t:[[180,"Deu o que ele guardou, não o preço do jogo"],[24,"Calculou 10% em vez de 25%"],[120,"Calculou 50% (só uma metade)"]] },
+    { c:"Pedro: 30% de 40 arremessos", e:"Num jogo de basquete, Pedro arremessou 40 vezes e acertou 30% dos arremessos. Quantos arremessos ele acertou?", r:12, d:"Calcule 10% de 40 e multiplique por 3.", t:[[28,"Deu os arremessos errados"],[4,"Calculou só 10%"],[1.2,"Erro de vírgula"],[30,"Repetiu a porcentagem como resposta"]] }
+   ]},
+ { titulo:"Nível 2: qualquer porcentagem",
+   teoria:`<p>Para calcular qualquer porcentagem de um valor:</p>
+   <div class="formula">P% de um valor = valor ÷ 100 × P</div>
+   <div class="ex">35% de 200: 200 ÷ 100 = 2, e 2 × 35 = 70.</div>
+   <p>Também dá para juntar atalhos: 15% é 10% mais 5%, e 5% é a metade de 10%.</p>
+   <p>Para descobrir <b>quantos por cento</b> uma parte é do todo:</p>
+   <div class="formula">porcentagem = parte ÷ todo × 100</div>
+   <div class="ex">15 de 60: 15 ÷ 60 = 0,25, e 0,25 × 100 = 25%.</div>`,
+   q:[
+    { e:"Quanto é 35% de 240?", r:84, d:"240 dividido por 100 dá 2,4. Agora multiplique 2,4 por 35.", t:[[8.4,"Erro de vírgula"],[156,"Deu o que sobra (240 menos 35%)"],[24,"Calculou só 10%"]] },
+    { e:"12 é quantos por cento de 48?", r:25, d:"Divida a parte (12) pelo todo (48) e multiplique por 100.", t:[[4,"Dividiu o todo pela parte (48 dividido por 12)"],[400,"Dividiu o todo pela parte e multiplicou por 100"],[0.25,"Esqueceu de multiplicar por 100"],[36,"Fez a diferença 48 menos 12"]] },
+    { e:"Numa turma de 25 alunos, 8 faltaram. Qual a porcentagem de alunos que faltaram?", r:32, d:"Divida os que faltaram (8) pelo total (25) e multiplique por 100.", t:[[3.125,"Dividiu ao contrário (25 dividido por 8)"],[0.32,"Esqueceu de multiplicar por 100"],[68,"Calculou a porcentagem de presentes"],[17,"Fez 25 menos 8"]] },
+    { e:"Quanto é 15% de 360?", r:54, d:"Calcule 10% de 360, depois 5% (a metade de 10%), e some os dois.", t:[[36,"Calculou só 10%, faltou somar os 5%"],[18,"Calculou só 5%"],[5.4,"Erro de vírgula"],[306,"Deu o que sobra (360 menos 15%)"]] },
+    { c:"Escola: 45% de 800 alunos", e:"Uma escola tem 800 alunos. Numa pesquisa, 45% deles disseram que o esporte preferido é o futebol. Quantos alunos preferem futebol?", r:360, d:"800 dividido por 100 dá 8. Agora multiplique 8 por 45.", t:[[440,"Deu os alunos que não preferem futebol"],[36,"Erro de vírgula"],[80,"Calculou só 10%"]] },
+    { c:"Ana: 34 de 40 questões, % de acerto", e:"Ana fez uma prova com 40 questões e acertou 34. Qual foi a porcentagem de acerto dela?", r:85, d:"Divida as questões certas (34) pelo total (40) e multiplique por 100.", t:[[15,"Calculou a porcentagem de erro"],[6,"Deu o número de questões erradas"],[0.85,"Esqueceu de multiplicar por 100"],[117.65,"Dividiu ao contrário (40 dividido por 34)"],[34,"Repetiu o número de acertos"]] }
+   ]},
+ { titulo:"Nível 3: aumentos e descontos",
+   teoria:`<p><b>Desconto:</b> calcule a porcentagem e tire do preço.</p>
+   <div class="formula">preço final = preço − desconto</div>
+   <div class="ex">R$ 80 com 25% de desconto: 25% de 80 é 20, então se paga 80 − 20 = R$ 60.</div>
+   <p><b>Aumento:</b> calcule a porcentagem e some ao valor.</p>
+   <div class="formula">valor novo = valor antigo + aumento</div>
+   <div class="ex">R$ 50 com aumento de 10%: 10% de 50 é 5, então fica 50 + 5 = R$ 55.</div>
+   <p>Para descobrir <b>de quantos por cento</b> foi o aumento ou o desconto:</p>
+   <div class="formula">porcentagem = diferença ÷ valor antigo × 100</div>`,
+   q:[
+    { c:"Camiseta R$ 60 com 15% de desconto", e:"Uma camiseta custa R$ 60 e está com 15% de desconto. Quanto você vai pagar?", r:51, d:"Calcule 15% de 60 (10% mais 5%) e depois tire esse valor de 60.", t:[[9,"Deu o valor do desconto, não o preço final"],[69,"Somou o desconto em vez de tirar"],[45,"Tirou 15 reais em vez de 15%"]] },
+    { c:"Salário R$ 2.000 com aumento de 8%", e:"Um salário de R$ 2.000 teve aumento de 8%. Qual é o novo salário?", r:2160, d:"1% de 2000 é 20. Então 8% é 8 vezes 20. Depois some ao salário.", t:[[160,"Deu só o valor do aumento"],[1840,"Tirou em vez de somar"],[2008,"Somou 8 reais em vez de 8%"],[2016,"Erro de vírgula no aumento"]] },
+    { c:"De R$ 50 para R$ 60, aumento de quantos %", e:"Um produto passou de R$ 50 para R$ 60. O aumento foi de quantos por cento?", r:20, d:"A diferença é 10 reais. Divida 10 pelo preço antigo (50) e multiplique por 100.", t:[[10,"Deu a diferença em reais, não em porcentagem"],[16.67,"Dividiu pelo preço novo em vez do antigo"],[120,"Deu o preço novo como porcentagem do antigo"]] },
+    { c:"TV R$ 1.200 com R$ 300 de desconto, quantos %", e:"Uma TV custava R$ 1.200 e teve R$ 300 de desconto. O desconto foi de quantos por cento?", r:25, d:"Divida o desconto (300) pelo preço antigo (1200) e multiplique por 100.", t:[[300,"Deu o desconto em reais"],[4,"Dividiu ao contrário (1200 dividido por 300)"],[75,"Deu a porcentagem que foi paga, não o desconto"],[0.25,"Esqueceu de multiplicar por 100"],[33.33,"Dividiu pelo preço novo (900) em vez do antigo"]] },
+    { c:"Marina: tênis R$ 250, 12% à vista, troco de R$ 230", e:"Marina quer comprar um tênis que custa R$ 250. Pagando à vista, a loja dá 12% de desconto. Ela pagou à vista com R$ 230. Quanto ela recebeu de troco?", r:10, d:"Primeiro calcule 12% de 250 (10% mais 2%) e tire do preço. Depois veja quanto sobra dos 230.", t:[[30,"Deu o valor do desconto"],[220,"Deu o preço com desconto, esqueceu o troco"],[20,"Fez 250 menos 230, sem aplicar o desconto"],[-20,"Fez 230 menos 250, sem aplicar o desconto"]] },
+    { c:"Conta de luz R$ 180, multa 2% + R$ 5", e:"Uma conta de luz de R$ 180 foi paga com atraso. Por isso teve multa de 2% sobre o valor da conta, mais R$ 5 de taxa. Qual foi o valor total pago?", r:188.6, d:"1% de 180 é 1,80, então 2% é 3,60. Some a conta, a multa e a taxa.", t:[[183.6,"Esqueceu a taxa de R$ 5"],[187,"Somou 2 reais em vez de 2%"],[185,"Esqueceu a multa de 2%"],[8.6,"Deu só os acréscimos, sem a conta"],[221,"Calculou 20% em vez de 2%"]] }
+   ]},
+ { titulo:"Nível 4: porcentagens seguidas e conta de trás para frente",
+   teoria:`<p>Aumentos e descontos seguidos <b>não se somam</b>. Cada um é calculado sobre o valor que ficou depois do anterior.</p>
+   <div class="formula">aplique uma porcentagem de cada vez, sempre sobre o valor novo</div>
+   <div class="ex">R$ 200 com aumento de 10% vira 220. Depois, 10% de desconto é calculado sobre 220: 10% de 220 é 22, e fica 198. Não volta para 200.</div>
+   <p><b>De trás para frente:</b> se o preço já está com desconto, ele é só uma parte do preço original.</p>
+   <div class="formula">desconto de 25% → o preço final é 75% do original<small>aumento de 10% → o valor final é 110% do original</small></div>
+   <div class="ex">Depois de 25% de desconto ficou R$ 60. Então 75% vale 60, 25% vale 20 e 100% vale 80. O preço original era R$ 80.</div>`,
+   q:[
+    { c:"R$ 100, sobe 10% e baixa 10%", e:"Um produto de R$ 100 subiu 10% e, depois, baixou 10%. Qual é o preço final?", r:99, d:"Primeiro calcule o preço depois do aumento. O desconto de 10% é calculado sobre esse novo preço.", t:[[100,"Achou que o aumento e o desconto se anulam"],[110,"Fez só o aumento"],[90,"Fez só o desconto"],[101,"Calculou o desconto sobre 100 e não sobre 110"]] },
+    { c:"Dois aumentos de 10%, aumento único", e:"Dois aumentos seguidos de 10% equivalem a um aumento único de quantos por cento?", r:21, d:"Teste com R$ 100: aplique um aumento de 10% e depois outro de 10% sobre o novo valor. Quanto aumentou no total?", t:[[20,"Somou as porcentagens"],[121,"Deu o valor final em vez do aumento"],[1.21,"Deu o fator multiplicativo em vez da porcentagem"]] },
+    { c:"R$ 64 depois de 20% de desconto, preço original", e:"Depois de um desconto de 20%, um produto custa R$ 64. Qual era o preço original?", r:80, d:"64 é 80% do preço original. Descubra quanto vale 10% (64 dividido por 8) e depois 100%.", t:[[76.8,"Calculou 20% de 64 e somou (porcentagem sobre o preço com desconto)"],[51.2,"Aplicou o desconto de novo"],[84,"Somou 20 reais"],[12.8,"Calculou 20% de 64"]] },
+    { c:"R$ 400, desconto 25% e aumento 20%", e:"Um preço de R$ 400 teve desconto de 25% e, depois, aumento de 20%. Qual é o preço final?", r:360, d:"Primeiro o desconto: 25% de 400. Com o novo preço, calcule 20% dele e some.", t:[[380,"Juntou as porcentagens (25% menos 20% = 5% de desconto)"],[300,"Fez só o desconto, esqueceu o aumento"],[480,"Fez só o aumento"],[320,"Tirou os 20% em vez de somar"]] },
+    { c:"Black Friday: fone R$ 150, +20% e -20%", e:"Uma semana antes da Black Friday, uma loja aumentou em 20% o preço de um fone que custava R$ 150. Na Black Friday, anunciou o fone com 20% de desconto. Qual foi o preço do fone na Black Friday?", r:144, d:"Primeiro calcule o preço depois do aumento. Os 20% de desconto são calculados sobre esse preço aumentado.", t:[[150,"Achou que o aumento e o desconto se anulam"],[180,"Fez só o aumento"],[120,"Fez só o desconto sobre o preço antigo"],[36,"Deu o valor do desconto"]] },
+    { c:"Carla: R$ 1.980 depois de 10% de aumento, salário antigo", e:"Carla recebeu um aumento de 10% e agora ganha R$ 1.980. Quanto ela ganhava antes do aumento?", r:1800, d:"1980 é 110% do salário antigo. Divida 1980 por 11 para achar quanto vale 10%, depois multiplique por 10.", t:[[1782,"Tirou 10% de 1980 (porcentagem sobre o valor novo)"],[2178,"Aplicou o aumento de novo"],[1970,"Tirou 10 reais"],[198,"Calculou 10% de 1980"]] }
+   ]}
+];
+let est = { nome:"", b:0, q:0, fila:[], hist:[] };
+try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s) est = Object.assign(est, s); } catch(e) {}
+function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(est)); } catch(e) {} }
+
+let tentativas = 0, inicioQ = Date.now();
+const $ = id => document.getElementById(id);
+
+function lerNumero(txt){
+  let s = String(txt).replace(/R\$|%|\s/gi, "");
+  if (!s) return NaN;
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  return Number(s);
+}
+const perto = (a, b, tol) => Math.abs(a - b) <= (tol ?? 0.005);
+
+function tipoErro(q, v){
+  if (isNaN(v)) return "Resposta não numérica";
+  for (const [val, txt] of q.t) if (perto(v, val, 0.02)) return txt;
+  for (const k of [10, 100]) if (perto(v, q.r * k, 0.02) || perto(v, q.r / k, 0.0005)) return "Erro de vírgula (casa decimal)";
+  return "Outro";
+}
+
+function enviar(dados){
+  est.fila.push(dados); salvar(); esvaziarFila();
+}
+let enviando = false;
+async function esvaziarFila(){
+  if (enviando) return; enviando = true;
+  while (est.fila.length){
+    const d = est.fila[0];
+    const corpo = new URLSearchParams();
+    for (const k in d) corpo.append(F[k], d[k]);
+    try { await fetch(FORM, { method:"POST", mode:"no-cors", body:corpo }); }
+    catch(e) { break; }
+    est.fila.shift(); salvar();
+  }
+  enviando = false;
+}
+window.addEventListener("online", esvaziarFila);
+
+function rotulo(){ const q = BLOCOS[est.b].q[est.q]; return `N${est.b+1}.Q${est.q+1} - ${q.c || q.e}`; }
+
+function desenhar(){
+  if (est.b >= BLOCOS.length) return fim();
+  $("telaNome").classList.add("esconde");
+  $("telaAtividade").classList.remove("esconde");
+  $("niveis").innerHTML = BLOCOS.map((_, i) => `<span class="${i<est.b?'feito':i===est.b?'atual':''}">Nível ${i+1}</span>`).join("");
+  const B = BLOCOS[est.b], q = B.q[est.q];
+  $("teoria").innerHTML = `<h2>${B.titulo}</h2><span class="copie">Copie no caderno</span>${B.teoria}`;
+  $("qNum").textContent = `Questão ${est.q+1} de ${B.q.length}`;
+  $("qEnun").textContent = q.e;
+  $("resp").value = ""; $("msg").textContent = ""; $("msg").className = "msg";
+  $("dica").style.display = "none"; $("dica").textContent = "Dica: " + q.d;
+  $("btnPular").classList.add("esconde");
+  tentativas = 0; inicioQ = Date.now();
+  $("resp").focus();
+}
+
+function registrarHist(acertou){
+  est.hist.push({ r:rotulo(), t:tentativas, a:acertou });
+}
+
+function avancar(){
+  est.q++;
+  if (est.q >= BLOCOS[est.b].q.length){ est.b++; est.q = 0; window.scrollTo(0,0); }
+  salvar(); desenhar();
+}
+
+function conferir(){
+  const txt = $("resp").value.trim();
+  if (!txt) return;
+  const q = BLOCOS[est.b].q[est.q];
+  const v = lerNumero(txt);
+  tentativas++;
+  const ok = !isNaN(v) && perto(v, q.r, q.r % 1 ? 0.02 : 0.005);
+  enviar({ aluno:est.nome, atividade:ATIVIDADE, questao:rotulo(), digitada:txt, correta:String(q.r).replace(".", ","),
+    acertou: ok ? "Sim" : "Não", tentativa:tentativas, erro: ok ? "" : tipoErro(q, v), tempo:Math.round((Date.now()-inicioQ)/1000) });
+  if (ok){
+    $("msg").className = "msg ok"; $("msg").textContent = "Certo!";
+    registrarHist("Sim");
+    $("btnResp").disabled = true;
+    setTimeout(() => { $("btnResp").disabled = false; avancar(); }, 900);
+  } else {
+    $("msg").className = "msg erro"; $("msg").textContent = "Ainda não. Confira a conta no caderno e tente de novo.";
+    if (tentativas >= 2) $("dica").style.display = "block";
+    if (tentativas >= 4) $("btnPular").classList.remove("esconde");
+    $("resp").select();
+  }
+}
+
+function pular(){
+  const q = BLOCOS[est.b].q[est.q];
+  enviar({ aluno:est.nome, atividade:ATIVIDADE, questao:rotulo(), digitada:"(pulou)", correta:String(q.r).replace(".", ","),
+    acertou:"Pulou", tentativa:tentativas, erro:"Pulou a questão", tempo:Math.round((Date.now()-inicioQ)/1000) });
+  registrarHist("Pulou");
+  avancar();
+}
+
+function fim(){
+  $("telaNome").classList.add("esconde");
+  $("telaAtividade").classList.add("esconde");
+  const t = $("telaFim"); t.classList.remove("esconde");
+  const linhas = est.hist.map(h => `<tr><td>${h.r.split(" - ")[0]}</td><td>${h.a==="Sim" ? "Acertou" : "Pulou"}</td><td>${h.t}</td></tr>`).join("");
+  t.innerHTML = `<h2>Atividade concluída!</h2><p>Obrigado, ${est.nome}. Suas respostas foram enviadas para o professor. Leve o caderno com os cálculos para a aula.</p>
+    <table><tr><th>Questão</th><th>Resultado</th><th>Tentativas</th></tr>${linhas}</table>
+    <p style="margin-top:14px"><button id="btnReiniciar">Recomeçar do início</button></p>`;
+  $("btnReiniciar").onclick = reiniciar;
+  esvaziarFila();
+}
+
+function reiniciar(){
+  const fila = est.fila;
+  est = { nome:"", b:0, q:0, fila:fila, hist:[] }; salvar();
+  $("telaFim").classList.add("esconde"); $("telaAtividade").classList.add("esconde");
+  $("telaNome").classList.remove("esconde"); $("nome").value = ""; window.scrollTo(0,0);
+}
+$("btnComecar").onclick = () => {
+  const n = $("nome").value.trim();
+  if (n.length < 2) { $("msgNome").textContent = "Digite seu nome para começar."; return; }
+  est.nome = n; salvar(); desenhar();
+};
+$("nome").addEventListener("keydown", e => { if (e.key === "Enter") $("btnComecar").click(); });
+$("btnResp").onclick = conferir;
+$("resp").addEventListener("keydown", e => { if (e.key === "Enter") conferir(); });
+$("btnPular").onclick = pular;
+$("lnkReiniciar").onclick = e => { e.preventDefault(); if ($("lnkReiniciar").dataset.ok) { delete $("lnkReiniciar").dataset.ok; reiniciar(); } else { $("lnkReiniciar").dataset.ok = 1; $("lnkReiniciar").textContent = "Clique de novo para confirmar (o progresso será perdido)"; setTimeout(() => { delete $("lnkReiniciar").dataset.ok; $("lnkReiniciar").textContent = "Recomeçar do início"; }, 4000); } };
+
+if (est.nome) desenhar();
+esvaziarFila();
+</script>
+</body>
+</html>

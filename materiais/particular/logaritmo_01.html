@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Função Logarítmica 01 - Atividade em níveis</title>
+<style>
+  :root { --azul:#1F4E79; --azulClaro:#e8eff6; --verde:#2e7d32; --vermelho:#b3261e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Times New Roman", Times, serif; font-size:18px; color:#1a1a1a; background:#f4f6f9; line-height:1.4; }
+  .wrap { max-width:720px; margin:0 auto; padding:14px; }
+  .faixa { background:var(--azul); color:#fff; padding:12px 16px; border-radius:6px; }
+  .faixa h1 { margin:0; font-size:24px; }
+  .faixa p { margin:4px 0 0; font-size:16px; opacity:.9; }
+  .card { background:#fff; border:1px solid #d6dde6; border-radius:6px; padding:14px 16px; margin-top:12px; }
+  .aviso { border-left:6px solid #c9a227; background:#fff8e1; }
+  .teoria { border-left:6px solid var(--azul); background:#f5f8fc; }
+  .teoria p { color:#1F4E79; margin:6px 0; }
+  .teoria h2, .card h2 { margin:0 0 6px; color:var(--azul); font-size:21px; }
+  .topoTeoria { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .topoTeoria h2 { margin:0; }
+  .formula { background:var(--azul); color:#fff; font-weight:bold; text-align:center; font-size:20px; padding:10px 12px; border-radius:6px; margin:8px 0; }
+  .formula small { display:block; font-weight:normal; font-size:15px; opacity:.85; margin-top:2px; }
+  .pares { display:flex; align-items:center; gap:8px; margin:8px 0; }
+  .par { flex:1; background:#fff; border:2px solid var(--azul); border-radius:6px; text-align:center; font-size:26px; font-weight:bold; padding:10px 4px; }
+  .seta { font-size:24px; color:var(--azul); }
+  .cb { color:#1F4E79; } .ce { color:#c0392b; } .cr { color:#2e7d32; }
+  .leg { font-size:15px; text-align:center; }
+  .copie { display:inline-block; font-size:14px; background:var(--azulClaro); color:var(--azul); padding:2px 8px; border-radius:10px; margin:6px 0; }
+  .ex { background:#fff; border:1px dashed #9fb3c8; color:#333; font-style:italic; padding:6px 10px; border-radius:4px; margin:6px 0; }
+  .ex::before { content:"Exemplo: "; font-style:normal; font-weight:bold; color:var(--azul); }
+  .grafico { background:#fff; border:1px solid #c9d5e2; border-radius:6px; margin:8px 0; padding:4px; }
+  .grafico svg { display:block; width:100%; height:auto; }
+  .niveis { display:flex; gap:6px; margin-top:12px; }
+  .niveis span { flex:1; text-align:center; padding:6px 2px; border-radius:4px; background:#dde3ea; color:#666; font-size:15px; }
+  .niveis span.feito { background:var(--verde); color:#fff; }
+  .niveis span.atual { background:var(--azul); color:#fff; font-weight:bold; }
+  .num { color:#666; font-size:15px; }
+  .enun { font-size:20px; margin:6px 0 12px; color:#111; }
+  .dados { display:none; background:var(--azulClaro); border:1px solid #b8c9db; color:var(--azul); border-radius:6px; padding:6px 10px; margin:0 0 12px; font-size:17px; }
+  .linha { display:flex; gap:8px; }
+  input[type=text] { flex:1; min-width:0; font-family:inherit; font-size:22px; padding:10px; border:2px solid #b8c4d2; border-radius:6px; }
+  input[type=text]:focus { outline:none; border-color:var(--azul); }
+  button { font-family:inherit; font-size:19px; padding:10px 18px; border:none; border-radius:6px; background:var(--azul); color:#fff; cursor:pointer; }
+  button.sec { background:#e3e7ec; color:#333; font-size:16px; }
+  button.peq { background:var(--azulClaro); color:var(--azul); font-size:15px; padding:6px 10px; white-space:nowrap; }
+  button.sinal { background:#e3e7ec; color:#111; font-size:22px; padding:10px 14px; }
+  .msg { min-height:26px; margin-top:8px; font-weight:bold; }
+  .msg.ok { color:var(--verde); } .msg.erro { color:var(--vermelho); }
+  .dica { display:none; margin-top:8px; padding:8px 10px; background:#fff8e1; border-radius:4px; }
+  .esconde { display:none; }
+  .fim td, .fim th { padding:4px 8px; border-bottom:1px solid #ddd; text-align:left; }
+  .fim th { background:var(--azul); color:#fff; }
+  .fim table { border-collapse:collapse; width:100%; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="faixa">
+    <h1>Função Logarítmica</h1>
+    <p>Atividade em 4 níveis. Cada nível abre quando você termina o anterior.</p>
+  </div>
+
+  <div class="card aviso">
+    <b>Antes de começar:</b> faça todos os cálculos à mão, no caderno, sem calculadora e sem celular. Se errar, tudo bem: o erro mostra o que a gente precisa trabalhar nas aulas.
+  </div>
+
+  <div id="telaNome" class="card">
+    <h2>Seu nome</h2>
+    <div class="linha">
+      <input type="text" id="nome" placeholder="Digite seu nome" autocomplete="name">
+      <button id="btnComecar">Começar</button>
+    </div>
+    <div class="msg erro" id="msgNome"></div>
+  </div>
+
+  <div id="telaAtividade" class="esconde">
+    <div class="niveis" id="niveis"></div>
+    <div style="text-align:right;margin-top:4px"><a href="#" id="lnkReiniciar" style="font-size:14px;color:#666">Recomeçar do início</a></div>
+    <div class="card teoria">
+      <div class="topoTeoria"><h2 id="tTitulo"></h2><button class="peq" id="btnTeoria"></button></div>
+      <div id="tCorpo"></div>
+    </div>
+    <div class="card" id="questao">
+      <div class="num" id="qNum"></div>
+      <div class="enun" id="qEnun"></div>
+      <div class="dados" id="qDados"></div>
+      <div class="linha">
+        <button class="sinal" id="btnSinal" title="Trocar o sinal da resposta">±</button>
+        <input type="text" id="resp" inputmode="decimal" autocomplete="off" placeholder="Sua resposta">
+        <button id="btnResp">Conferir</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="dica" id="dica"></div>
+      <div style="margin-top:10px"><button class="sec esconde" id="btnPular">Não consegui, pular esta questão</button></div>
+    </div>
+  </div>
+
+  <div id="telaFim" class="card fim esconde"></div>
+</div>
+
+<script>
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdDp_Usjq7aPc_whNWfCFu1ztIWVET3n5X9_3_s3MCrseTnkQ/formResponse";
+const F = { aluno:"entry.659926714", atividade:"entry.1123997006", questao:"entry.1692331355",
+  digitada:"entry.1805724041", correta:"entry.637093830", acertou:"entry.1410261161",
+  tentativa:"entry.426479395", erro:"entry.1281287574", tempo:"entry.1896467064" };
+const ATIVIDADE = "Função Logarítmica 01";
+const CHAVE = "particular_logaritmo01";
+const ALUNO_ID = (new URLSearchParams(location.search).get("aluno") || "").trim().toLowerCase();
+const AULA = (new URLSearchParams(location.search).get("aula") || "").trim().toLowerCase();
+const ATIVIDADE_ENVIO = ATIVIDADE + (AULA ? " | " + AULA : "");
+
+const DADOS = "Use: log 2 = 0,30 e log 3 = 0,48";
+
+const BLOCOS = [
+ { titulo:"Nível 1: o que é logaritmo",
+   teoria:`<p>O logaritmo responde a uma pergunta sobre expoente: <b>a base elevada a quanto dá esse número?</b></p>
+   <div class="pares"><div class="par"><span class="cb">2</span><sup class="ce">3</sup> = <span class="cr">8</span></div><div class="seta">⟷</div><div class="par">log<sub class="cb">2</sub> <span class="cr">8</span> = <span class="ce">3</span></div></div>
+   <p class="leg"><b class="cb">base</b> · <b class="ce">expoente</b> · <b class="cr">resultado da potência</b></p>
+   <div class="formula">log<sub>b</sub> a = x &nbsp;quer dizer&nbsp; b<sup>x</sup> = a</div>
+   <p>Quando a base não aparece, ela é 10: log 100 = 2, porque 10<sup>2</sup> = 100.</p>
+   <div class="ex">log<sub>5</sub> 25 = 2, porque 5<sup>2</sup> = 25. E log<sub>5</sub> 1 = 0, porque 5<sup>0</sup> = 1.</div>`,
+   q:[
+    { c:"2 elevado a quanto dá 32", e:"2 elevado a quanto dá 32?", r:5, d:"Vá multiplicando por 2 e contando: 2, 4, 8, 16, 32.", t:[[16,"Dividiu 32 por 2"],[64,"Multiplicou 32 por 2"],[4,"Errou a contagem das potências"],[6,"Errou a contagem das potências"]] },
+    { c:"10 elevado a quanto dá 10 000", e:"10 elevado a quanto dá 10 000?", r:4, d:"Em potência de 10, o expoente é a quantidade de zeros.", t:[[1000,"Dividiu 10 000 por 10"],[5,"Contou os algarismos em vez dos zeros"],[3,"Errou a contagem dos zeros"]] },
+    { c:"log₃ 81", e:"Calcule log<sub>3</sub> 81.", r:4, d:"A pergunta é: 3 elevado a quanto dá 81? Conte: 3, 9, 27, 81.", t:[[27,"Dividiu 81 por 3"],[243,"Multiplicou 81 por 3"],[3,"Errou a contagem das potências"],[5,"Errou a contagem das potências"],[9,"Deu a raiz quadrada de 81"]] },
+    { c:"log 1000", e:"Calcule log 1000.", r:3, d:"Sem base escrita, a base é 10. Então: 10 elevado a quanto dá 1000?", t:[[100,"Dividiu 1000 por 10"],[4,"Contou os algarismos em vez dos zeros"],[2,"Errou a contagem dos zeros"]] },
+    { c:"Bactérias dobram: 1 até 64", e:"Uma colônia de bactérias dobra de tamanho a cada hora. Ela começou com 1 bactéria. Depois de quantas horas a colônia terá 64 bactérias?", r:6, d:"Dobrar t vezes é multiplicar por 2 elevado a t. A resposta é log de 64 na base 2.", t:[[32,"Dividiu 64 por 2"],[5,"Errou a contagem das potências"],[7,"Errou a contagem das potências"],[128,"Multiplicou 64 por 2"],[8,"Deu a raiz quadrada de 64"]] },
+    { c:"Notícia triplica: 1 até 243", e:"O número de pessoas que viram uma notícia triplica a cada dia. No início, só 1 pessoa tinha visto. Depois de quantos dias serão 243 pessoas?", r:5, d:"Triplicar t vezes é multiplicar por 3 elevado a t. Conte: 3, 9, 27, 81, 243.", t:[[81,"Dividiu 243 por 3"],[4,"Errou a contagem das potências"],[6,"Errou a contagem das potências"],[729,"Multiplicou 243 por 3"]] }
+   ]},
+ { titulo:"Nível 2: propriedades",
+   teoria:`<p>As propriedades transformam contas difíceis em contas simples.</p>
+   <div class="formula">log (a · b) = log a + log b<small>multiplicação vira soma</small></div>
+   <div class="formula">log (a ÷ b) = log a − log b<small>divisão vira subtração</small></div>
+   <div class="formula">log (a<sup>n</sup>) = n · log a<small>o expoente desce multiplicando</small></div>
+   <div class="ex">sabendo que log 2 = 0,30: log 4 = log (2<sup>2</sup>) = 2 · 0,30 = 0,60. E log 20 = log 2 + log 10 = 0,30 + 1 = 1,30.</div>
+   <p><b>Cuidado:</b> não existe propriedade para soma. log (a + b) não é log a + log b.</p>`,
+   q:[
+    { c:"log 6", e:"Calcule log 6.", dados:DADOS, r:0.78, d:"6 = 2 · 3. Multiplicação vira soma dos logs.", t:[[0.144,"Multiplicou os logs em vez de somar"],[0.18,"Subtraiu em vez de somar"],[0.9,"Multiplicou log 2 por 3"],[1.44,"Multiplicou log 3 por 3"]] },
+    { c:"log 8", e:"Calcule log 8.", dados:DADOS, r:0.9, d:"8 = 2 elevado a 3. O expoente desce multiplicando.", t:[[2.4,"Multiplicou log 2 por 8"],[1.2,"Multiplicou log 2 por 4"],[0.027,"Elevou log 2 ao cubo"],[0.6,"Usou 2 ao quadrado em vez de 2 ao cubo"]] },
+    { c:"log 1,5", e:"Calcule log 1,5.", dados:DADOS, r:0.18, d:"1,5 = 3 ÷ 2. Divisão vira subtração dos logs.", t:[[0.78,"Somou em vez de subtrair"],[1.6,"Dividiu os logs em vez de subtrair"],[-0.18,"Subtraiu na ordem inversa"],[0.144,"Multiplicou os logs"]] },
+    { c:"log 5", e:"Calcule log 5.", dados:DADOS, r:0.7, d:"5 = 10 ÷ 2, e log 10 = 1.", t:[[0.78,"Somou log 2 e log 3 (isso é log 6)"],[1.3,"Somou em vez de subtrair (isso é log 20)"],[3.33,"Dividiu log 10 por log 2 em vez de subtrair"],[-0.7,"Subtraiu na ordem inversa"]] },
+    { c:"Algarismos de 2 elevado a 30", e:"Para saber quantos algarismos tem um número grande, calcule o log dele, fique só com a parte inteira e some 1. Quantos algarismos tem o número 2<sup>30</sup>?", dados:DADOS, r:10, d:"log (2 elevado a 30) = 30 · log 2. Depois some 1 à parte inteira.", t:[[9,"Calculou o log e esqueceu de somar 1"],[30,"Deu o expoente"],[31,"Somou 1 ao expoente"]] },
+    { c:"pH com C = 2 · 10⁻⁵", e:"Em Química, o pH de uma solução é dado por pH = − log C, em que C é a concentração de íons de hidrogênio. Qual é o pH de uma solução com C = 2 · 10<sup>−5</sup>?", dados:DADOS, r:4.7, d:"log (2 · 10 elevado a −5) = log 2 + (−5) = 0,30 − 5. Depois troque o sinal.", t:[[-4.7,"Esqueceu o sinal de menos da fórmula"],[5.3,"Somou 0,30 em vez de subtrair"],[5,"Ignorou o fator 2"],[-5.3,"Errou os sinais"],[1.5,"Multiplicou 0,30 por 5"]] }
+   ]},
+ { titulo:"Nível 3: a função logarítmica",
+   teoria:`<div class="formula">f(x) = log<sub>b</sub> x<small>só existe para x maior que zero</small></div>
+   <div class="grafico"><svg viewBox="0 0 320 224" role="img" aria-label="Gráfico da função logarítmica crescente e decrescente">
+     <line x1="30" y1="110" x2="312" y2="110" stroke="#555" stroke-width="1"/><line x1="30" y1="8" x2="30" y2="216" stroke="#555" stroke-width="1"/>
+     <text x="304" y="124" font-size="12" fill="#555">x</text><text x="16" y="16" font-size="12" fill="#555">y</text>
+     <polyline fill="none" stroke="#1F4E79" stroke-width="2.5" points="33.7,205.5 34.8,195.1 35.8,186.7 36.8,179.7 37.8,173.6 38.8,168.3 39.9,163.6 40.9,159.3 41.9,155.4 42.9,151.9 43.9,148.6 45.0,145.5 46.0,142.7 47.0,140.0 48.0,137.5 49.0,135.1 50.1,132.8 51.1,130.7 52.1,128.6 53.1,126.7 54.1,124.8 55.2,123.0 56.2,121.3 57.2,119.7 58.2,118.1 59.2,116.5 60.3,115.0 61.3,113.6 62.3,112.2 63.3,110.9 64.3,109.6 72.8,100.0 81.3,92.2 89.8,85.5 98.3,79.8 106.8,74.7 115.3,70.2 123.8,66.1 132.3,62.3 140.8,58.9 149.3,55.7 157.8,52.7 166.3,49.9 174.8,47.3 183.3,44.8 191.8,42.5 200.3,40.3 208.8,38.1 217.3,36.1 225.8,34.2 234.3,32.4 242.8,30.6 251.3,28.9 259.8,27.3 268.3,25.7 276.8,24.2 285.3,22.7 293.8,21.3"/>
+     <polyline fill="none" stroke="#c0392b" stroke-width="2.5" points="33.7,14.5 34.8,24.9 35.8,33.3 36.8,40.3 37.8,46.4 38.8,51.7 39.9,56.4 40.9,60.7 41.9,64.6 42.9,68.1 43.9,71.4 45.0,74.5 46.0,77.3 47.0,80.0 48.0,82.5 49.0,84.9 50.1,87.2 51.1,89.3 52.1,91.4 53.1,93.3 54.1,95.2 55.2,97.0 56.2,98.7 57.2,100.3 58.2,101.9 59.2,103.5 60.3,105.0 61.3,106.4 62.3,107.8 63.3,109.1 64.3,110.4 72.8,120.0 81.3,127.8 89.8,134.5 98.3,140.2 106.8,145.3 115.3,149.8 123.8,153.9 132.3,157.7 140.8,161.1 149.3,164.3 157.8,167.3 166.3,170.1 174.8,172.7 183.3,175.2 191.8,177.5 200.3,179.7 208.8,181.9 217.3,183.9 225.8,185.8 234.3,187.6 242.8,189.4 251.3,191.1 259.8,192.7 268.3,194.3 276.8,195.8 285.3,197.3 293.8,198.7"/>
+     <circle cx="64" cy="110" r="4.5" fill="#111"/><text x="92" y="105" font-size="13" fill="#111">(1, 0)</text>
+     <text x="150" y="84" font-size="13" fill="#1F4E79">base maior que 1: crescente</text>
+     <text x="138" y="142" font-size="13" fill="#c0392b">base entre 0 e 1: decrescente</text>
+   </svg></div>
+   <p>O gráfico sempre passa pelo ponto (1, 0), porque log de 1 é zero em qualquer base. Ele nunca encosta no eixo y.</p>
+   <p>Com base maior que 1, números entre 0 e 1 têm log <b>negativo</b>.</p>
+   <div class="ex">log<sub>2</sub> (1/2) = −1, porque 2<sup>−1</sup> = 1/2.</div>
+   <p>A função logarítmica é a <b>inversa</b> da exponencial: uma desfaz o que a outra faz.</p>`,
+   q:[
+    { c:"f(x) = log₂ x, f(16)", e:"Dada f(x) = log<sub>2</sub> x, calcule f(16).", r:4, d:"2 elevado a quanto dá 16?", t:[[8,"Dividiu 16 por 2"],[32,"Multiplicou 16 por 2"],[256,"Calculou 16 ao quadrado"],[3,"Errou a contagem das potências"],[5,"Errou a contagem das potências"]] },
+    { c:"f(x) = log₂ x, f(1/4)", e:"Dada f(x) = log<sub>2</sub> x, calcule f(1/4).", r:-2, d:"1/4 é 2 elevado a um expoente negativo. Use o botão ± para o sinal.", t:[[2,"Esqueceu o sinal negativo"],[0.5,"Deu a raiz quadrada de 1/4"],[0.125,"Dividiu 1/4 por 2"],[-4,"Deu o denominador com sinal negativo"],[-0.5,"Inverteu o expoente"]] },
+    { c:"f(x) = log₃ (x − 1), f(10)", e:"Dada f(x) = log<sub>3</sub> (x − 1), calcule f(10).", r:2, d:"Primeiro faça a conta de dentro: 10 − 1. Depois calcule o log.", t:[[9,"Fez só a conta de dentro (10 − 1)"],[3,"Dividiu 9 por 3"],[1,"Errou a contagem das potências"]] },
+    { c:"Menor inteiro do domínio de log (x − 4)", e:"Qual é o menor número inteiro que pertence ao domínio de f(x) = log (x − 4)?", r:5, d:"O que está dentro do log precisa ser maior que zero, e não pode ser zero.", t:[[4,"Aceitou log de zero (o logaritmando tem que ser maior que zero)"],[1,"Usou x maior que zero, sem considerar o − 4"],[0,"Usou zero"],[-4,"Trocou o sinal"],[-3,"Trocou o sinal"]] },
+    { c:"Decibéis: I = 10¹¹ vezes I₀", e:"O nível sonoro, em decibéis, é dado por N = 10 · log (I ÷ I<sub>0</sub>), em que I<sub>0</sub> é a menor intensidade que o ouvido percebe. Num show, a intensidade I é 10<sup>11</sup> vezes maior que I<sub>0</sub>. Qual é o nível sonoro do show, em decibéis?", r:110, d:"I ÷ I₀ = 10 elevado a 11. O log disso é 11. Depois multiplique por 10.", t:[[11,"Calculou o log e esqueceu de multiplicar por 10"],[21,"Somou 10 em vez de multiplicar"],[120,"Errou o log de 10 elevado a 11"],[100,"Errou o log de 10 elevado a 11"]] },
+    { c:"Planta: h(t) = log₂ (t + 1) = 3", e:"A altura de uma planta, em metros, é dada por h(t) = log<sub>2</sub> (t + 1), com t em anos. Depois de quantos anos a planta atinge 3 metros?", r:7, d:"Faça log₂ (t + 1) = 3. Então t + 1 = 2 elevado a 3.", t:[[8,"Achou t + 1 = 8 e esqueceu de subtrair 1"],[2,"Calculou h(3) em vez de resolver h(t) = 3"],[5,"Fez 2 · 3 em vez de 2 elevado a 3"],[6,"Fez 2 · 3 em vez de 2 elevado a 3"]] }
+   ]},
+ { titulo:"Nível 4: equações e aplicações",
+   teoria:`<p>Para resolver uma equação com log, volte para a potência:</p>
+   <div class="formula">log<sub>b</sub> (algo) = k &nbsp;→&nbsp; algo = b<sup>k</sup></div>
+   <div class="ex">log<sub>3</sub> (x + 2) = 2 → x + 2 = 3<sup>2</sup> = 9 → x = 7.</div>
+   <p>No fim, confira o domínio: o que fica dentro de cada log tem que ser positivo.</p>
+   <p><b>Mudança de base:</b> serve para calcular logs que não são exatos.</p>
+   <div class="formula">log<sub>b</sub> a = log a ÷ log b</div>
+   <p>Com ela dá para resolver equações exponenciais:</p>
+   <div class="formula">b<sup>x</sup> = a &nbsp;→&nbsp; x = log a ÷ log b</div>`,
+   q:[
+    { c:"log₂ (x + 1) = 3", e:"Resolva: log<sub>2</sub> (x + 1) = 3. Qual é o valor de x?", r:7, d:"x + 1 = 2 elevado a 3.", t:[[8,"Achou x + 1 = 8 e esqueceu de subtrair 1"],[5,"Fez 2 · 3 em vez de 2 elevado a 3"],[2,"Igualou x + 1 a 3"],[9,"Somou 1 em vez de subtrair"]] },
+    { c:"log₂ 3 por mudança de base", e:"Calcule log<sub>2</sub> 3.", dados:DADOS, r:1.6, d:"log₂ 3 = log 3 ÷ log 2.", t:[[0.625,"Inverteu a divisão (log 2 ÷ log 3)"],[0.18,"Subtraiu em vez de dividir"],[0.78,"Somou em vez de dividir"],[1.5,"Dividiu 3 por 2"],[0.144,"Multiplicou os logs"]] },
+    { c:"log x + log (x − 3) = 1", e:"Resolva: log x + log (x − 3) = 1. Qual é o valor de x?", r:5, d:"Soma de logs vira log do produto: log [x · (x − 3)] = 1, então x · (x − 3) = 10. Resolva e confira o domínio.", t:[[-2,"Deu a raiz que está fora do domínio"],[6.5,"Somou os logaritmandos em vez de multiplicar"],[2,"Trocou o sinal da raiz negativa"],[10,"Parou em x · (x − 3) = 10"]] },
+    { c:"2ˣ = 6", e:"Resolva: 2<sup>x</sup> = 6. Qual é o valor de x?", dados:DADOS, r:2.6, d:"x = log 6 ÷ log 2. Para log 6, use 6 = 2 · 3.", t:[[3,"Dividiu 6 por 2"],[0.385,"Inverteu a divisão"],[0.48,"Subtraiu os logs em vez de dividir"],[0.78,"Calculou log 6 e parou"],[1.08,"Somou os logs em vez de dividir"]] },
+    { c:"Richter: magnitude 7 contra 5", e:"Na escala Richter, a magnitude de um terremoto é M = log (A ÷ A<sub>0</sub>), em que A é a amplitude das ondas. A amplitude das ondas de um terremoto de magnitude 7 é quantas vezes maior que a de um terremoto de magnitude 5?", r:100, d:"Cada 1 ponto de magnitude multiplica a amplitude por 10. São 2 pontos de diferença.", t:[[2,"Deu a diferença das magnitudes"],[1.4,"Dividiu 7 por 5"],[20,"Multiplicou a diferença por 10"],[10,"Considerou só 1 ponto de diferença"],[1000,"Errou a potência de 10"]] },
+    { c:"Capital dobra a 20% ao ano", e:"Um capital aplicado a juros compostos de 20% ao ano é multiplicado por 1,2 a cada ano. Em quantos anos ele dobra de valor? Resolva 1,2<sup>t</sup> = 2.", dados:"Use: log 2 = 0,30 e log 1,2 = 0,08", r:3.75, d:"t = log 2 ÷ log 1,2 = 0,30 ÷ 0,08.", t:[[5,"Fez 100% ÷ 20%, como se fossem juros simples"],[0.267,"Inverteu a divisão"],[0.22,"Subtraiu os logs em vez de dividir"],[1.67,"Dividiu 2 por 1,2"],[0.024,"Multiplicou os logs"]] }
+   ]}
+];
+
+let est = { nome:"", b:0, q:0, fila:[], hist:[] };
+try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s) est = Object.assign(est, s); } catch(e) {}
+function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(est)); } catch(e) {} }
+if (ALUNO_ID && est.nome !== ALUNO_ID) {
+  est = { nome:ALUNO_ID, b:0, q:0, fila:est.fila || [], hist:[] };
+  salvar();
+}
+
+let tentativas = 0, inicioQ = Date.now(), teoriaAberta = true;
+const $ = id => document.getElementById(id);
+
+function lerNumero(txt){
+  let s = String(txt).replace(/R\$|%|\s/gi, "").replace(/[−–]/g, "-");
+  if (!s) return NaN;
+  const fr = s.match(/^(-?)(\d+)\/(\d+)$/);
+  if (fr) return (fr[1] ? -1 : 1) * Number(fr[2]) / Number(fr[3]);
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  return Number(s);
+}
+const perto = (a, b, tol) => Math.abs(a - b) <= (tol ?? 0.005);
+const inteiro = n => Number.isInteger(n);
+const br = n => String(n).replace(".", ",");
+
+function tipoErro(q, v){
+  if (isNaN(v)) return "Resposta não numérica";
+  for (const [val, txt] of q.t) if (perto(v, val, inteiro(val) ? 0.005 : 0.011)) return txt;
+  if (!inteiro(q.r)) for (const k of [10, 100]) if (perto(v, q.r * k, 0.02) || perto(v, q.r / k, 0.0005)) return "Erro de vírgula (casa decimal)";
+  if (perto(v, -q.r, 0.011)) return "Errou só o sinal";
+  return "Outro";
+}
+
+function enviar(dados){ est.fila.push(dados); salvar(); esvaziarFila(); }
+let enviando = false;
+async function esvaziarFila(){
+  if (enviando) return; enviando = true;
+  while (est.fila.length){
+    const d = est.fila[0];
+    const corpo = new URLSearchParams();
+    for (const k in d) corpo.append(F[k], d[k]);
+    try { await fetch(FORM, { method:"POST", mode:"no-cors", body:corpo }); }
+    catch(e) { break; }
+    est.fila.shift(); salvar();
+  }
+  enviando = false;
+}
+window.addEventListener("online", esvaziarFila);
+
+function rotulo(){ const q = BLOCOS[est.b].q[est.q]; return `N${est.b+1}.Q${est.q+1} - ${q.c}`; }
+
+function mostrarTeoria(){
+  $("tCorpo").classList.toggle("esconde", !teoriaAberta);
+  $("btnTeoria").textContent = teoriaAberta ? "Esconder teoria" : "Ver teoria";
+}
+
+function desenhar(){
+  if (est.b >= BLOCOS.length) return fim();
+  $("telaNome").classList.add("esconde");
+  $("telaAtividade").classList.remove("esconde");
+  $("niveis").innerHTML = BLOCOS.map((_, i) => `<span class="${i<est.b?'feito':i===est.b?'atual':''}">Nível ${i+1}</span>`).join("");
+  const B = BLOCOS[est.b], q = B.q[est.q];
+  $("tTitulo").textContent = B.titulo;
+  $("tCorpo").innerHTML = `<span class="copie">Copie no caderno</span>${B.teoria}`;
+  teoriaAberta = est.q === 0; mostrarTeoria();
+  $("qNum").textContent = `Questão ${est.q+1} de ${B.q.length}`;
+  $("qEnun").innerHTML = q.e;
+  $("qDados").textContent = q.dados || ""; $("qDados").style.display = q.dados ? "block" : "none";
+  $("resp").value = ""; $("msg").textContent = ""; $("msg").className = "msg";
+  $("dica").style.display = "none"; $("dica").textContent = "Dica: " + q.d;
+  $("btnPular").classList.add("esconde");
+  tentativas = 0; inicioQ = Date.now();
+  if (est.q > 0) $("resp").focus();
+}
+
+function registrarHist(acertou){ est.hist.push({ r:rotulo(), t:tentativas, a:acertou }); }
+
+function avancar(){
+  est.q++;
+  if (est.q >= BLOCOS[est.b].q.length){ est.b++; est.q = 0; window.scrollTo(0,0); }
+  salvar(); desenhar();
+}
+
+function conferir(){
+  const txt = $("resp").value.trim();
+  if (!txt) return;
+  const q = BLOCOS[est.b].q[est.q];
+  const v = lerNumero(txt);
+  tentativas++;
+  const ok = !isNaN(v) && perto(v, q.r, inteiro(q.r) ? 0.005 : 0.011);
+  enviar({ aluno:est.nome, atividade:ATIVIDADE_ENVIO, questao:rotulo(), digitada:txt, correta:br(q.r),
+    acertou: ok ? "Sim" : "Não", tentativa:tentativas, erro: ok ? "" : tipoErro(q, v), tempo:Math.round((Date.now()-inicioQ)/1000) });
+  if (ok){
+    $("msg").className = "msg ok"; $("msg").textContent = "Certo!";
+    registrarHist("Sim");
+    $("btnResp").disabled = true;
+    setTimeout(() => { $("btnResp").disabled = false; avancar(); }, 900);
+  } else {
+    $("msg").className = "msg erro"; $("msg").textContent = "Ainda não. Confira a conta no caderno e tente de novo.";
+    if (tentativas >= 2) $("dica").style.display = "block";
+    if (tentativas >= 4) $("btnPular").classList.remove("esconde");
+    $("resp").select();
+  }
+}
+
+function pular(){
+  const q = BLOCOS[est.b].q[est.q];
+  enviar({ aluno:est.nome, atividade:ATIVIDADE_ENVIO, questao:rotulo(), digitada:"(pulou)", correta:br(q.r),
+    acertou:"Pulou", tentativa:tentativas, erro:"Pulou a questão", tempo:Math.round((Date.now()-inicioQ)/1000) });
+  registrarHist("Pulou");
+  avancar();
+}
+
+function fim(){
+  $("telaNome").classList.add("esconde");
+  $("telaAtividade").classList.add("esconde");
+  const t = $("telaFim"); t.classList.remove("esconde");
+  const linhas = est.hist.map(h => `<tr><td>${h.r.split(" - ")[0]}</td><td>${h.a==="Sim" ? "Acertou" : "Pulou"}</td><td>${h.t}</td></tr>`).join("");
+  const obrigado = (ALUNO_ID || est.nome.includes("@")) ? "Obrigado." : "Obrigado, " + est.nome + ".";
+  t.innerHTML = `<h2>Atividade concluída!</h2><p>${obrigado} Suas respostas foram enviadas para o professor. Leve o caderno com os cálculos para a aula.</p>
+    <table><tr><th>Questão</th><th>Resultado</th><th>Tentativas</th></tr>${linhas}</table>
+    <p style="margin-top:14px"><button id="btnReiniciar">Recomeçar do início</button></p>`;
+  $("btnReiniciar").onclick = reiniciar;
+  esvaziarFila();
+}
+
+function reiniciar(){
+  const fila = est.fila;
+  est = { nome:ALUNO_ID, b:0, q:0, fila:fila, hist:[] }; salvar();
+  window.scrollTo(0,0);
+  $("telaFim").classList.add("esconde");
+  if (ALUNO_ID) { desenhar(); return; }
+  $("telaAtividade").classList.add("esconde");
+  $("telaNome").classList.remove("esconde"); $("nome").value = "";
+}
+
+$("btnComecar").onclick = () => {
+  const n = $("nome").value.trim();
+  if (n.length < 2) { $("msgNome").textContent = "Digite seu nome para começar."; return; }
+  est.nome = n; salvar(); desenhar();
+};
+$("nome").addEventListener("keydown", e => { if (e.key === "Enter") $("btnComecar").click(); });
+$("btnResp").onclick = conferir;
+$("resp").addEventListener("keydown", e => { if (e.key === "Enter") conferir(); });
+$("btnPular").onclick = pular;
+$("btnTeoria").onclick = () => { teoriaAberta = !teoriaAberta; mostrarTeoria(); };
+$("btnSinal").onclick = () => {
+  const r = $("resp"); const v = r.value.trim().replace(/^[−–]/, "-");
+  r.value = v.startsWith("-") ? v.slice(1) : "-" + v; r.focus();
+};
+$("lnkReiniciar").onclick = e => { e.preventDefault(); const l = $("lnkReiniciar");
+  if (l.dataset.ok) { delete l.dataset.ok; l.textContent = "Recomeçar do início"; reiniciar(); }
+  else { l.dataset.ok = 1; l.textContent = "Clique de novo para confirmar (o progresso será perdido)";
+    setTimeout(() => { delete l.dataset.ok; l.textContent = "Recomeçar do início"; }, 4000); } };
+
+if (est.nome) desenhar();
+esvaziarFila();
+</script>
+</body>
+</html>

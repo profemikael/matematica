@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão para a Prova · 3º Trimestre · 7º Ano</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color:#1F2937; margin:0; background:#EEF2F7; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 0 40px; }
+  header.capa { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #3B82F6 100%); color:#fff; padding: 20px 26px 16px; }
+  header.capa .linha { font-size: 11.5px; letter-spacing:.12em; text-transform:uppercase; opacity:.85; }
+  header.capa h1 { margin: 5px 0 2px; font-size: 24px; }
+  header.capa h2 { margin: 0; font-size: 14px; font-weight: normal; opacity:.92; }
+  .card { background:#fff; margin: 16px 16px 0; border-radius: 12px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(30,58,138,.08); }
+  h3 { color:#1E3A8A; margin: 0 0 10px; font-size: 19px; }
+  p { font-size: 15px; line-height: 1.55; margin: 8px 0; }
+  label { display:block; font-weight:bold; font-size:14px; color:#1E3A8A; margin: 14px 0 5px; }
+  select, input[type=text] { width:100%; font-size:16px; padding: 10px 12px; border:2px solid #CBD5E1; border-radius:8px; background:#fff; }
+  select:focus, input:focus { outline:none; border-color:#2563EB; }
+  button { font-size:16px; font-weight:bold; border:none; border-radius:9px; padding: 12px 20px; cursor:pointer; }
+  .btn { background:#1E3A8A; color:#fff; }
+  .btn:disabled { background:#94A3B8; cursor:not-allowed; }
+  .btn.verde { background:#166534; }
+  .btn.claro { background:#E2E8F0; color:#1E3A8A; }
+  .linha-btn { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  a.link { color:#2563EB; font-size:14px; cursor:pointer; text-decoration:underline; display:inline-block; margin-top:8px; }
+
+  /* sugestões de nome */
+  .auto { position:relative; }
+  .sugestoes { position:absolute; left:0; right:0; top:100%; background:#fff; border:2px solid #2563EB; border-top:none; border-radius:0 0 8px 8px; z-index:5; max-height:260px; overflow-y:auto; }
+  .sugestoes div { padding:10px 12px; font-size:15.5px; cursor:pointer; border-top:1px solid #E5E7EB; }
+  .sugestoes div:hover, .sugestoes div.ativa { background:#EFF6FF; color:#1E3A8A; }
+  .sugestoes .vazio { color:#64748B; cursor:default; }
+  .escolhido { display:flex; align-items:center; justify-content:space-between; gap:10px; background:#F0FDF4; border:2px solid #86EFAC; border-radius:8px; padding:10px 12px; font-size:16px; color:#166534; font-weight:bold; }
+  .escolhido a { font-weight:normal; font-size:14px; color:#166534; text-decoration:underline; cursor:pointer; }
+
+  .faixa { border-radius:10px; padding:10px 14px; font-size:14.5px; margin-bottom:14px; }
+  .faixa.vermelha { border:3px solid #C0392B; background:#FDF1F0; color:#7F1D1D; }
+  .faixa.vermelha b { color:#C0392B; }
+  .faixa.azul { border:3px solid #1E3A8A; background:#EFF6FF; color:#1E3A8A; }
+  .etiqueta { font-size:12.5px; color:#64748B; font-weight:bold; letter-spacing:.07em; text-transform:uppercase; margin-bottom:4px; }
+  .formula { background:#1E3A8A; color:#fff; text-align:center; font-weight:bold; font-size:16px; padding:10px 12px; border-radius:8px; margin:10px 0; }
+  .item { border-left:4px solid #2563EB; background:#F2F7FC; border-radius:0 8px 8px 0; padding:9px 13px; margin:9px 0; font-size:15px; line-height:1.5; }
+  .item b { color:#1E3A8A; }
+  .exemplo { background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:9px 13px; margin:9px 0; font-size:14.5px; line-height:1.55; }
+  .exemplo .rot { font-size:11px; font-weight:bold; color:#2563EB; letter-spacing:.1em; text-transform:uppercase; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:15px; }
+  th { background:#1E3A8A; color:#fff; padding:8px 10px; text-align:left; }
+  td { border-bottom:1px solid #E5E7EB; padding:8px 10px; }
+  tr:nth-child(even) td { background:#F8FAFC; }
+
+  .progresso { display:flex; gap:4px; margin: 0 0 14px; }
+  .progresso span { flex:1; height:9px; border-radius:5px; background:#E2E8F0; }
+  .progresso span.c { background:#FCA5A5; }
+  .progresso span.ok { background:#16A34A; }
+  .progresso span.atual { background:#2563EB; }
+
+  .copiar { border:3px solid #D97706; background:#FFFBEB; border-radius:12px; padding:16px 18px 10px; margin: 4px 0 6px; }
+  .copiar-tt { display:inline-block; background:#D97706; color:#fff; font-weight:bold; font-size:13px; letter-spacing:.06em; padding:5px 12px; border-radius:999px; margin-bottom:10px; }
+  .copiar h3 { margin-top:2px; }
+  .copiar .item { background:#fff; }
+  .senha.so-responder { border:2px dashed #94A3B8; background:#F8FAFC; }
+  .senha.so-responder .tt { color:#475569; }
+  .senha .sub-tt { font-size:13px; color:#64748B; margin:-2px 0 4px; }
+  .senha { margin-top:18px; border:2px dashed #2563EB; border-radius:10px; padding:14px 16px; background:#FAFCFF; }
+  .senha .tt { font-size:13px; font-weight:bold; color:#2563EB; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; }
+  .enun { font-size:17px; line-height:1.6; margin: 6px 0 12px; }
+  .enun b { color:#1E3A8A; background:#EFF6FF; padding:0 4px; border-radius:4px; }
+  .resp-linha { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .resp-linha input { flex:1; min-width:140px; font-size:20px; text-align:center; }
+  .unid { font-size:17px; font-weight:bold; color:#1E3A8A; }
+  .msg { margin-top:14px; padding:11px 14px; border-radius:9px; font-size:15px; display:none; }
+  .msg.erro { display:block; background:#FEF2F2; border:2px solid #FCA5A5; color:#991B1B; }
+  .msg.certo { display:block; background:#F0FDF4; border:2px solid #86EFAC; color:#166534; }
+  .dica { display:none; margin-top:10px; background:#FEF7EE; border-left:4px solid #E67E22; border-radius:0 8px 8px 0; padding:9px 13px; font-size:14.5px; color:#7C2D12; }
+  .dica b { color:#B9651A; }
+  .seu { font-size:12.5px; color:#64748B; margin-top:12px; }
+  .final { text-align:center; }
+  .final .grande { font-size:54px; line-height:1; color:#16A34A; margin:6px 0; }
+  .final .dados { display:inline-block; text-align:left; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:10px; padding:12px 18px; margin:12px 0; font-size:15.5px; line-height:1.8; }
+  .envio { font-size:14px; margin-top:6px; }
+  .envio.ok { color:#166534; } .envio.falha { color:#991B1B; }
+  .oculto { display:none !important; }
+</style>
+<style>
+  .niveis { display:flex; gap:6px; margin:0 0 14px; }
+  .niveis .g { flex:1; display:flex; gap:2px; }
+  .niveis .g span { flex:1; height:9px; border-radius:4px; background:#E2E8F0; }
+  .niveis .g span.ok { background:#16A34A; }
+  .niveis .g span.atual { background:#2563EB; }
+  .nivel-tag { display:inline-block; background:#1E3A8A; color:#fff; font-weight:bold; font-size:13px; letter-spacing:.05em; padding:5px 12px; border-radius:999px; margin-bottom:8px; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; margin-top:4px; }
+  .opcoes button { text-align:left; background:#fff; color:#1F2937; border:2px solid #CBD5E1; font-weight:normal; font-size:16px; padding:11px 14px; }
+  .opcoes button:hover:not(:disabled) { border-color:#2563EB; background:#EFF6FF; }
+  .opcoes button.errada { border-color:#FCA5A5; background:#FEF2F2; color:#991B1B; }
+  .opcoes button.correta { border-color:#16A34A; background:#F0FDF4; color:#166534; font-weight:bold; }
+  .opcoes button:disabled { cursor:default; }
+  .xy { display:flex; align-items:center; gap:6px; font-size:24px; font-weight:bold; color:#1E3A8A; }
+  .xy input { width:110px; font-size:20px; text-align:center; }
+  .pre { font-size:17px; font-weight:bold; color:#1E3A8A; }
+  .parabens { text-align:center; padding:10px 0 4px; }
+  .parabens .big { font-size:42px; color:#16A34A; line-height:1; }
+  .copiar .lin { font-size:16.5px; line-height:1.5; padding:7px 4px 5px; border-bottom:1.5px solid #F2C98A; }
+  .copiar .lin:last-child { border-bottom:none; }
+  .copiar .lin b { color:#1E3A8A; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="capa">
+  <div class="linha">Matemática · 7º Ano · 3º Trimestre · Interativo</div>
+  <h1>Revisão para a Prova</h1>
+  <h2>8 níveis · conteúdos dos Simulados 1, 2, 3 e 4</h2>
+</header>
+
+<!-- ============ IDENTIFICAÇÃO ============ -->
+<section id="tela-id" class="card">
+  <h3>Antes de começar</h3>
+  <p>Escolha a sua turma e o seu nome. Quando você terminar, o resultado vai direto para o professor.</p>
+  <label for="turma">Turma</label>
+  <select id="turma">
+    <option value="">Escolha a turma</option>
+    <option value="7A MAT">7º A</option>
+  </select>
+
+  <div id="bloco-nome" class="oculto">
+    <label for="busca">Seu nome</label>
+    <div class="auto" id="caixa-busca">
+      <input type="text" id="busca" autocomplete="off" placeholder="Digite as primeiras letras do seu nome">
+      <div class="sugestoes oculto" id="sugestoes"></div>
+    </div>
+    <div class="escolhido oculto" id="escolhido"><span id="escolhido-nome"></span><a id="trocar">trocar</a></div>
+    <a class="link" id="nao-esta">Meu nome não está na lista</a>
+  </div>
+
+  <div id="bloco-livre" class="oculto">
+    <label for="nome-livre">Digite seu nome completo</label>
+    <input type="text" id="nome-livre" autocomplete="off">
+    <a class="link" id="voltar-lista">Voltar para a lista de nomes</a>
+  </div>
+
+  <div id="aviso-continuar" class="oculto" style="margin-top:16px;">
+    <div class="item">Você já tinha começado esta atividade neste Chromebook. Pode continuar de onde parou, com os mesmos números.</div>
+  </div>
+  <div class="linha-btn">
+    <button class="btn" id="btn-comecar" disabled>Começar</button>
+    <button class="btn claro oculto" id="btn-continuar">Continuar de onde parei</button>
+  </div>
+</section>
+
+
+<!-- ============ ETAPAS ============ -->
+<section id="tela-etapa" class="card oculto">
+  <div class="niveis" id="niveis"></div>
+  <div class="etiqueta" id="etiqueta"></div>
+  <div id="faixa"></div>
+  <div id="conteudo"></div>
+
+  <div id="area-pergunta">
+    <div class="senha" id="caixa-senha">
+      <div class="tt" id="pergunta-tt"></div>
+      <div class="sub-tt" id="pergunta-sub"></div>
+      <div class="enun" id="enun"></div>
+      <div class="resp-linha" id="linha-num">
+        <span class="pre" id="pre"></span>
+        <input type="text" id="resp" inputmode="decimal" autocomplete="off" placeholder="sua resposta">
+        <span class="unid" id="unid"></span>
+      </div>
+      <div class="xy oculto" id="linha-xy">( <input type="text" id="rx" inputmode="numeric" autocomplete="off" placeholder="x"> ; <input type="text" id="ry" inputmode="numeric" autocomplete="off" placeholder="y"> )</div>
+      <div class="opcoes oculto" id="opcoes"></div>
+      <div class="linha-btn" id="linha-conferir">
+        <button class="btn" id="btn-conferir">Conferir</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="dica" id="dica"></div>
+      <div class="seu" id="seu"></div>
+    </div>
+  </div>
+
+  <div class="linha-btn" style="justify-content:space-between;">
+    <button class="btn claro oculto" id="btn-voltar">← Voltar</button>
+    <button class="btn verde oculto" id="btn-avancar">Continuar</button>
+  </div>
+  <div class="seu" id="aviso-revisao" style="display:none;">Você está revendo uma etapa que já respondeu. Use "Avançar" para voltar até onde parou.</div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section id="tela-fim" class="card final oculto">
+  <div class="grande">✔</div>
+  <h3>Revisão concluída! Os 8 níveis estão completos.</h3>
+  <div class="dados" id="fim-dados"></div>
+  <div class="envio" id="fim-envio">Enviando resultado ao professor…</div>
+  <div class="linha-btn" style="justify-content:center;"><button class="btn claro oculto" id="btn-reenviar">Tentar enviar de novo</button></div>
+  <p style="font-size:14px;color:#64748B;">Mostre esta tela e o caderno ao professor. Bom estudo para a prova!</p>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var CHAVE = 'icaro7_revisao_prova_3tri_v1';
+  var ATIVIDADE = '7º Ano · Revisão para a Prova do 3º Trimestre (interativo)';
+  var FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSd0cya9DeEyUh4d1lMecTy3W5P5zJR-uEUeYryzR0U8wyIyTw/formResponse';
+  var CAMPOS = { nome:'entry.92939802', turma:'entry.1767871945', atividade:'entry.495326704', resultado:'entry.664553886' };
+
+  var LISTAS = {
+    '7A MAT': ['Ana Clara Martins Mielezarski','Ana Lauren dos Santos Lombardo','Antônia Vaz Rybarczik','Antônio Oliveira C. de Medeiros','Bernardo Matheus Marques','Davi Lucas Dalaroza Medeiros','Davi Machado Lemos Larcen','Eduarda Specht Martins','Eduardo Nunes Ramos','Guilherme Vicennti Vargas da Silva','Gustavo Accinelli Teixeira','Isabelli da Silva de Araújo','Isabelly de Souza Dullius','João Victor Ibias dos Santos','Leonardo Scholl Feldmann','Lorenzo Vidal Berwanger','Luan de Oliveira Picáz','Luis Otavio Borges Marx','Maiele Rohde Rodrigues','Maria Luiza Oliveira Machado','Millena Bitencourt de O. Alves','Murilo Nunes Souza','Murilo Vianna dos Santos','Naomi Magnolia de Limas Maier','Nicolas Umbersbach Coelho','Rafael Narcizo das Neves da Silva','Samuel Rossano','Shadia Fahed Azevedo Hamad','Sofia Stumpf Santana','Valentina Marques Duzac']
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function rint(min,max){ return min + Math.floor(Math.random()*(max-min+1)); }
+  function fmt(n){ return n.toLocaleString('pt-BR'); }
+  function norm(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+  function R(x){ return Math.round(x*1000)/1000; }
+  function embaralhar(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function sinal(n){ return n<0 ? '−'+Math.abs(n) : ''+n; }
+  function ponto(a,b){ return '('+sinal(a)+' ; '+sinal(b)+')'; }
+
+  // ================= CONCEITOS (quadro para copiar) =================
+  var NIVEIS = [
+    { nome:'Ângulos em retas paralelas', curto:'Paralelas', sim:'Simulado 1',
+      html:'<div class="lin"><b>Correspondentes, alternos internos, alternos externos e opostos pelo vértice:</b> têm a mesma medida.</div><div class="lin"><b>Colaterais internos e colaterais externos:</b> somam 180°.</div><div class="lin">Se um ângulo mede 130°, o correspondente mede 130° e o colateral interno mede 50°.</div><div class="lin">Dois ângulos iguais: monto a equação e acho x. Dois suplementares: a soma é 180.</div>' },
+    { nome:'Triângulos', curto:'Triâng.', sim:'Simulado 1',
+      html:'<div class="lin">A soma dos três ângulos internos é sempre <b>180°</b>.</div><div class="lin"><b>Ângulo externo</b> = soma dos dois internos não vizinhos (ou 180 menos o vizinho).</div><div class="lin">Quanto aos lados: equilátero (3 iguais), isósceles (2 iguais), escaleno (todos diferentes).</div><div class="lin">Quanto aos ângulos: acutângulo (todos agudos), retângulo (um de 90°), obtusângulo (um obtuso).</div>' },
+    { nome:'Áreas de triângulos e quadriláteros', curto:'Áreas', sim:'Simulado 2',
+      html:'<div class="lin">Retângulo: base × altura · Quadrado: lado × lado</div><div class="lin">Triângulo: base × altura ÷ 2 · Paralelogramo: base × altura</div><div class="lin">Trapézio: (base maior + base menor) × altura ÷ 2</div><div class="lin">Losango: diagonal maior × diagonal menor ÷ 2</div>' },
+    { nome:'Áreas compostas', curto:'Compost.', sim:'Simulado 2',
+      html:'<div class="lin">Figura em L: corto em dois retângulos e <b>somo</b> as áreas.</div><div class="lin">Parede com janela, terreno com canteiro: calculo a figura toda e <b>subtraio</b> o buraco.</div><div class="lin">Sempre confiro se todas as medidas estão na mesma unidade.</div><div class="lin">Área sai em unidade ao quadrado: cm², m².</div>' },
+    { nome:'Volume de blocos retangulares', curto:'Volume', sim:'Simulado 3',
+      html:'<div class="lin">Volume = comprimento × largura × altura (cubo: aresta × aresta × aresta).</div><div class="lin">1 cm³ = 1 mL · 1 dm³ = 1 L · 1 m³ = 1 000 L</div><div class="lin">Atalho: medidas em cm, divido cada uma por 10 e multiplico → sai em litros.</div><div class="lin">Altura = volume ÷ (comprimento × largura).</div>' },
+    { nome:'Polígonos', curto:'Políg.', sim:'Simulado 3',
+      html:'<div class="lin">Soma dos ângulos internos = (n − 2) × 180</div><div class="lin">Polígono regular: ângulo interno = soma ÷ n</div><div class="lin">Ângulo externo = 360 ÷ n (e interno + externo = 180)</div><div class="lin">Número de diagonais = n × (n − 3) ÷ 2</div>' },
+    { nome:'Circunferência, π e comprimento', curto:'Circunf.', sim:'Simulado 4',
+      html:'<div class="lin">Diâmetro = 2 × raio · Raio = diâmetro ÷ 2</div><div class="lin">Comprimento: C = 2 × π × r (ou C = π × d)</div><div class="lin">Uma volta da roda anda o comprimento. Várias voltas: multiplico pelo número de voltas.</div><div class="lin">O π fica <b>indicado</b> na resposta, sem trocar por 3,14.</div>' },
+    { nome:'Área do círculo', curto:'Círculo', sim:'Simulado 4',
+      html:'<div class="lin">Área = π × r × r (A = πr²). O raio multiplica por ele mesmo.</div><div class="lin">Se o problema der o diâmetro, divido por 2 antes de tudo.</div><div class="lin">Área = 49π → r × r = 49 → r = 7.</div><div class="lin">Região entre dois círculos: área do maior menos área do menor.</div>' }
+  ];
+
+  // ================= QUESTÕES (números sorteados por aluno) =================
+  function mc(t, certa, erradas, d){ return {tipo:'mc', t:t, r:certa, ops:embaralhar([certa].concat(erradas)), d:d}; }
+  function eqLados(){ // p x + q = r x - s, com r > p, s > 0
+    var x,p,q,r,s;
+    do{ x=rint(3,14); p=rint(2,4); r=p+rint(1,3); q=rint(2,18); s=r*x-(p*x+q); }while(s<1);
+    return {x:x,p:p,q:q,r:r,s:s,v:p*x+q};
+  }
+
+  function gerar(){
+    var N=[], L, a,b,c,d,h,k,n,r,e,it,t;
+
+    // 1 · Ângulos em retas paralelas
+    L=[];
+    a=rint(105,155);
+    e=pick([['correspondente',a],['alterno interno',a],['alterno externo',a],['oposto pelo vértice',a],['colateral interno',180-a],['colateral externo',180-a]]);
+    L.push({t:'Duas retas paralelas foram cortadas por uma transversal e um dos ângulos formados mede <b>'+a+'°</b>. Quanto mede o ângulo <b>'+e[0]+'</b> a ele?', r:e[1], u:'°',
+      d: e[1]===a ? 'Esses dois ângulos são congruentes: têm a mesma medida.' : 'Esses dois ângulos são suplementares: somam 180°, então faça 180 − '+a+'.'});
+    e=pick([['entre as paralelas, em lados opostos da transversal','Alternos internos'],
+            ['entre as paralelas, do mesmo lado da transversal','Colaterais internos'],
+            ['fora das paralelas, em lados opostos da transversal','Alternos externos'],
+            ['na mesma posição, um em cada paralela, do mesmo lado da transversal','Correspondentes']]);
+    L.push(mc('Como se chamam dois ângulos que ficam <b>'+e[0]+'</b>?', e[1],
+      ['Alternos internos','Colaterais internos','Alternos externos','Correspondentes'].filter(function(z){return z!==e[1];}),
+      'Interno é entre as paralelas, externo é fora. Alterno é em lados opostos da transversal, colateral é do mesmo lado.'));
+    e=eqLados();
+    L.push({t:'Dois ângulos <b>correspondentes</b> medem <b>('+e.p+'x + '+e.q+')°</b> e <b>('+e.r+'x − '+e.s+')°</b>. Quanto mede cada um deles?', r:e.v, u:'°',
+      d:'Correspondentes são iguais: '+e.p+'x + '+e.q+' = '+e.r+'x − '+e.s+'. Ache x e substitua em '+e.p+'x + '+e.q+'.'});
+    N.push(L);
+
+    // 2 · Triângulos
+    L=[];
+    a=rint(35,75); b=rint(35,75);
+    L.push({t:'Um triângulo tem dois ângulos medindo <b>'+a+'°</b> e <b>'+b+'°</b>. Quanto mede o terceiro ângulo?', r:180-a-b, u:'°',
+      d:'A soma dos três é 180°. Faça 180 − '+a+' − '+b+'.'});
+    a=rint(32,70); b=rint(32,70);
+    L.push({t:'Em um triângulo, dois ângulos internos medem <b>'+a+'°</b> e <b>'+b+'°</b>. Quanto mede o ângulo <b>externo</b> do terceiro vértice?', r:a+b, u:'°',
+      d:'O ângulo externo é a soma dos dois internos não vizinhos: '+a+' + '+b+'.'});
+    t=pick([40,50,64,70,80,96,100,110,120]);
+    L.push({t:'Um triângulo <b>isósceles</b> tem o ângulo do topo medindo <b>'+t+'°</b>. Quanto mede cada um dos dois ângulos da base?', r:(180-t)/2, u:'°',
+      d:'Tire o topo de 180: 180 − '+t+' = '+(180-t)+'. Os dois da base são iguais, então divida por 2.'});
+    if(Math.random()<0.5){
+      e=pick([['os três lados iguais','Equilátero'],['dois lados iguais e um diferente','Isósceles'],['os três lados com medidas diferentes','Escaleno']]);
+      L.push(mc('Um triângulo tem <b>'+e[0]+'</b>. Como ele se classifica quanto aos lados?', e[1], ['Equilátero','Isósceles','Escaleno'].filter(function(z){return z!==e[1];}),
+        'Equilátero: três iguais. Isósceles: dois iguais. Escaleno: todos diferentes.'));
+    } else {
+      e=pick([['os três ângulos agudos','Acutângulo'],['um ângulo de 90°','Retângulo'],['um ângulo obtuso','Obtusângulo']]);
+      L.push(mc('Um triângulo tem <b>'+e[0]+'</b>. Como ele se classifica quanto aos ângulos?', e[1], ['Acutângulo','Retângulo','Obtusângulo'].filter(function(z){return z!==e[1];}),
+        'Agudo é menor que 90°, reto é igual a 90° e obtuso é maior que 90°.'));
+    }
+    N.push(L);
+
+    // 3 · Áreas de triângulos e quadriláteros
+    L=[];
+    a=rint(6,24); b=rint(4,18);
+    L.push({t:'Um terreno retangular mede <b>'+a+' m</b> de comprimento e <b>'+b+' m</b> de largura. Qual é a área dele?', r:a*b, u:'m²',
+      d:'No retângulo a área é base × altura: '+a+' × '+b+'.'});
+    a=pick([6,8,10,12,14,16,18,20,24]); h=rint(3,16);
+    L.push({t:'Um painel triangular tem base de <b>'+a+' cm</b> e altura de <b>'+h+' cm</b>. Qual é a área?', r:a*h/2, u:'cm²',
+      d:'No triângulo: base × altura ÷ 2, ou seja '+a+' × '+h+' ÷ 2.'});
+    a=rint(8,20); do{ b=rint(4,16); }while(b>=a); h=pick([4,6,8,10,12]);
+    L.push({t:'Um tampo em forma de <b>trapézio</b> tem base maior de <b>'+a+' cm</b>, base menor de <b>'+b+' cm</b> e altura de <b>'+h+' cm</b>. Qual é a área?', r:(a+b)*h/2, u:'cm²',
+      d:'Some as bases, multiplique pela altura e divida por 2: ('+a+' + '+b+') × '+h+' ÷ 2.'});
+    if(Math.random()<0.5){
+      a=pick([6,8,10,12,14,16,18,20]); b=rint(3,15);
+      L.push({t:'Um losango tem diagonais de <b>'+a+' cm</b> e <b>'+b+' cm</b>. Qual é a área dele?', r:a*b/2, u:'cm²',
+        d:'No losango: diagonal maior × diagonal menor ÷ 2.'});
+    } else {
+      a=rint(5,20); h=rint(4,15);
+      L.push({t:'Um paralelogramo tem base de <b>'+a+' cm</b> e altura de <b>'+h+' cm</b>. Qual é a área dele?', r:a*h, u:'cm²',
+        d:'No paralelogramo a área é base × altura, sem dividir por 2.'});
+    }
+    N.push(L);
+
+    // 4 · Áreas compostas
+    L=[];
+    a=rint(5,14); b=rint(3,9); c=rint(3,10); d=rint(2,7);
+    L.push({t:'O piso de uma sala tem a forma de um <b>L</b>, formado por dois retângulos encostados: um de <b>'+a+' m</b> por <b>'+b+' m</b> e outro de <b>'+c+' m</b> por <b>'+d+' m</b>. Qual é a área total do piso?', r:a*b+c*d, u:'m²',
+      d:'Calcule a área de cada retângulo e some: '+a+' × '+b+' mais '+c+' × '+d+'.'});
+    a=rint(5,10); b=rint(3,6); c=pick([1,1.5,2,2.5]); d=pick([1,1.5,2]);
+    L.push({t:'Uma parede mede <b>'+a+' m</b> por <b>'+b+' m</b> e tem uma janela de <b>'+fmt(c)+' m</b> por <b>'+fmt(d)+' m</b>. Qual é a área que será pintada?', r:R(a*b-c*d), u:'m²',
+      d:'Área da parede inteira menos a área da janela: '+a+' × '+b+' − '+fmt(c)+' × '+fmt(d)+'.'});
+    a=rint(10,20); b=rint(8,16); c=pick([4,6,8,10,12]); h=rint(3,10);
+    L.push({t:'Um terreno retangular de <b>'+a+' m</b> por <b>'+b+' m</b> tem um canteiro triangular de base <b>'+c+' m</b> e altura <b>'+h+' m</b>. Qual é a área do terreno que sobra fora do canteiro?', r:a*b-c*h/2, u:'m²',
+      d:'Área do terreno ('+a+' × '+b+') menos a área do canteiro ('+c+' × '+h+' ÷ 2).'});
+    N.push(L);
+
+    // 5 · Volume de blocos retangulares
+    L=[];
+    a=rint(5,20); b=rint(4,15); c=rint(3,12);
+    L.push({t:'Uma caixa mede <b>'+a+' cm</b> de comprimento, <b>'+b+' cm</b> de largura e <b>'+c+' cm</b> de altura. Qual é o volume dela?', r:a*b*c, u:'cm³',
+      d:'Multiplique as três medidas: '+a+' × '+b+' × '+c+'.'});
+    a=pick([30,40,50,60,70,80,90,100,120]); b=pick([20,30,40,50]); c=pick([20,30,40,50,60]);
+    L.push({t:'Um aquário mede <b>'+a+' cm</b> × <b>'+b+' cm</b> × <b>'+c+' cm</b>. Quantos litros de água ele comporta?', r:a*b*c/1000, u:'L',
+      d:'Atalho: divida cada medida por 10 (vira dm) e multiplique. O resultado já sai em litros.'});
+    a=pick([4,5,6,8,10,12,15,20]); b=pick([2,3,4,5,6,8]); k=rint(3,18);
+    L.push({t:'Uma caixa tem base de <b>'+a+' cm</b> por <b>'+b+' cm</b> e volume de <b>'+fmt(a*b*k)+' cm³</b>. Qual é a altura dela?', r:k, u:'cm',
+      d:'Altura = volume ÷ (comprimento × largura) = '+fmt(a*b*k)+' ÷ '+(a*b)+'.'});
+    N.push(L);
+
+    // 6 · Polígonos
+    L=[];
+    n=pick([5,6,7,8,9,10,11,12,15,20]);
+    L.push({t:'Qual é a soma dos ângulos internos de um polígono de <b>'+n+' lados</b>?', r:180*(n-2), u:'°',
+      d:'Use (n − 2) × 180: ('+n+' − 2) × 180.'});
+    n=pick([5,6,8,9,10,12,15,18,20]);
+    L.push({t:'Quanto mede cada ângulo interno de um polígono <b>regular</b> de <b>'+n+' lados</b>?', r:180*(n-2)/n, u:'°',
+      d:'Primeiro a soma: ('+n+' − 2) × 180 = '+fmt(180*(n-2))+'. Depois divida por '+n+'.'});
+    n=pick([4,5,6,8,9,10,12,15,18,20,24,36]);
+    L.push({t:'Quanto mede cada ângulo externo de um polígono <b>regular</b> de <b>'+n+' lados</b>?', r:360/n, u:'°',
+      d:'A soma dos externos é sempre 360°. Divida 360 por '+n+'.'});
+    n=pick([5,6,7,8,9,10,11,12]);
+    L.push({t:'Quantas <b>diagonais</b> tem um polígono de <b>'+n+' lados</b>?', r:n*(n-3)/2, u:'diagonais',
+      d:'Use n × (n − 3) ÷ 2: '+n+' × '+(n-3)+' ÷ 2.'});
+    N.push(L);
+
+    // 7 · Circunferência, pi e comprimento
+    L=[];
+    if(Math.random()<0.5){
+      r=rint(6,40);
+      L.push({t:'Uma roda tem raio de <b>'+r+' cm</b>. Qual é o diâmetro dela?', r:2*r, u:'cm', d:'O diâmetro vale dois raios: '+r+' × 2.'});
+    } else {
+      r=rint(6,40); 
+      L.push({t:'Um prato redondo tem <b>'+(2*r)+' cm</b> de diâmetro. Qual é o raio dele?', r:r, u:'cm', d:'O raio é a metade do diâmetro: '+(2*r)+' ÷ 2.'});
+    }
+    r=rint(5,60);
+    L.push({t:'Uma roda tem raio de <b>'+r+' cm</b>. Qual é o comprimento dela? (Responda em π: digite só o número que vai antes do π.)', r:2*r, u:'π cm',
+      d:'C = 2 × π × r, então o número antes do π é 2 × '+r+'.'});
+    r=rint(8,45); k=rint(2,6);
+    L.push({t:'Uma roda de raio <b>'+r+' cm</b> dá <b>'+k+' voltas</b> completas em linha reta. Quantos centímetros ela anda? (Responda em π.)', r:2*r*k, u:'π cm',
+      d:'Uma volta mede '+(2*r)+' vezes o π. Multiplique por '+k+' voltas.'});
+    r=rint(6,40);
+    L.push({t:'Uma circunferência tem comprimento de <b>'+(2*r)+'π cm</b>. Quanto mede o raio dela?', r:r, u:'cm',
+      d:'Em C = 2 × π × r, o número antes do π é o dobro do raio. Divida '+(2*r)+' por 2.'});
+    N.push(L);
+
+    // 8 · Área do círculo
+    L=[];
+    r=rint(3,20);
+    L.push({t:'Um círculo tem raio de <b>'+r+' cm</b>. Qual é a área dele? (Responda em π: digite só o número que vai antes do π.)', r:r*r, u:'π cm²',
+      d:'A = π × r × r = π × '+r+' × '+r+'.'});
+    r=rint(3,16);
+    L.push({t:'Uma pizza redonda tem <b>'+(2*r)+' cm</b> de diâmetro. Qual é a área dela? (Responda em π.)', r:r*r, u:'π cm²',
+      d:'Primeiro o raio: '+(2*r)+' ÷ 2 = '+r+'. Depois '+r+' × '+r+'.'});
+    r=rint(3,18);
+    L.push({t:'Um círculo tem área de <b>'+(r*r)+'π cm²</b>. Quanto mede o raio dele?', r:r, u:'cm',
+      d:'Procure o número que, multiplicado por ele mesmo, dá '+(r*r)+'.'});
+    a=rint(8,16); do{ b=rint(3,14); }while(b>=a);
+    L.push({t:'Um canteiro circular de <b>'+a+' m</b> de raio tem no meio uma fonte circular de <b>'+b+' m</b> de raio. Qual é a área de terra em volta da fonte? (Responda em π.)', r:a*a-b*b, u:'π m²',
+      d:'Área do canteiro ('+a+' × '+a+' = '+(a*a)+') menos a área da fonte ('+b+' × '+b+' = '+(b*b)+').'});
+    N.push(L);
+
+    return N;
+  }
+
+  // ================= ETAPAS =================
+  // [aviso] + para cada nível: [conceito, questões...]
+  var ETAPAS=[], NQ=0;
+  function montarEtapas(){
+    ETAPAS=[{k:'aviso'}];
+    for(var i=0;i<NIVEIS.length;i++){
+      ETAPAS.push({k:'conc',n:i});
+      for(var j=0;j<E.q[i].length;j++){ ETAPAS.push({k:'q',n:i,j:j}); }
+    }
+    NQ=ETAPAS.filter(function(s){return s.k==='q';}).length;
+  }
+
+  var E=null, ver=0;
+  function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(E)); }catch(e){} }
+  function carregar(){ try{ var s=localStorage.getItem(CHAVE); return s?JSON.parse(s):null; }catch(e){ return null; } }
+  function mostrar(id){ ['tela-id','tela-etapa','tela-fim'].forEach(function(t){ $(t).classList.toggle('oculto', t!==id); }); window.scrollTo(0,0); }
+
+  // ================= IDENTIFICAÇÃO COM SUGESTÕES =================
+  var escolhido='', modoLivre=false, ativa=-1;
+
+  function atualizarBotao(){
+    var ok = $('turma').value && (modoLivre ? $('nome-livre').value.trim().length>2 : !!escolhido);
+    $('btn-comecar').disabled=!ok;
+  }
+  function limparEscolha(){
+    escolhido=''; $('escolhido').classList.add('oculto'); $('caixa-busca').classList.remove('oculto');
+    $('busca').value=''; $('sugestoes').classList.add('oculto'); atualizarBotao();
+  }
+  function escolher(nome){
+    escolhido=nome; $('escolhido-nome').textContent=nome;
+    $('escolhido').classList.remove('oculto'); $('caixa-busca').classList.add('oculto');
+    $('sugestoes').classList.add('oculto'); atualizarBotao();
+  }
+  function sugerir(){
+    var q=norm($('busca').value.trim()), box=$('sugestoes'); box.innerHTML=''; ativa=-1;
+    if(!q){ box.classList.add('oculto'); return; }
+    var lista=LISTAS[$('turma').value]||[];
+    var achados=lista.filter(function(n){ return (' '+norm(n)).indexOf(' '+q)>=0; }).slice(0,8);
+    if(!achados.length){ var d=document.createElement('div'); d.className='vazio'; d.textContent='Nenhum nome encontrado. Confira a turma ou use "Meu nome não está na lista".'; box.appendChild(d); }
+    achados.forEach(function(n){ var d=document.createElement('div'); d.textContent=n; d.addEventListener('mousedown',function(e){ e.preventDefault(); escolher(n); }); box.appendChild(d); });
+    box.classList.remove('oculto');
+  }
+  $('turma').addEventListener('change', function(){
+    modoLivre=false; $('bloco-livre').classList.add('oculto');
+    $('bloco-nome').classList.toggle('oculto', !this.value);
+    limparEscolha(); if(this.value) $('busca').focus();
+  });
+  $('busca').addEventListener('input', function(){ escolhido=''; atualizarBotao(); sugerir(); });
+  $('busca').addEventListener('keydown', function(e){
+    var itens=$('sugestoes').querySelectorAll('div:not(.vazio)');
+    if(e.key==='ArrowDown' && itens.length){ ativa=Math.min(ativa+1,itens.length-1); e.preventDefault(); }
+    else if(e.key==='ArrowUp' && itens.length){ ativa=Math.max(ativa-1,0); e.preventDefault(); }
+    else if(e.key==='Enter' && ativa>=0 && itens[ativa]){ escolher(itens[ativa].textContent); e.preventDefault(); return; }
+    else return;
+    itens.forEach(function(d,i){ d.classList.toggle('ativa', i===ativa); });
+  });
+  $('busca').addEventListener('blur', function(){ setTimeout(function(){ $('sugestoes').classList.add('oculto'); },150); });
+  $('busca').addEventListener('focus', function(){ if(this.value.trim()) sugerir(); });
+  $('trocar').addEventListener('click', function(){ limparEscolha(); $('busca').focus(); });
+  $('nao-esta').addEventListener('click', function(){ modoLivre=true; $('bloco-nome').classList.add('oculto'); $('bloco-livre').classList.remove('oculto'); $('nome-livre').focus(); atualizarBotao(); });
+  $('voltar-lista').addEventListener('click', function(){ modoLivre=false; $('bloco-livre').classList.add('oculto'); $('bloco-nome').classList.remove('oculto'); limparEscolha(); });
+  $('nome-livre').addEventListener('input', atualizarBotao);
+
+
+  $('btn-comecar').addEventListener('click', function(){
+    E={ turma:$('turma').value, nome: modoLivre ? $('nome-livre').value.trim() : escolhido,
+        q:gerar(), p:0, erros:0, errN:[0,0,0,0,0,0,0,0], tent:0, resolvido:false, enviado:false };
+    montarEtapas(); salvar(); abrirEtapa();
+  });
+  $('btn-continuar').addEventListener('click', function(){ montarEtapas(); if(E.p>=ETAPAS.length) finalizar(); else abrirEtapa(); });
+
+  function desenharNiveis(){
+    var box=$('niveis'); box.innerHTML='';
+    for(var i=0;i<NIVEIS.length;i++){
+      var g=document.createElement('div'); g.className='g'; g.title='Nível '+(i+1)+' · '+NIVEIS[i].nome;
+      ETAPAS.forEach(function(s,idx){
+        if(s.n!==i) return;
+        var sp=document.createElement('span');
+        if(idx===ver) sp.className='atual'; else if(idx<E.p) sp.className='ok';
+        g.appendChild(sp);
+      });
+      box.appendChild(g);
+    }
+  }
+
+  function tipoResposta(t){
+    $('linha-num').classList.toggle('oculto', t!=='num');
+    $('linha-xy').classList.toggle('oculto', t!=='xy');
+    $('opcoes').classList.toggle('oculto', t!=='mc');
+    $('linha-conferir').classList.toggle('oculto', t==='mc');
+  }
+
+  function abrirEtapa(idx){
+    ver = (typeof idx==='number') ? idx : E.p;
+    var revisao = ver < E.p, s=ETAPAS[ver];
+    mostrar('tela-etapa'); desenharNiveis();
+    $('btn-voltar').classList.toggle('oculto', ver===0);
+    $('aviso-revisao').style.display = revisao ? 'block' : 'none';
+    $('msg').className='msg'; $('msg').textContent='';
+    $('btn-avancar').classList.add('oculto');
+
+    if(s.k==='aviso'){
+      $('etiqueta').textContent='Como funciona';
+      $('faixa').innerHTML='';
+      $('conteudo').innerHTML='<h3>Revisão em 8 níveis</h3>'+
+        '<p>Cada nível é um conteúdo dos simulados. Primeiro aparece um <b>quadro laranja</b> com os conceitos importantes. Depois vêm as questões do nível. Você só passa para a próxima quando acertar: a resposta certa é a <b>senha</b>.</p>'+
+        '<div class="faixa vermelha" style="font-size:16px;line-height:1.6;"><b>No caderno, vale visto:</b><br>1. Copiar os 8 quadros laranja: o título e as 4 linhas de cada um.<br>2. A <b>resolução</b> de todas as questões, com a conta. Sem a resolução no caderno, a questão não conta.</div>'+
+        '<div class="faixa azul" style="font-size:15px;line-height:1.6;">Os números foram <b>sorteados só para você</b>. A resposta do colega não serve no seu Chromebook. Copiar o enunciado é opcional.</div>';
+      $('area-pergunta').classList.add('oculto');
+      $('btn-avancar').textContent = revisao ? 'Avançar' : 'Começar o nível 1';
+      $('btn-avancar').classList.remove('oculto');
+      return;
+    }
+
+    var nv=NIVEIS[s.n];
+    if(s.k==='conc'){
+      $('etiqueta').textContent='Nível '+(s.n+1)+' de '+NIVEIS.length+' · '+nv.sim;
+      var antes = (s.n>0 && !revisao && ver===E.p) ? '<div class="parabens"><div class="big">★</div><b>Nível '+s.n+' concluído!</b></div>' : '';
+      $('faixa').innerHTML=antes;
+      $('conteudo').innerHTML='<div class="nivel-tag">NÍVEL '+(s.n+1)+'</div><div class="copiar"><div class="copiar-tt">✎ CONCEITOS IMPORTANTES · COPIE NO CADERNO · VALE VISTO</div><h3>'+nv.nome+'</h3>'+nv.html+'</div>';
+      $('area-pergunta').classList.add('oculto');
+      $('btn-avancar').textContent = revisao ? 'Avançar' : 'Já copiei · ir para as questões';
+      $('btn-avancar').classList.remove('oculto');
+      return;
+    }
+
+    var q=E.q[s.n][s.j], tot=E.q[s.n].length;
+    $('etiqueta').textContent='Nível '+(s.n+1)+' · '+nv.nome+' · questão '+(s.j+1)+' de '+tot;
+    $('faixa').innerHTML= q.tipo==='mc' ? '<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Anote no caderno</b> a resposta e o porquê. Vale visto.</div>' : '<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Resolva no caderno.</b> A resolução vale visto.</div>';
+    $('conteudo').innerHTML='';
+    $('area-pergunta').classList.remove('oculto');
+    $('pergunta-tt').textContent='Senha '+(s.j+1)+' do nível '+(s.n+1);
+    $('pergunta-sub').textContent = q.tipo==='mc' ? 'Clique na alternativa certa.' : 'Faça a conta no caderno antes de responder.';
+    $('enun').innerHTML=q.t;
+    $('dica').innerHTML='<b>Dica:</b> '+q.d;
+    $('seu').textContent='Os números desta questão foram sorteados só para você.';
+    var ultimaDoNivel = s.j===tot-1, ultima = ver===ETAPAS.length-1;
+    $('btn-avancar').textContent = ultima ? 'Concluir a revisão' : (ultimaDoNivel ? 'Ir para o nível '+(s.n+2) : 'Próxima questão');
+    if(revisao) $('btn-avancar').textContent='Avançar';
+    var feito = revisao || E.resolvido;
+
+    if(q.tipo==='mc'){
+      tipoResposta('mc');
+      var box=$('opcoes'); box.innerHTML='';
+      q.ops.forEach(function(o){
+        var b=document.createElement('button'); b.type='button'; b.textContent=o;
+        if(feito){ b.disabled=true; if(o===q.r) b.className='correta'; }
+        else b.addEventListener('click', function(){ conferirMC(b,o); });
+        box.appendChild(b);
+      });
+    } else if(q.tipo==='xy'){
+      tipoResposta('xy');
+      $('rx').value = feito ? q.r[0] : ''; $('ry').value = feito ? q.r[1] : '';
+      $('rx').disabled=feito; $('ry').disabled=feito;
+    } else {
+      tipoResposta('num');
+      $('pre').textContent=q.pre||''; $('unid').textContent=q.u||'';
+      $('resp').value = feito ? fmt(q.r) : ''; $('resp').disabled=feito;
+    }
+
+    if(feito){
+      $('btn-conferir').classList.add('oculto');
+      $('msg').className='msg certo'; $('msg').textContent='Certo!'; $('dica').style.display='none';
+      $('btn-avancar').classList.remove('oculto');
+    } else {
+      $('btn-conferir').classList.remove('oculto');
+      $('dica').style.display = E.tent>=2 ? 'block' : 'none';
+      if(q.tipo==='xy') $('rx').focus(); else if(q.tipo!=='mc') $('resp').focus();
+    }
+  }
+
+  function questaoAtual(){ var s=ETAPAS[E.p]; return E.q[s.n][s.j]; }
+  function lerNumero(txt){
+    var t=String(txt).replace(/−/g,'-').replace(/[^\d,.\-]/g,'');
+    if(t.indexOf(',')>=0) t=t.replace(/\./g,'').replace(',', '.');
+    else if(/^-?\d{1,3}(\.\d{3})+$/.test(t)) t=t.replace(/\./g,'');
+    var m=t.match(/^-?\d+(\.\d+)?/); return m?parseFloat(m[0]):NaN;
+  }
+  function acertou(txt){
+    E.resolvido=true; salvar();
+    $('msg').className='msg certo'; $('msg').textContent='Certo! '+txt;
+    $('dica').style.display='none';
+    $('btn-conferir').classList.add('oculto'); $('btn-avancar').classList.remove('oculto');
+  }
+  function errou(){
+    E.erros++; E.errN[ETAPAS[E.p].n]++; E.tent++; salvar();
+    $('msg').className='msg erro';
+    $('msg').textContent = E.tent>=2 ? 'Ainda não. Leia a dica abaixo e refaça no caderno.' : 'Ainda não. Confira a resolução no caderno e tente de novo.';
+    if(E.tent>=2) $('dica').style.display='block';
+  }
+  function conferir(){
+    var q=questaoAtual();
+    if(q.tipo==='xy'){
+      var x=lerNumero($('rx').value), y=lerNumero($('ry').value);
+      if(isNaN(x)||isNaN(y)){ $('msg').className='msg erro'; $('msg').textContent='Preencha o x e o y.'; return; }
+      if(x===q.r[0] && y===q.r[1]){ $('rx').disabled=true; $('ry').disabled=true; acertou(ponto(q.r[0],q.r[1])+'.'); }
+      else { errou(); $('rx').select(); }
+      return;
+    }
+    var v=lerNumero($('resp').value);
+    if(isNaN(v)){ $('msg').className='msg erro'; $('msg').textContent='Digite um número.'; return; }
+    if(Math.abs(v-q.r)<1e-9){ $('resp').disabled=true; acertou((q.pre?q.pre+' ':'')+fmt(q.r)+(q.u?' '+q.u:'')+'.'); }
+    else { errou(); $('resp').select(); }
+  }
+  function conferirMC(btn, op){
+    var q=questaoAtual();
+    if(op===q.r){
+      Array.prototype.forEach.call($('opcoes').children, function(b){ b.disabled=true; });
+      btn.className='correta'; acertou('');
+    } else { btn.className='errada'; btn.disabled=true; errou(); }
+  }
+  $('btn-conferir').addEventListener('click', conferir);
+  ['resp','rx','ry'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){
+      if(e.key!=='Enter') return;
+      if(id==='rx' && !$('ry').value){ $('ry').focus(); return; }
+      e.preventDefault();
+      if($('btn-avancar').classList.contains('oculto')) conferir();
+    });
+  });
+  function avancar(){
+    E.p++; E.tent=0; E.resolvido=false; salvar();
+    if(E.p>=ETAPAS.length) finalizar(); else abrirEtapa(E.p);
+  }
+  $('btn-avancar').addEventListener('click', function(){ if(ver<E.p) abrirEtapa(ver+1); else avancar(); });
+  $('btn-voltar').addEventListener('click', function(){ if(ver>0) abrirEtapa(ver-1); });
+
+  // ================= FINAL E ENVIO =================
+  function resultadoTexto(){
+    var porNivel = NIVEIS.map(function(nv,i){ return nv.curto+' '+E.errN[i]; }).join(', ');
+    return 'Níveis 8/8 · Questões '+NQ+'/'+NQ+' · '+E.erros+(E.erros===1?' tentativa errada':' tentativas erradas')+' · Erros por nível: '+porNivel;
+  }
+  function finalizar(){
+    mostrar('tela-fim');
+    var agora=new Date();
+    $('fim-dados').innerHTML='<b>Nome:</b> '+E.nome+'<br><b>Turma:</b> '+E.turma.replace(' MAT','')+'<br><b>Questões:</b> '+NQ+'/'+NQ+' · '+E.erros+(E.erros===1?' tentativa errada':' tentativas erradas')+'<br><b>Data:</b> '+agora.toLocaleDateString('pt-BR')+' '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    if(E.enviado){ $('fim-envio').className='envio ok'; $('fim-envio').textContent='Resultado já enviado ao professor.'; }
+    else enviar();
+  }
+  function enviarPorFormulario(d, pronto){
+    var nomeFrame='envio_'+Date.now();
+    var ifr=document.createElement('iframe'); ifr.name=nomeFrame; ifr.style.display='none';
+    var f=document.createElement('form'); f.method='POST'; f.action=FORM; f.target=nomeFrame; f.style.display='none';
+    d.forEach(function(v,k){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v; f.appendChild(i); });
+    var feito=false; function fim(ok){ if(feito) return; feito=true; pronto(ok); }
+    ifr.addEventListener('load', function(){ fim(true); });
+    setTimeout(function(){ fim(true); }, 4000);
+    document.body.appendChild(ifr); document.body.appendChild(f);
+    try{ f.submit(); }catch(e){ fim(false); }
+  }
+  function enviar(){
+    $('btn-reenviar').classList.add('oculto');
+    $('fim-envio').className='envio'; $('fim-envio').textContent='Enviando resultado ao professor…';
+    var d=new URLSearchParams();
+    d.append(CAMPOS.nome,E.nome); d.append(CAMPOS.turma,E.turma); d.append(CAMPOS.atividade,ATIVIDADE); d.append(CAMPOS.resultado,resultadoTexto());
+    function ok(){ E.enviado=true; salvar(); $('fim-envio').className='envio ok'; $('fim-envio').textContent='Resultado enviado ao professor.'; }
+    function falha(){ $('fim-envio').className='envio falha'; $('fim-envio').textContent='Não foi possível enviar agora. Verifique a internet e tente de novo.'; $('btn-reenviar').classList.remove('oculto'); }
+    fetch(FORM,{method:'POST',mode:'no-cors',body:d}).then(ok).catch(function(){
+      enviarPorFormulario(d, function(sucesso){ if(sucesso) ok(); else falha(); });
+    });
+  }
+  $('btn-reenviar').addEventListener('click', enviar);
+
+
+  // ================= RETOMAR =================
+  var salvo=carregar();
+  if(salvo && salvo.q && salvo.nome){
+    E=salvo;
+    $('aviso-continuar').classList.remove('oculto');
+    $('btn-continuar').classList.remove('oculto');
+    $('btn-continuar').textContent='Continuar como '+salvo.nome.split(' ')[0];
+  }
+})();
+</script>
+</body>
+</html>

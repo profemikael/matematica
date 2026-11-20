@@ -178,3 +178,18 @@ test('o professor pode começar sem esperar todos aceitarem; recarregar no cart�
   n.con.definirJogadores({ a1: { conectado: true, aceitouRegras: true }, a2: { conectado: true, aceitouRegras: true }, b1: { conectado: true, aceitouRegras: true } });
   assert.equal(n.con.ultimoPublico().fase, 'pergunta');
 });
+
+test('o tempo do resultado pode ser maior (o jogo usa 8 s para dar tempo de ler)', function () {
+  const rel = criarRelogio(), con = criarConexaoFalsa();
+  con.definirJogadores({ a1: { conectado: true }, a2: { conectado: true }, b1: { conectado: true } });
+  const anf = Anfitriao.criar({ conexao: con, config: CFG, perguntas: PERGS, relogio: rel, aleatorio: function () { return 0.5; }, resultadoMs: 8000,
+    times: [{ id: 1, nome: 'A', alunos: ['a1', 'a2'], navios: NA() }, { id: 2, nome: 'B', alunos: ['b1'], navios: NA() }] });
+  anf.iniciar();
+  rel.avancar(10000);   // ninguém respondeu: resultado
+  assert.equal(con.ultimoPublico().fase, 'resultado');
+  assert.equal(con.ultimoPublico().ate, rel.agora() + 8000);
+  rel.avancar(5000);
+  assert.equal(con.ultimoPublico().fase, 'resultado', 'aos 5 s ainda está no resultado');
+  rel.avancar(3000);
+  assert.equal(con.ultimoPublico().rodada, 2);
+});

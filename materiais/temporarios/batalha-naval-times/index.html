@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Batalha Naval em Times</title>
 <link rel="stylesheet" href="../batalha-naval/css/estilo.css?v=2026-10-05-painel">
-<link rel="stylesheet" href="css/times.css?v=2026-11-09b">
+<link rel="stylesheet" href="css/times.css?v=2026-11-20">
 </head>
 <body>
 <main class="folha">
@@ -134,24 +134,38 @@
       <span id="bat-fase"></span>
       <span id="bat-tempo"></span>
     </div>
-    <p id="bat-pausa" class="alerta" hidden>⏸ Partida pausada pelo professor</p>
-    <div id="bat-fim" class="bat-fim" hidden>
-      <p id="bat-fim-titulo"></p>
-      <p class="dica">Veja os últimos tiros e onde estavam os navios de todos os times.</p>
-      <button id="btn-ver-final" class="botao principal" type="button">Ver o resultado final</button>
+    <!-- Painel da rodada: sempre do mesmo tamanho (pergunta, ataque, movimento, resultado), para os mares não pularem -->
+    <div id="bat-painel" class="bat-painel">
+      <p id="bat-pausa" class="alerta" hidden>⏸ Partida pausada pelo professor</p>
+      <div id="bat-fim" class="bat-fim" hidden>
+        <p id="bat-fim-titulo"></p>
+        <p class="dica">Veja os últimos tiros e onde estavam os navios de todos os times.</p>
+        <button id="btn-ver-final" class="botao principal" type="button">Ver o resultado final</button>
+      </div>
+      <div id="bat-resultado" class="bat-resultado" hidden><ul id="bat-resultado-lista"></ul></div>
+      <div id="bat-pergunta" class="cartao conta-times" hidden></div>
+      <div id="bat-ataque" class="cartao conta-times" hidden></div>
+      <div id="bat-movimento" class="cartao conta-times" hidden></div>
+      <p id="bat-mensagem" class="mensagem"></p>
     </div>
-    <div id="bat-pergunta" class="cartao conta-times" hidden></div>
-    <div id="bat-ataque" class="cartao conta-times" hidden></div>
-    <div id="bat-movimento" class="cartao conta-times" hidden></div>
-    <ul id="bat-avisos" class="avisos-times"></ul>
-    <p id="bat-mensagem" class="mensagem"></p>
-    <p id="bat-radar-msg" class="radar-msg" hidden></p>
+    <div class="bat-faixa-avisos">
+      <ul id="bat-avisos" class="avisos-times"></ul>
+      <p id="bat-radar-msg" class="radar-msg" hidden></p>
+    </div>
     <div id="bat-mares" class="tabuleiros tabuleiros-times">
       <div id="mar-1" class="mar" hidden><h3 id="mar-titulo-1"></h3><div id="mar-tab-1"></div></div>
       <div id="mar-2" class="mar" hidden><h3 id="mar-titulo-2"></h3><div id="mar-tab-2"></div></div>
       <div id="mar-3" class="mar" hidden><h3 id="mar-titulo-3"></h3><div id="mar-tab-3"></div></div>
       <div id="mar-4" class="mar" hidden><h3 id="mar-titulo-4"></h3><div id="mar-tab-4"></div></div>
     </div>
+    <!-- Opções do meu mar (o app coloca no título do meu mar) -->
+    <div id="meu-mar-ctrl" class="meu-mar-ctrl" role="group" aria-label="Mostrar ou esconder o meu mar">
+      <button type="button" class="botao" data-ocultar="mostrar" title="Mostrar meus navios">👁 Mostrar</button>
+      <button type="button" class="botao" data-ocultar="navios" title="Esconder os navios (os tiros continuam aparecendo)">🙈 Esconder navios</button>
+      <button type="button" class="botao" data-ocultar="tudo" title="Esconder o mar inteiro">⬛ Esconder o mar</button>
+    </div>
+    <button id="meu-mar-cortina" class="meu-mar-cortina" type="button">🙈 Meu mar está escondido — clique para ver</button>
+    <h4 class="historico-titulo">Histórico da rodada</h4>
     <ul id="bat-eventos" class="eventos"></ul>
     <table class="placar placar-times"><thead><tr><th>Time</th><th>Alunos</th><th>Navios</th><th>Sequência</th><th>Arsenal</th></tr></thead><tbody id="bat-placar"></tbody></table>
     <div id="bat-anfitriao" class="linha-botoes centro-botoes" hidden>

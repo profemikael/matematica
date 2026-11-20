@@ -18,6 +18,15 @@
   function gravar(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* sem armazenamento */ } }
   function apagar(k) { try { localStorage.removeItem(k); } catch (e) { /* sem armazenamento */ } }
   function nomeTime(id) { return 'Time ' + NOMES_TIMES[id]; }
+  const BOLA_TIMES = ['', '🔵', '🟢', '🟡', '🔴'];
+  // Nome do time colorido (para o resultado em destaque).
+  function spanTime(id) { const e = criarEl('span', BOLA_TIMES[id] + ' ' + nomeTime(id), 'nome-time'); e.style.color = CORES_TIMES[id]; return e; }
+
+  // Meu mar: 'mostrar' | 'navios' (esconde só os navios) | 'tudo' (esconde o mar inteiro). Cada computador lembra.
+  let ocultarMeu = (function () { const v = ler('bnt-ocultar'); return v === 'navios' || v === 'tudo' ? v : 'mostrar'; })();
+  // Na hora de mover navio e no fim do jogo, o mar aparece sempre.
+  function ocultarEfetivo() { return publico && (publico.fase === 'fim' || movendoAtivo()) ? 'mostrar' : ocultarMeu; }
+  function escolherOcultar(v) { ocultarMeu = v; gravar('bnt-ocultar', v); if (publico) renderTabuleiros(); }
   function criarEl(tag, texto, classe) {
     const e = document.createElement(tag);
     if (texto !== undefined && texto !== null) e.textContent = texto;
@@ -341,7 +350,7 @@
   // ---------------- iniciar (anfitrião) ----------------
   function criarAnfitriao(perguntas, times) {
     return Anfitriao.criar({
-      conexao: conexao, config: config, times: times, perguntas: perguntas, gracaMs: 1500, cartaoRegras: true,
+      conexao: conexao, config: config, times: times, perguntas: perguntas, gracaMs: 1500, cartaoRegras: true, resultadoMs: 8000,
       relogio: { agora: function () { return conexao.horaServidor(); },
                  agendar: function (fn, ms) { const h = setTimeout(fn, ms); return function () { clearTimeout(h); }; } }
     });
@@ -373,6 +382,10 @@
 
   $('btn-pausar').addEventListener('click', function () { if (anfitriao) anfitriao.pausar(); });
   $('btn-retomar').addEventListener('click', function () { if (anfitriao) anfitriao.retomar(); });
+  Array.prototype.forEach.call(document.querySelectorAll('#meu-mar-ctrl [data-ocultar]'), function (b) {
+    b.addEventListener('click', function () { escolherOcultar(b.dataset.ocultar); });
+  });
+  $('meu-mar-cortina').addEventListener('click', function () { escolherOcultar('mostrar'); });
   $('btn-comecar-ja').addEventListener('click', function () { if (anfitriao) anfitriao.comecarJa(); });
   $('btn-regras-ok').addEventListener('click', function () {
     if (!conexao) return;
@@ -712,7 +725,7 @@
   function opMar(t, previa) {
     const dados = publico.times[t];
     if (t === meuTime()) {
-      const op = { navios: naviosMostrados(), tiros: dados.tiros, afundadas: dados.afundadas, clicavel: function () { return movendoAtivo(); } };
+      const op = { navios: ocultarEfetivo() === 'mostrar' ? naviosMostrados() : {}, tiros: dados.tiros, afundadas: dados.afundadas, clicavel: function () { return movendoAtivo(); } };
       if (previa) op.previa = previa;
       return op;
     }
@@ -728,6 +741,8 @@
 
   function renderTabuleiros() {
     const meuT = meuTime();
+    $('meu-mar-ctrl').hidden = !meuT || !publico.times[meuT];
+    $('meu-mar-cortina').hidden = true;
     [1, 2, 3, 4].forEach(function (t) {
       const dados = publico.times[t];
       $('mar-' + t).hidden = !dados;
@@ -744,6 +759,15 @@
       }
       $('mar-titulo-' + t).textContent = (t === meuT ? 'Meu mar — ' : 'Mar do ') + nomeTime(t) + (dados.vivo ? '' : ' (eliminado)');
       $('mar-' + t).classList.toggle('meu-mar', t === meuT);
+      if (t === meuT) {
+        const titulo = $('mar-titulo-' + t);
+        if ($('meu-mar-ctrl').previousElementSibling !== titulo) titulo.after($('meu-mar-ctrl'));
+        if ($('meu-mar-cortina').previousElementSibling !== $('meu-mar-ctrl')) $('meu-mar-ctrl').after($('meu-mar-cortina'));
+        const ef = ocultarEfetivo();
+        $('mar-' + t).classList.toggle('mar-oculto', ef === 'tudo');
+        $('meu-mar-cortina').hidden = ef !== 'tudo';
+        Array.prototype.forEach.call(document.querySelectorAll('#meu-mar-ctrl [data-ocultar]'), function (b) { b.classList.toggle('ativo', b.dataset.ocultar === ocultarMeu); });
+      } else $('mar-' + t).classList.remove('mar-oculto');
       $('mar-' + t).classList.toggle('eliminado', !dados.vivo);
       pintarMar(t, null);
     });
@@ -751,26 +775,38 @@
   }
 
   let ultimoEventoRodada = 0;
+
+  // Uma linha do resultado: [atacante] → [alvo]: o que aconteceu. Os nomes dos times vão coloridos.
+  function linhaEvento(e) {
+    const li = criarEl('li');
+    const txt = function (t) { li.appendChild(document.createTextNode(t)); };
+    li.appendChild(spanTime(e.atacante));
+    if (e.ignorado && e.alvo === e.atacante) { txt(' tentou mover um navio, mas não deu'); return li; }
+    if (e.poder === 'mover' && !e.ignorado) { txt(' ⚓ mudou um navio de lugar'); return li; }
+    if (e.radar) {
+      txt(' usou ' + ROTULO_PODER[e.poder] + ' no '); li.appendChild(spanTime(e.alvo));
+      if (e.atacante === meuTime()) li.appendChild(criarEl('b', e.tem ? ': 🟢 HÁ NAVIO!' : ': ⚪ nada na área', e.tem ? 'res-acerto' : 'res-agua'));
+      return li;
+    }
+    txt(' → '); li.appendChild(spanTime(e.alvo));
+    if (e.ignorado) { txt(': ataque sem efeito'); return li; }
+    const nomes = e.casas.map(function (ch) { const p = ch.split(',').map(Number); return Regras.nomeCasa(p[0], p[1]); }).join(', ');
+    txt((e.poder !== 'normal' ? ' ' + ROTULO_PODER[e.poder] : '') + (nomes ? ' em ' + nomes : '') + ': ');
+    li.appendChild(e.afundou ? criarEl('b', '💥 AFUNDOU UM NAVIO!', 'res-afundou') : e.acertos.length ? criarEl('b', '🔥 ACERTOU!', 'res-acerto') : criarEl('b', '🌊 água', 'res-agua'));
+    return li;
+  }
+
   function renderEventos() {
-    const ul = $('bat-eventos');
-    limpar(ul);
-    if (publico.fase !== 'resultado' && publico.fase !== 'fim') return;
-    (publico.eventos || []).forEach(function (e) {
-      let texto = nomeTime(e.atacante) + ' atacou ' + nomeTime(e.alvo);
-      if (e.ignorado && e.alvo === e.atacante) texto = nomeTime(e.atacante) + ' tentou mover um navio, mas não deu.';
-      else if (e.ignorado) texto += ': ataque sem efeito.';
-      else if (e.poder === 'mover') texto = nomeTime(e.atacante) + ' reorganizou os navios ⚓';
-      else if (e.radar) {
-        texto = nomeTime(e.atacante) + ' usou ' + ROTULO_PODER[e.poder] + ' em ' + nomeTime(e.alvo);
-        if (e.atacante === meuTime()) texto += ': ' + (e.tem ? '🟢 há navio na área!' : '⚪ nenhum navio na área.');
-      } else {
-        const nomes = e.casas.map(function (ch) { const p = ch.split(',').map(Number); return Regras.nomeCasa(p[0], p[1]); }).join(', ');
-        texto += ' em ' + nomes + (e.poder !== 'normal' ? ' (' + ROTULO_PODER[e.poder] + ')' : '') + ': ' +
-          (e.afundou ? '💥 afundou um navio!' : e.acertos.length ? '🔥 acertou!' : '🌊 água.');
-      }
-      ul.appendChild(criarEl('li', texto));
-    });
-    if ((publico.eventos || []).length === 0) ul.appendChild(criarEl('li', 'Nenhum time atacou nesta rodada.'));
+    const ul = $('bat-eventos'), grande = $('bat-resultado-lista');
+    limpar(ul); limpar(grande);
+    const mostra = publico.fase === 'resultado' || publico.fase === 'fim';
+    $('bat-resultado').hidden = !mostra;
+    if (!mostra) return;
+    (publico.eventos || []).forEach(function (e) { ul.appendChild(linhaEvento(e)); grande.appendChild(linhaEvento(e)); });
+    if ((publico.eventos || []).length === 0) {
+      ul.appendChild(criarEl('li', 'Nenhum time atacou nesta rodada.'));
+      grande.appendChild(criarEl('li', 'Nenhum time atacou nesta rodada.'));
+    }
     if (publico.rodada !== ultimoEventoRodada && (publico.fase === 'resultado' || publico.fase === 'fim')) {
       ultimoEventoRodada = publico.rodada;
       const ev = publico.eventos || [];

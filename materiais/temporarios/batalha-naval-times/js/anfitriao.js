@@ -17,6 +17,7 @@
     const relogio = opcoes.relogio;
     const aleatorio = opcoes.aleatorio || Math.random;
     const perguntas = opcoes.perguntas;
+    const resultadoMs = opcoes.resultadoMs || RESULTADO_MS;   // tempo para ler o resultado da rodada (o jogo usa 8 s)
 
     let estado = null;          // estado do JuizTimes
     let fase = 'espera';
@@ -233,7 +234,7 @@
         return;
       }
       fase = 'resultado';
-      agendar(RESULTADO_MS, iniciarRodada);
+      agendar(resultadoMs, iniciarRodada);
       publicar();
     }
 
@@ -265,7 +266,7 @@
       else if (fase === 'pergunta') comecarPergunta();
       else if (fase === 'ataque') comecarAtaque();
       else if (fase === 'movimento') comecarMovimento(movedores);
-      else if (fase === 'resultado') { agendar(RESULTADO_MS, iniciarRodada); publicar(); }
+      else if (fase === 'resultado') { agendar(resultadoMs, iniciarRodada); publicar(); }
       else publicar();
     }
 

@@ -106,3 +106,34 @@
 
 .avisos-times { list-style: none; margin: 6px auto; padding: 0; max-width: 720px; text-align: center; }
 .avisos-times li { display: inline-block; margin: 2px 4px; padding: 4px 10px; border-radius: 12px; background: #FEF3C7; border: 1px solid #F59E0B; font-size: 14px; }
+
+/* Painel da rodada: altura fixa, o conteúdo troca dentro dele e rola se for maior */
+.bat-painel { height: 250px; max-width: 900px; margin: 8px auto 4px; overflow-y: auto; background: var(--azul-fundo);
+  border: 2px solid #BFDBFE; border-radius: 12px; padding: 8px 12px; box-sizing: border-box; display: flex; flex-direction: column; }
+.bat-painel > * { margin-top: auto; margin-bottom: auto; }
+.bat-painel > [hidden] { display: none; }
+.bat-painel .cartao { background: transparent; border: 0; box-shadow: none; margin: auto; padding: 0; width: 100%; }
+.bat-painel .mensagem { text-align: center; font-size: 18px; font-weight: bold; color: var(--azul-esc); }
+.bat-painel .mensagem:empty { display: none; }
+.bat-painel .bat-fim { margin: 0 auto 6px; }
+.bat-faixa-avisos { max-width: 900px; margin: 0 auto; min-height: 30px; }
+.bat-faixa-avisos .radar-msg { margin: 4px auto; font-size: 17px; }
+/* Resultado da rodada em destaque */
+.bat-resultado ul { list-style: none; margin: 0; padding: 0; }
+.bat-resultado li { font-size: 21px; line-height: 1.35; padding: 4px 0; text-align: center; border-bottom: 1px solid #DBEAFE; }
+.bat-resultado li:last-child { border-bottom: 0; }
+.nome-time { font-weight: bold; white-space: nowrap; }
+.res-afundou { color: #B91C1C; font-size: 1.1em; }
+.res-acerto { color: #C2410C; }
+.res-agua { color: #1D4ED8; }
+.historico-titulo { max-width: 720px; margin: 10px auto 0; color: var(--cinza); font-size: 14px; }
+.eventos li { font-size: 14px; }
+/* Meu mar: mostrar / esconder navios / esconder tudo */
+.meu-mar-ctrl { display: flex; gap: 6px; justify-content: center; margin: 2px 0 6px; flex-wrap: wrap; }
+.meu-mar-ctrl .botao { font-size: 13px; padding: 4px 10px; }
+.meu-mar-ctrl[hidden], .meu-mar-cortina[hidden] { display: none; }
+.mar.mar-oculto > div[id^="mar-tab-"] { display: none; }
+.meu-mar-cortina { display: block; margin: 6px auto; padding: 40px 30px; font-size: 18px; font-weight: bold; border-radius: 12px;
+  border: 3px dashed #94A3B8; background: #E2E8F0; color: #334155; cursor: pointer; }
+.meu-mar-cortina:hover { background: #CBD5E1; }
+@media (max-width: 700px) { .bat-painel { height: 300px; } .bat-resultado li { font-size: 17px; } }

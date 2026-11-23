@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendário e Medida do Tempo</title>
+<style>
+  :root{
+    --navy:#0f766e;--navy2:#0b5751;--ink:#1c2a29;--mute:#5b6d6a;--line:#dfe8e6;
+    --teal-bg:#eaf5f3;--amber-bg:#fdf3e2;--amber-line:#f0c674;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:var(--ink);font-family:"Segoe UI",Arial,DejaVu Sans,sans-serif;line-height:1.4;}
+  .page{max-width:800px;margin:0 auto;padding:12px 22px;}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);}
+  h1{margin:3px 0 2px;font-size:19px;line-height:1.12;}
+  .sub{color:var(--mute);font-size:12px;margin:0 0 3px;}
+  .meta{font-size:10.5px;color:var(--mute);margin:1px 0 6px;}
+  .ident{font-size:11px;color:var(--mute);margin:4px 0 2px;}
+  hr.top{border:none;border-top:2.5px solid var(--navy);margin:5px 0 8px;}
+  p{margin:4px 0;font-size:12.5px;}
+  .cap{float:left;font-size:28px;font-weight:700;color:var(--navy);line-height:.85;margin:1px 6px 0 0;}
+  h2.sec{font-size:14px;color:var(--navy2);margin:9px 0 4px;border-bottom:2px solid var(--line);padding-bottom:2px;}
+  .box{border:1px solid var(--line);border-radius:9px;padding:5px 12px;margin:4px 0;}
+  .box h3{margin:0 0 2px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--navy2);}
+  .box.concept{background:var(--teal-bg);border-color:#bfe3dd;}
+  .box.amber{background:var(--amber-bg);border-color:var(--amber-line);}
+  .box p{margin:1px 0;font-size:11.5px;}
+  table{width:100%;border-collapse:collapse;margin:6px 0;font-size:11.5px;}
+  th{background:var(--navy);color:#fff;text-align:left;padding:4px 8px;font-size:11px;}
+  td{border-bottom:1px solid var(--line);padding:4px 8px;vertical-align:top;}
+  tr:nth-child(even) td{background:#f6faf9;}
+  .fig{text-align:center;margin:4px 0;}
+  .fig figcaption{color:var(--mute);font-style:italic;font-size:10.5px;margin-top:2px;}
+  .exhead{color:var(--navy2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--navy);padding-bottom:2px;margin:8px 0 4px;}
+  .ex{border:1px solid var(--line);border-radius:8px;padding:5px 11px;margin:3px 0;font-size:11.5px;}
+  .ex b{color:var(--navy2);}
+  .visto{background:linear-gradient(135deg,#fde68a,#f0c674);color:#78350f;border-radius:9px;padding:6px 14px;margin:8px 0 0;font-size:11.5px;font-weight:600;text-align:center;}
+  .foot{color:var(--mute);font-size:10px;margin-top:10px;border-top:1px solid var(--line);padding-top:5px;}
+  @media print{ body{background:#fff;} .page{max-width:none;padding:0;} .ex,.box,table{page-break-inside:avoid;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">Ciências · 6º ano · 3º trimestre · Aula 08</div>
+  <h1>Calendário e medida do tempo</h1>
+  <p class="sub">De onde vêm o dia, o mês e o ano</p>
+  <div class="meta">EMEF Ceará · Prof. Mikael Maronez · Retomada de aprendizagem · EF06CI14</div>
+  <div class="ident">Nome: ______________________________________ Turma: ________ Data: ____/____/______</div>
+  <hr class="top">
+
+  <p><span class="cap">O</span> calendário parece uma invenção humana qualquer, mas cada pedaço dele veio de um movimento no céu. O dia, o mês e o ano não foram escolhidos por alguém: são o tempo que a Terra e a Lua levam para completar seus movimentos.</p>
+
+  <table>
+    <tr><th>Medida</th><th>Movimento que a originou</th><th>Duração</th></tr>
+    <tr><td><b>Dia</b></td><td>Rotação da Terra em torno do próprio eixo</td><td>cerca de 24 horas</td></tr>
+    <tr><td><b>Mês</b></td><td>Ciclo completo das fases da Lua</td><td>cerca de 29 dias e meio</td></tr>
+    <tr><td><b>Ano</b></td><td>Translação da Terra ao redor do Sol</td><td>365 dias e 6 horas</td></tr>
+  </table>
+
+  <div class="box concept">
+    <h3>O mês veio da Lua</h3>
+    <p>Antes de existirem relógios e calendários impressos, os povos antigos contavam o tempo olhando para a Lua, porque ela muda de aparência de um jeito previsível. Da lua nova até a lua nova seguinte passam cerca de 29 dias e meio, e é desse ciclo que vem a palavra <b>mês</b>. Por isso os meses do nosso calendário têm 30 ou 31 dias: são um arredondamento desse ciclo lunar.</p>
+  </div>
+
+  <div class="box concept">
+    <h3>O ano e as seis horas que sobram</h3>
+    <p>A translação não dura 365 dias exatos, e sim 365 dias e 6 horas. Essas seis horas não cabem no calendário, então vão se acumulando. Depois de quatro anos elas somam quase um dia inteiro, e esse dia extra é acrescentado ao calendário como o <b>29 de fevereiro</b>. O ano que recebe esse dia é o <b>ano bissexto</b>, e por isso ele cai sempre de quatro em quatro anos.</p>
+  </div>
+
+  <div class="fig">
+    <svg width="330" height="78" viewBox="0 0 360 86" xmlns="http://www.w3.org/2000/svg">
+      <g font-size="11" fill="#0b5751" text-anchor="middle">
+        <rect x="14" y="24" width="68" height="30" rx="6" fill="#eaf5f3" stroke="#0f766e"/>
+        <rect x="98" y="24" width="68" height="30" rx="6" fill="#eaf5f3" stroke="#0f766e"/>
+        <rect x="182" y="24" width="68" height="30" rx="6" fill="#eaf5f3" stroke="#0f766e"/>
+        <rect x="266" y="24" width="68" height="30" rx="6" fill="#fdf3e2" stroke="#f0c674"/>
+        <text x="48" y="43">ano 1</text><text x="132" y="43">ano 2</text>
+        <text x="216" y="43">ano 3</text><text x="300" y="43">ano 4</text>
+        <text x="48" y="68" font-size="10" fill="#5b6d6a">+6 h</text>
+        <text x="132" y="68" font-size="10" fill="#5b6d6a">+6 h</text>
+        <text x="216" y="68" font-size="10" fill="#5b6d6a">+6 h</text>
+        <text x="300" y="68" font-size="10" fill="#78350f">+6 h = 1 dia</text>
+        <text x="180" y="16" font-size="10.5" fill="#5b6d6a">as seis horas que sobram em cada ano vão se acumulando</text>
+      </g>
+    </svg>
+    <figcaption>Quatro anos de seis horas somam um dia inteiro: nasce o 29 de fevereiro.</figcaption>
+  </div>
+
+  <div class="box amber">
+    <h3>Você sabia?</h3>
+    <p>O calendário que usamos hoje é chamado de <b>calendário gregoriano</b> e foi ajustado em 1582, porque o calendário anterior estava adiantado em relação às estações do ano. Existem até hoje calendários que seguem só a Lua, como o islâmico, e por isso suas datas vão mudando de estação ao longo dos anos.</p>
+  </div>
+
+  <div class="box amber">
+    <h3>Cuidado com a ideia errada</h3>
+    <p>O ano bissexto <b>não</b> acontece porque a Terra gira mais devagar nesse ano. A translação dura sempre o mesmo tempo. O dia extra existe porque o calendário usa números inteiros de dias, e as seis horas que sobram precisam ser devolvidas de tempos em tempos.</p>
+  </div>
+
+  <div class="exhead">Exercícios — resolva no caderno</div>
+
+  <div class="ex"><b>1.</b> Qual movimento deu origem ao dia? E ao ano?</div>
+  <div class="ex"><b>2.</b> De onde veio a ideia de mês? Quanto dura o ciclo completo das fases da Lua?</div>
+  <div class="ex"><b>3.</b> Explique, com suas palavras, por que existe o ano bissexto.</div>
+  <div class="ex"><b>4.</b> Se o calendário nunca tivesse o 29 de fevereiro, o que iria acontecendo com as estações do ano ao longo dos séculos?</div>
+  <div class="ex"><b>5.</b> O ano de 2028 será bissexto? Mostre como você descobriu.</div>
+  <div class="ex"><b>6.</b> Por que se diz que o calendário é, na verdade, um registro dos movimentos da Terra e da Lua?</div>
+
+  <div class="visto">Esta atividade vale visto no caderno.</div>
+
+  <div class="foot">Ciências — 6º ano · Calendário e medida do tempo · EMEF Ceará — Canoas/RS · Prof. Mikael Maronez</div>
+</div>
+</body>
+</html>

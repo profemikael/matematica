@@ -405,8 +405,8 @@
       $('faixa').innerHTML='';
       $('conteudo').innerHTML='<h3>Retomada em 2 níveis</h3>'+
         '<p>Cada nível é um conteúdo do Simulado 2. Primeiro aparece um <b>quadro laranja</b> com os conceitos importantes. Depois vêm as questões do nível. Você só passa para a próxima quando acertar: a resposta certa é a <b>senha</b>.</p>'+
-        '<div class="faixa vermelha" style="font-size:16px;line-height:1.6;"><b>No caderno, vale visto:</b><br>1. Copiar os 2 quadros laranja: o título e as linhas de cada um.<br>2. A <b>resolução</b> de todas as questões, com a conta. Sem a resolução no caderno, a questão não conta.</div>'+
-        '<div class="faixa azul" style="font-size:15px;line-height:1.6;">Os números foram <b>sorteados só para você</b>. A resposta do colega não serve no seu Chromebook. Copiar o enunciado é opcional.</div>';
+        '<div class="faixa vermelha" style="font-size:16px;line-height:1.6;"><b>No caderno, vale visto:</b><br>1. Copiar os 2 quadros laranja: o título e as linhas de cada um.<br>2. <b>Copiar cada questão</b> (o enunciado com os seus números) e a <b>resolução</b>, com a conta. Sem isso no caderno, a questão não conta.</div>'+
+        '<div class="faixa azul" style="font-size:15px;line-height:1.6;">Os números foram <b>sorteados só para você</b>. A resposta do colega não serve no seu Chromebook.</div>';
       $('area-pergunta').classList.add('oculto');
       $('btn-avancar').textContent = revisao ? 'Avançar' : 'Começar o nível 1';
       $('btn-avancar').classList.remove('oculto');
@@ -427,11 +427,11 @@
 
     var q=E.q[s.n][s.j], tot=E.q[s.n].length;
     $('etiqueta').textContent='Nível '+(s.n+1)+' · '+nv.nome+' · questão '+(s.j+1)+' de '+tot;
-    $('faixa').innerHTML= q.tipo==='mc' ? '<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Anote no caderno</b> a resposta e o porquê. Vale visto.</div>' : '<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Resolva no caderno.</b> A resolução vale visto.</div>';
+    $('faixa').innerHTML= q.tipo==='mc' ? '<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Copie a questão no caderno</b> e anote a resposta e o porquê. Vale visto.</div>' : '<div class="faixa vermelha" style="padding:7px 12px;font-size:13.5px;"><b>Copie a questão e resolva no caderno.</b> Vale visto.</div>';
     $('conteudo').innerHTML='';
     $('area-pergunta').classList.remove('oculto');
     $('pergunta-tt').textContent='Senha '+(s.j+1)+' do nível '+(s.n+1);
-    $('pergunta-sub').textContent = q.tipo==='mc' ? 'Clique na alternativa certa.' : 'Faça a conta no caderno antes de responder.';
+    $('pergunta-sub').textContent = q.tipo==='mc' ? 'Copie a questão no caderno e clique na alternativa certa.' : 'Copie a questão, faça a conta no caderno e depois responda.';
     $('enun').innerHTML=q.t;
     $('dica').innerHTML='<b>Dica:</b> '+q.d;
     $('seu').textContent='Os números desta questão foram sorteados só para você.';
